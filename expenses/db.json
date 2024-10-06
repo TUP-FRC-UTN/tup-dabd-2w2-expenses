@@ -1,0 +1,31 @@
+{
+  "cargosLote": [
+    {
+      "id": 1,
+      "fechaEmision": "01/10/2024",
+      "lote": 101,
+      "tipo": "Mantenimiento",
+      "periodo": "Mensual",
+      "monto": 1500,
+      "descripcion": "Mantenimiento mensual del lote"
+    },
+    {
+      "id": 2,
+      "fechaEmision": "15/09/2024",
+      "lote": 202,
+      "tipo": "Agua",
+      "periodo": "Bimestral",
+      "monto": 800,
+      "descripcion": "Cobro del servicio de agua"
+    },
+    {
+      "id": 801,
+      "fechaEmision": "2024-10-10",
+      "lote": "23",
+      "tipo": "Tipo 2",
+      "periodo": "Período 2",
+      "monto": "200",
+      "descripcion": "lalalalala"
+    }
+  ]
+}

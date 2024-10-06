@@ -35,7 +35,7 @@
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
-                    <th><input type="checkbox"></th>
+                    <th>#</th>
                     <th>FECHA DE EMISIÓN</th>
                     <th>PERIODO</th>
                     <th>TIPO</th>
@@ -45,14 +45,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>22/06/2024</td>
-                    <td>JULIO - 2024</td>
-                    <td>Servicio de jardinería</td>
-                    <td>$100.000</td>
-                    <td>1</td>
-                    <td>
+                
+                    @for (charge of charges; track $index) {<tr>
+                        <td><input type="checkbox"></td>
+                        <td>{{charge.fechaEmision}}</td>
+                        <td>{{charge.periodo}}</td>
+                        <td>{{charge.tipo}}</td>
+                        <td>{{charge.monto}}</td>
+                        <td>{{charge.lote}}</td>
+                        <td>
                         <button class="btn btn-warning btn-sm mr-2" data-toggle="modal" data-target="#viewModal">
                             <i class="bi bi-eye"></i>
                         </button>
@@ -60,7 +61,7 @@
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
-                </tr>
+                   </tr> }
             </tbody>
         </table>
     </div>

@@ -1,5 +1,27 @@
-<app-borrar-item></app-borrar-item>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/list-charges" routerLinkActive="active">Listar Cargos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/add-charge" routerLinkActive="active">Agregar Cargo</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <router-outlet></router-outlet>
+</div>
+
+
+
+
+<!-- <app-borrar-item></app-borrar-item>
 
 <app-add-charge></app-add-charge>
 
-<app-list-charges></app-list-charges>
+<app-list-charges></app-list-charges> -->
