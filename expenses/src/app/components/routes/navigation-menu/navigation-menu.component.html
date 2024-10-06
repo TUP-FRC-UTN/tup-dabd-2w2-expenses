@@ -1,0 +1,24 @@
+<app-navbar
+  [menuItems]="items"
+  (menuVisited)="onMenuVisited($event)"
+/>
+
+<div>
+  @switch (visibleSection) {
+    @case ('bills') {
+      <span>Bills-component</span>
+    }
+    @case ('charges') {
+      <span>Charges-component</span>
+    }
+    @case ('liquidation-expense'){
+      <app-liquidation-expense></app-liquidation-expense>
+    }
+    @case ('accounts') {
+      <span>Accounts-component</span>
+    }
+    @default {
+
+    }
+  }
+</div>
