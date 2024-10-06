@@ -1,2 +1,36 @@
-<h1>toy en liquidation</h1>
-    
+<div class="container">
+  <div class="row">
+    <div class="col-2">
+      <app-period-select
+        (periodSelected)="onPeriodSelected($event)"
+      ></app-period-select>
+    </div>
+  </div>
+  @for (liquidation of liquidationExpense; track $index) {
+  <div>
+    <h3>{{ liquidation.bill_type?.name }}</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Categoría</th>
+          <th scope="col">Período</th>
+          <th scope="col">Monto</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (detail of liquidation.liquidation_expenses_details; track $index) {
+            <tr>
+                <td>{{detail.amount}} </td>
+                <td>{{liquidation.period?.month}} / {{liquidation.period?.year}} </td>
+                <td>{{detail.category?.name}} </td>
+                <td><button class="btn btn-primary" >Accion</button></td>
+              </tr>
+        }
+      </tbody>
+      <h3>Total: {{liquidation.total_amount}} </h3>
+    </table>
+  </div>
+
+  }
+</div>

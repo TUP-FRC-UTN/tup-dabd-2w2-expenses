@@ -3,5 +3,5 @@ import { AppComponent } from './app.component';
 import { LiquidationExpenseComponent } from './components/routes/liquidation-expense/liquidation-expense.component';
 
 export const routes: Routes = [
-    { path: 'expense', component:LiquidationExpenseComponent }
+    { path: 'expense/:id', component:LiquidationExpenseComponent }
 ];
