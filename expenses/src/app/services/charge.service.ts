@@ -7,16 +7,16 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ChargeService {
-  private readonly url = 'http://localhost:3000/cargosLote';
+  private url = 'http://localhost:3000/cargosLote';
   private http = inject(HttpClient);
 
   constructor() {}
-  
-  addCharge(charge: Charge) {
-    return this.http.post(this.url, charge);
+
+  addCharge(charge: Charge): Observable<Charge> {
+    return this.http.post<Charge>(this.url, charge);
   }
 
-  getCharges():Observable<Charge[]> {
+  getCharges(): Observable<Charge[]> {
     return this.http.get<Charge[]>(this.url);
   }
 
@@ -24,7 +24,7 @@ export class ChargeService {
     return this.http.put(`${this.url}/${charge.id}`, charge);
   }
 
-  deleteCharge(ids: number[]) {
-    return this.http.delete(`${this.url}/${ids.join(',')}`);
+  deleteCharge(charge: number): Observable<Charge> {
+    return this.http.delete<Charge>(this.url + '/' + charge);
   }
 }

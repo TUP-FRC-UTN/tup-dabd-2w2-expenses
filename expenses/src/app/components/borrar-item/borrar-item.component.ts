@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-borrar-item',
@@ -8,5 +9,15 @@ import { Component } from '@angular/core';
   styleUrl: './borrar-item.component.css'
 })
 export class BorrarItemComponent {
+  @Input() chargeId!: number;
 
+  constructor(public activeModal: NgbActiveModal) {}
+
+  confirmDelete() {
+    this.activeModal.close(this.chargeId);
+  }
+
+  cancelDelete() {
+    this.activeModal.dismiss();
+  }
 }
