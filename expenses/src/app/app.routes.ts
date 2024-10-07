@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { AppComponent } from './app.component';
+import { LiquidationExpenseComponent } from './components/routes/liquidation-expense/liquidation-expense.component';
 
 export const routes: Routes = [
-    { path: '', component: AppComponent }, // Ruta raíz
-    { path: 'expense/period/{period_id}', component:AppComponent }, // Ruta para productos
-    { path: '**', redirectTo: '' } 
+    { path: 'expense/:id', component:LiquidationExpenseComponent },
+    { path: '', redirectTo: '', pathMatch: 'full' }, 
+    { path: '**', redirectTo: '/expense/1' },
 ];
