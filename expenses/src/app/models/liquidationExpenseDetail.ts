@@ -5,5 +5,5 @@ export default class LiquidationExpenseDetail {
   type: string | null = null
   category: string | null = null
   total_amount: number | null = null
-  billS: Bill[] = []
+  bills: Bill[] = []
 }

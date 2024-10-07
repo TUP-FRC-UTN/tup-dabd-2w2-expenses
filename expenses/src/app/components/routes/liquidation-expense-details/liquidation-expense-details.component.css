@@ -1,0 +1,53 @@
+.liquidation {
+  margin: auto;
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #FFF;
+  border: 1.5px solid rgb(207, 207, 207);
+  border-radius: 10px;
+  width: 950px;
+  height: 80vh;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 35%;
+}
+
+.general-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.general-details div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.general-details p {
+  margin: 0;
+}
+
+.bills {
+  height: 65%;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+.btn-go-back {
+  background-color: rgb(253, 139, 45);
+  padding: 10px 20px;
+  color: #FFF;
+}

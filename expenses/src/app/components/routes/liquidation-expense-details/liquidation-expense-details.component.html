@@ -1,1 +1,48 @@
-<p>liquidation-expense-details works!</p>
+<div class="liquidation">
+  <div class="details">
+    <h3>{{liquidationExpenseDetail.category}}</h3>
+    <div class="general-details">
+      <div>
+        <label><b>Tipo de expensa</b></label>
+        <p>{{liquidationExpenseDetail.type}}</p>
+      </div>
+      <div>
+        <label><b>Monto Total</b></label>
+        <p>{{liquidationExpenseDetail.total_amount | currency}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="bills">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Proveedor</th>
+          <th scope="col">Monto</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (factura of liquidationExpenseDetail.bills; track $index) {
+          <tr>
+            <th scope="row">{{$index}}</th>
+            <td>{{factura.date}}</td>
+            <td>{{factura.provider}}</td>
+            <td>{{ factura.amount | currency }}</td>
+            <td>
+              @if (factura.paid) {
+                Pagado
+              } @else {
+                No Pagado
+              }
+            </td>
+            <td>{{factura.description}}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-go-back" (click)="goBack()">Volver</button>
+</div>

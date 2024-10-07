@@ -1,18 +1,22 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { LiquidationExpenseDetailsService } from '../../../services/liquidation-expense-details.service';
 import LiquidationExpenseDetail from '../../../models/liquidationExpenseDetail';
+import { Location } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-liquidation-expense-details',
   standalone: true,
-  imports: [],
+  imports: [
+    CurrencyPipe
+  ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
 })
 export class LiquidationExpenseDetailsComponent implements OnInit{
 
-  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly service = inject(LiquidationExpenseDetailsService);
   private readonly route = inject(ActivatedRoute);
   liquidationExpenseDetail: LiquidationExpenseDetail = new LiquidationExpenseDetail();
@@ -29,11 +33,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         this.service.get(Number(id)).subscribe((data: LiquidationExpenseDetail) => {
           this.liquidationExpenseDetail = data;
 
-          console.log(this.liquidationExpenseDetail);
-
         });
       }
     });
   }
 
+  goBack() {
+    this.location.back();
+  }
 }

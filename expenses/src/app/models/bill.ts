@@ -1,6 +1,6 @@
 export interface Bill {
   date: Date | null
-  anount: number | null
+  amount: number | null
   provider: string | null
   paid: boolean
   description: string

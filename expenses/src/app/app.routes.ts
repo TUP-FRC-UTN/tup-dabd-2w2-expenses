@@ -4,6 +4,7 @@ import { LiquidationExpenseComponent } from './components/routes/liquidation-exp
 import { LiquidationExpenseDetailsComponent } from './components/routes/liquidation-expense-details/liquidation-expense-details.component';
 
 export const routes: Routes = [
-    { path: 'expense/:id', component:LiquidationExpenseComponent },
-    { path: 'expense/details/:id', component:LiquidationExpenseDetailsComponent }
+  { path: 'expense/:id', component:LiquidationExpenseComponent },
+  { path: 'expense/details/:id', component:LiquidationExpenseDetailsComponent },
+  { path: '', redirectTo: '/bills', pathMatch: 'full' }
 ];

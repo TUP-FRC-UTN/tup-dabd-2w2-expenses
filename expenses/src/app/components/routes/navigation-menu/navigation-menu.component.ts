@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
 import {LiquidationExpenseComponent} from "../liquidation-expense/liquidation-expense.component";
 import { LiquidationExpenseDetailsComponent } from "../liquidation-expense-details/liquidation-expense-details.component";
