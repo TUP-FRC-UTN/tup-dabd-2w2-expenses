@@ -67,8 +67,7 @@
       "total_amount": 60000
     }
   ],
-  "expensesDetails": [
-    {
+  "expenseDetails": {
       "expense_id": 1,
       "type": "Extraordinaria",
       "category": "Sueldos y Jornales",
@@ -96,72 +95,5 @@
           "description": "descripcion de ejemplo"
         }
       ]
-    },
-    {
-      "expense_id": 2,
-      "type": "Extraordinaria",
-      "category": "Sueldos y Jornales",
-      "total_amount": 50000,
-      "bills": [
-        {
-          "date": "07-08-2024",
-          "amount": "30000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        },
-        {
-          "date": "09-08-2024",
-          "amount": "20000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        }
-      ]
-    },
-    {
-      "expense_id": 3,
-      "type": "Ordinaria",
-      "category": "EPEC",
-      "total_amount": 60000,
-      "bills": [
-        {
-          "date": "07-08-2024",
-          "amount": "30000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        },
-        {
-          "date": "09-08-2024",
-          "amount": "20000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        },
-        {
-          "date": "10-08-2024",
-          "amount": "10000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        }
-      ]
-    },
-    {
-      "expense_id": 4,
-      "type": "Ordinaria",
-      "category": "Servicios de agua",
-      "total_amount": 30000,
-      "bills": [
-        {
-          "date": "07-08-2024",
-          "amount": "30000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        }
-      ]
     }
-  ]
 }
