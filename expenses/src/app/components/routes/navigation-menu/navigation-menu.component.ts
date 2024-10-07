@@ -2,14 +2,18 @@ import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
 import {LiquidationExpenseComponent} from "../liquidation-expense/liquidation-expense.component";
 import { ActivatedRoute, Router } from '@angular/router';
+import { ExpenseComponent } from '../expense/expense/expense.component';
+import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
 
 @Component({
   selector: 'app-navigation-menu',
   standalone: true,
   imports: [
     NavbarComponent,
-    LiquidationExpenseComponent
-  ],
+    LiquidationExpenseComponent,
+    ExpenseComponent,
+    PeriodSelectComponent
+],
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
@@ -33,8 +37,14 @@ export class NavigationMenuComponent implements OnInit {
       disabled: false
     },
     {
-      key: 'liquidation-expense',
+      key: 'expense',
       name: 'Expensas',
+      active: false,
+      disabled: false
+    },
+    {
+      key: 'liquidation-expense',
+      name: 'Liquidacion de Expensas',
       active: false,
       disabled: false
     },

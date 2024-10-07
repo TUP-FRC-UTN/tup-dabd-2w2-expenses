@@ -1,0 +1,36 @@
+<div class="container" style="margin-top: 18px;">
+    <div class="row">
+      <div class="col-2">
+        <app-period-select
+          (periodSelected)="onPeriodSelected($event)"
+        ></app-period-select>
+      </div>
+    </div>
+    @for (expense of expenses; track $index) {
+    <div>
+      <h3>Expensas</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Lote</th>
+            <th scope="col">Período</th>
+            <th scope="col">Monto Total</th>
+            <th scope="col">Fecha de liquidación</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+                <td>{{expense.lotId}} </td>
+                <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
+                <td>{{expense.totalAmount}} </td>
+                <td>{{expense.liquidationDate}}</td>
+                <td><button class="btn btn-primary" >Accion</button></td>
+             
+    
+        </tbody>
+        <h3>Total: {{expense.totalAmount}} </h3>
+      </table>
+    </div>
+  
+    }
+  </div>
