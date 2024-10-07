@@ -1,0 +1,167 @@
+{
+  "periods": [
+    {
+      "id": 1,
+      "month": 9,
+      "year": 2024
+    },
+    {
+      "id": 2,
+      "month": 10,
+      "year": 2024
+    },
+    {
+      "id": 3,
+      "month": 8,
+      "year": 2024
+    },
+    {
+      "id": 4,
+      "month": 7,
+      "year": 2024
+    }
+  ],
+  "expenses": [
+    {
+      "expense_id": 1,
+      "liquidation_expenses_details": [
+        {
+          "id": 1,
+          "amount": 30000,
+          "category": {
+            "categoryBillId": 1,
+            "description": "descripcion ejemplo",
+            "name": "ejemplo 1"
+          }
+        },
+        {
+          "id": 2,
+          "amount": 20000,
+          "category": {
+            "categoryBillId": 1,
+            "description": "descripcion ejemplo",
+            "name": "ejemplo 1"
+          }
+        },
+        {
+          "id": 3,
+          "amount": 10000,
+          "category": {
+            "categoryBillId": 2,
+            "description": "descripcion ejemplo",
+            "name": "ejemplo 2"
+          }
+        }
+      ],
+      "solicitacion_date": "09-09-2024",
+      "bill_type": {
+        "typeId": 1,
+        "name": "ejemplo 1",
+        "descripcion": "descripcion ejemplo"
+      },
+      "period": {
+        "id": 1,
+        "mont": 9,
+        "year": 2024
+      },
+      "total_amount": 60000
+    }
+  ],
+  "expensesDetails": [
+    {
+      "expense_id": 1,
+      "type": "Extraordinaria",
+      "category": "Sueldos y Jornales",
+      "total_amount": 60000,
+      "bills": [
+        {
+          "date": "07-08-2024",
+          "amount": "30000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        },
+        {
+          "date": "09-08-2024",
+          "amount": "20000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        },
+        {
+          "date": "10-08-2024",
+          "amount": "10000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        }
+      ]
+    },
+    {
+      "expense_id": 2,
+      "type": "Extraordinaria",
+      "category": "Sueldos y Jornales",
+      "total_amount": 50000,
+      "bills": [
+        {
+          "date": "07-08-2024",
+          "amount": "30000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        },
+        {
+          "date": "09-08-2024",
+          "amount": "20000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        }
+      ]
+    },
+    {
+      "expense_id": 3,
+      "type": "Ordinaria",
+      "category": "EPEC",
+      "total_amount": 60000,
+      "bills": [
+        {
+          "date": "07-08-2024",
+          "amount": "30000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        },
+        {
+          "date": "09-08-2024",
+          "amount": "20000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        },
+        {
+          "date": "10-08-2024",
+          "amount": "10000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        }
+      ]
+    },
+    {
+      "expense_id": 4,
+      "type": "Ordinaria",
+      "category": "Servicios de agua",
+      "total_amount": 30000,
+      "bills": [
+        {
+          "date": "07-08-2024",
+          "amount": "30000",
+          "provider": "ejemplo",
+          "paid": true,
+          "description": "descripcion de ejemplo"
+        }
+      ]
+    }
+  ]
+}
