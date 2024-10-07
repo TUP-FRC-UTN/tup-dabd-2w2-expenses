@@ -8,8 +8,7 @@ import {NavigationMenuComponent} from "./components/routes/navigation-menu/navig
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BorrarItemComponent, AddChargeComponent, ListChargesComponent, RouterModule],
-  imports: [RouterOutlet, NavigationMenuComponent,RouterModule],
+  imports: [RouterOutlet, RouterModule, NavigationMenuComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
