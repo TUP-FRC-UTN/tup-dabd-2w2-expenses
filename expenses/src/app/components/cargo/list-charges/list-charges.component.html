@@ -45,23 +45,24 @@
                 </tr>
             </thead>
             <tbody>
-                
-                    @for (charge of charges; track $index) {<tr>
-                        <td><input type="checkbox"></td>
-                        <td>{{charge.fechaEmision}}</td>
-                        <td>{{charge.periodo}}</td>
-                        <td>{{charge.tipo}}</td>
-                        <td>{{charge.monto}}</td>
-                        <td>{{charge.lote}}</td>
-                        <td>
-                        <button class="btn btn-warning btn-sm mr-2" data-toggle="modal" data-target="#viewModal">
+
+                @for (charge of charges; track $index) {<tr>
+                    <td><input type="checkbox"></td>
+                    <td>{{charge.fechaEmision}}</td>
+                    <td>{{charge.periodo}}</td>
+                    <td>{{charge.tipo}}</td>
+                    <td>{{charge.monto}}</td>
+                    <td>{{charge.lote}}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(charge)">
                             <i class="bi bi-eye"></i>
                         </button>
+
                         <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.id)">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
-                   </tr> }
+                </tr> }
             </tbody>
         </table>
     </div>
@@ -80,72 +81,4 @@
             </li>
         </ul>
     </nav>
-</div>
-
-
-
-<!-- esto va en el componente de update charge -->
-<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewModalLabel">Cargo N° 1</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="fechaEmision">Fecha de emisión</label>
-                            <input type="text" class="form-control" id="fechaEmision" value="28/07/2024" disabled>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="lote">Lote</label>
-                            <input type="text" class="form-control" id="lote" value="1" disabled>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-5">
-                            <label for="tipo">Tipo</label>
-                            <select id="tipo" class="form-control" disabled>
-                                <option selected>Servicio de jardinería</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-1 text-center d-flex align-items-center justify-content-center mt-4">
-                            <button type="button" class="btn btn-link" data-toggle="modal"
-                                data-target="#categoriaModal">+</button>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="periodo">Período</label>
-                            <select id="periodo" class="form-control" disabled>
-                                <option selected>JULIO - 2024</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="monto">Monto</label>
-                            <input type="text" class="form-control" id="monto" value="$30000" disabled>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" class="form-control" rows="3"
-                            disabled>El lore nro1 ha contratado el servicio de jardinería "Vivan los arboles"</textarea>
-                    </div>
-
-                    <div class="form-row justify-content-center">
-                        <button type="button" class="btn btn-primary mr-2">Modificar</button>
-                        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-warning">Guardar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>

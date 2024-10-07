@@ -20,9 +20,9 @@ export class ChargeService {
     return this.http.get<Charge[]>(this.url);
   }
 
-  updateCharge(charge: Charge) {
-    return this.http.put(`${this.url}/${charge.id}`, charge);
-  }
+  updateCharge(charge: Charge): Observable<Charge> {
+    return this.http.put<Charge>(`${this.url}/${charge.id}`, charge);
+  }  
 
   deleteCharge(charge: number): Observable<Charge> {
     return this.http.delete<Charge>(this.url + '/' + charge);

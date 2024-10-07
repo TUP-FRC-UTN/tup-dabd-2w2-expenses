@@ -3,11 +3,12 @@ import { Charge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BorrarItemComponent } from '../../borrar-item/borrar-item.component';
+import { UpdateChargeComponent } from '../update-charge/update-charge.component';
 
 @Component({
   selector: 'app-list-charges',
   standalone: true,
-  imports: [],
+  imports: [UpdateChargeComponent],
   templateUrl: './list-charges.component.html',
   styleUrl: './list-charges.component.css',
 })
@@ -16,9 +17,14 @@ export class ListChargesComponent implements OnInit {
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
 
+  selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
 
   ngOnInit(): void {
+    this.loadCharges();
+  }
+
+  loadCharges(): void {
     this.chargeService.getCharges().subscribe((charges) => {
       this.charges = charges;
     });
@@ -43,8 +49,7 @@ export class ListChargesComponent implements OnInit {
           this.deleteCharge(result);
         }
       },
-      () => {
-      }
+      () => {}
     );
   }
 
@@ -52,5 +57,19 @@ export class ListChargesComponent implements OnInit {
     this.chargeService.deleteCharge(chargeId).subscribe(() => {
       this.charges = this.charges.filter((charge) => charge.id !== chargeId);
     });
+  }
+
+  openUpdateModal(charge: Charge) {
+    const modalRef = this.modalService.open(UpdateChargeComponent);
+    modalRef.componentInstance.charge = charge;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.loadCharges();
+        }
+      },
+      () => {}
+    );
   }
 }
