@@ -1,5 +1,5 @@
 import BillType from "./billType"
-import Category from "./Category"
+import Category from "./category"
 import Period from "./period"
 
 export default class LiquidationExpense{
