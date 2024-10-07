@@ -1,0 +1,49 @@
+{
+  "cargosLote": [
+    {
+      "id": "801",
+      "fechaEmision": "2024-10-31",
+      "lote": "24",
+      "tipo": "Tipo 3",
+      "periodo": "Período 2",
+      "monto": "10000",
+      "descripcion": "si se"
+    },
+    {
+      "id": "989",
+      "fechaEmision": "2024-10-01",
+      "lote": "22",
+      "tipo": "Tipo 3",
+      "periodo": "Período 2",
+      "monto": "10000",
+      "descripcion": "corte de pasto"
+    },
+    {
+      "id": "928",
+      "fechaEmision": "2024-10-16",
+      "lote": "23",
+      "tipo": "Tipo 3",
+      "periodo": "Período 2",
+      "monto": "200",
+      "descripcion": "jardineria"
+    },
+    {
+      "id": 728,
+      "fechaEmision": "2024-10-21",
+      "lote": "2",
+      "tipo": "Tipo 3",
+      "periodo": "Período 1",
+      "monto": "1000",
+      "descripcion": "no se"
+    },
+    {
+      "id": 221,
+      "fechaEmision": "2024-10-09",
+      "lote": "6",
+      "tipo": "Tipo 3",
+      "periodo": "Período 3",
+      "monto": "123456",
+      "descripcion": "limpieza"
+    }
+  ]
+}

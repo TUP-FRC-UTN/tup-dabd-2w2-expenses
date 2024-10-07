@@ -1,5 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+
 import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import Period from '../models/period';
 
@@ -7,6 +8,9 @@ import Period from '../models/period';
   providedIn: 'root'
 })
 export class PeriodService {
+
+
+  constructor() { }
 
   private readonly http = inject(HttpClient)
 
@@ -23,7 +27,4 @@ export class PeriodService {
     }
       
   }
-
-
-
 }
