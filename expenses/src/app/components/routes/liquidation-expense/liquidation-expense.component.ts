@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-liquidation-expense',
@@ -22,15 +23,23 @@ export class LiquidationExpenseComponent implements OnInit {
   ngOnInit(): void {
     this.loadLiquidationExpense()
   }
-
-  private loadLiquidationExpense (){
+  
+  private loadLiquidationExpense() {
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id')
-      if (id&& !isNaN(Number(id))) {
-          this.service.get(Number(id)).subscribe((data:LiquidationExpense[])=>{
-            this.liquidationExpense = data
-            console.log(this.liquidationExpense)
-          })
+      const id = params.get('id');
+      if (id && !isNaN(Number(id))) {
+        this.service.get(Number(id)).subscribe((data: LiquidationExpense[]) => {
+          this.liquidationExpense = data;
+  
+          const requests = this.liquidationExpense.map(liq => 
+            this.service.getById(Number(liq.expense_id))
+          );
+  
+          forkJoin(requests).subscribe((results: LiquidationExpense[]) => {
+            this.liquidationExpense = results;
+            console.log(this.liquidationExpense);
+          });
+        });
       }
     });
   }

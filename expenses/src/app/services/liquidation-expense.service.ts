@@ -10,9 +10,12 @@ export class LiquidationExpenseService {
 
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/liquidation/calculate"
+  private apiUrl = "http://localhost:8081/liquidation/"
 
   get(id:number): Observable<LiquidationExpense[]>{
-    return this.http.get<LiquidationExpense[]>(`${this.apiUrl}/${id}`,)
+    return this.http.get<LiquidationExpense[]>(`${this.apiUrl}calculate/${id}`,)
+  }
+  getById(id:number):Observable<LiquidationExpense>{
+    return this.http.get<LiquidationExpense>(`${this.apiUrl}find/${id}`,)
   }
 }

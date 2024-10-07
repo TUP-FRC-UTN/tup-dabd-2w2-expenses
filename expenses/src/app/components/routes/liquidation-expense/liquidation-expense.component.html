@@ -21,9 +21,9 @@
       <tbody>
         @for (detail of liquidation.liquidation_expenses_details; track $index) {
             <tr>
-                <td>{{detail.amount}} </td>
+              <td>{{detail.category?.name}} </td>
                 <td>{{liquidation.period?.month}} / {{liquidation.period?.year}} </td>
-                <td>{{detail.category?.name}} </td>
+                <td>{{detail.amount}} </td>
                 <td><button class="btn btn-primary" >Accion</button></td>
               </tr>
         }
