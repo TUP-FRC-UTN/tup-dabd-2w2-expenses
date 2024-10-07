@@ -31,7 +31,7 @@
         </div>
     </form>
 
-    <div class="table-responsive">
+    <div class="table-responsive text-center">
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
@@ -48,10 +48,10 @@
 
                 @for (charge of charges; track $index) {<tr>
                     <td><input type="checkbox"></td>
-                    <td>{{charge.fechaEmision}}</td>
+                    <td>{{charge.fechaEmision | date}}</td>
                     <td>{{charge.periodo}}</td>
                     <td>{{charge.tipo}}</td>
-                    <td>{{charge.monto}}</td>
+                    <td>${{charge.monto | number}}</td>
                     <td>{{charge.lote}}</td>
                     <td>
                         <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(charge)">

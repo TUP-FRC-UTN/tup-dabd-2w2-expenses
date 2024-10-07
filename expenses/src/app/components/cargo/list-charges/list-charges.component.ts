@@ -4,11 +4,12 @@ import { ChargeService } from '../../../services/charge.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BorrarItemComponent } from '../../borrar-item/borrar-item.component';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-list-charges',
   standalone: true,
-  imports: [UpdateChargeComponent],
+  imports: [UpdateChargeComponent, CommonModule],
   templateUrl: './list-charges.component.html',
   styleUrl: './list-charges.component.css',
 })
