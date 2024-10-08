@@ -13,10 +13,12 @@ export class ExpenseServiceService {
   constructor() { }
   private readonly http = inject(HttpClient)
    private apiUrl = "http://localhost:8081/expense/"
-   get(id:number): Observable<Expense[]>{
+   get(): Observable<Expense[]>{
+    console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)
   }
   getByPeriod(period:Period):Observable<Expense>{
+    console.log('cargando por periodos')
     return this.http.get<Expense>(`${this.apiUrl}period/${period}`)
   }
   getByPeriodAndPlot(period:Period, plotId:Number):Observable<Expense>{

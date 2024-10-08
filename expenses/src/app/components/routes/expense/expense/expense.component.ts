@@ -4,12 +4,16 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import Expense from '../../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../../selects/period-select/period-select.component';
+import { forkJoin } from 'rxjs';
+import Period from '../../../../models/period';
+import { Pipe, PipeTransform } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-expense',
   standalone: true,
-  imports: [ RouterModule, FormsModule, PeriodSelectComponent],
+  imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent],
   templateUrl: './expense.component.html',
   styleUrl: './expense.component.css'
 })
@@ -24,14 +28,18 @@ export class ExpenseComponent implements OnInit{
   }
   
   private loadExpenses() {
-    this.route.paramMap.subscribe(params => {
-
-    })
+    console.log('Cargando expensas')
+    this.service.get().subscribe((data: Expense[]) => {
+     this.expenses = data;
+     console.log(this.expenses)
+        });
+      
+    
     
   }
   onPeriodSelected(periodId: number): void {
     console.log(periodId)
-    this.router.navigate([`expense/${periodId}`]);
+  
   }
 
 }
