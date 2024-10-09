@@ -6,5 +6,6 @@ import { LiquidationExpenseDetailsComponent } from './components/routes/liquidat
 export const routes: Routes = [
   { path: 'expense/:id', component:LiquidationExpenseComponent },
   { path: 'expense/details/:id', component:LiquidationExpenseDetailsComponent },
-  { path: '', redirectTo: '/bills', pathMatch: 'full' }
+  { path: '', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: '' },
 ];
