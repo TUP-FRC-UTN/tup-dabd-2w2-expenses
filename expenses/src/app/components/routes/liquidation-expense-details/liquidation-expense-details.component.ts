@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LiquidationExpenseDetailsService } from '../../../services/liquidation-expense-details.service';
-import LiquidationExpenseDetail from '../../../models/liquidationExpenseDetail';
-import { Location } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
+import LiquidationExpense from '../../../models/liquidationExpense';
 
 @Component({
   selector: 'app-liquidation-expense-details',
   standalone: true,
   imports: [
-    CurrencyPipe
+    CurrencyPipe,
+    DatePipe
   ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
@@ -19,10 +20,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   private readonly location = inject(Location);
   private readonly service = inject(LiquidationExpenseDetailsService);
   private readonly route = inject(ActivatedRoute);
-  liquidationExpenseDetail: LiquidationExpenseDetail = new LiquidationExpenseDetail();
+  liquidationExpense: LiquidationExpense = new LiquidationExpense();
 
   ngOnInit(): void {
-
     this.loadLiquidationExpenseDetails();
   }
 
@@ -30,9 +30,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id && !isNaN(Number(id))) {
-        this.service.get(Number(id)).subscribe((data: LiquidationExpenseDetail) => {
-          this.liquidationExpenseDetail = data;
-
+        this.service.get(Number(id)).subscribe((data: LiquidationExpense) => {
+          this.liquidationExpense = data;
         });
       }
     });
@@ -40,5 +39,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
   goBack() {
     this.location.back();
+  }
+
+  paid(value: string){
+    alert(value);
   }
 }

@@ -68,32 +68,61 @@
     }
   ],
   "expenseDetails": {
-      "expense_id": 1,
-      "type": "Extraordinaria",
-      "category": "Sueldos y Jornales",
-      "total_amount": 60000,
-      "bills": [
-        {
-          "date": "07-08-2024",
-          "amount": "30000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
+    "expense_id": 1,
+    "liquidation_expenses_details": [
+      {
+        "id": 101,
+        "amount": 500.0,
+        "category": {
+          "categoryBillId": 10,
+          "description": "Monthly office supplies",
+          "name": "Office Supplies"
         },
-        {
-          "date": "09-08-2024",
-          "amount": "20000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
+        "bills": [
+          {
+            "expenditureId": 201,
+            "date": "2023-09-15T00:00:00.000Z",
+            "amount": 150.0,
+            "description": "Printer paper"
+          },
+          {
+            "expenditureId": 202,
+            "date": "2023-09-20T00:00:00.000Z",
+            "amount": 350.0,
+            "description": "Toner cartridge"
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "amount": 300.0,
+        "category": {
+          "categoryBillId": 11,
+          "description": "Internet services",
+          "name": "Utilities"
         },
-        {
-          "date": "10-08-2024",
-          "amount": "10000",
-          "provider": "ejemplo",
-          "paid": true,
-          "description": "descripcion de ejemplo"
-        }
-      ]
-    }
+        "bills": [
+          {
+            "expenditureId": 203,
+            "date": "2023-09-25T00:00:00.000Z",
+            "amount": 300.0,
+            "description": "Internet bill for September"
+          }
+        ]
+      }
+    ],
+    "solicitacion_date": "2023-10-10T00:00:00.000Z",
+    "bill_type": {
+      "typeId": 1,
+      "name": "Invoice",
+      "description": "Standard invoice"
+    },
+    "period": {
+      "id": 1,
+      "month": 9,
+      "year": 2023
+    },
+    "total_amount": 800.0
+  }
+
 }

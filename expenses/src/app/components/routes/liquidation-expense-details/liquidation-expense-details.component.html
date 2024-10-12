@@ -1,134 +1,50 @@
-<div class="container mt-5">
-  <h3 class="mb-4">Cargos</h3>
-
-  <form class="form-row mb-4">
-      <div class="form-group col-md-3">
-          <label for="periodo">Período</label>
-          <select id="periodo" class="form-control">
-              <option selected>Seleccionar...</option>
-              <option>Período 1</option>
-              <option>Período 2</option>
-          </select>
-      </div>
-      <div class="form-group col-md-3">
-          <label for="tipo">Tipo</label>
-          <select id="tipo" class="form-control">
-              <option selected>Seleccionar...</option>
-              <option>Tipo 1</option>
-              <option>Tipo 2</option>
-          </select>
-      </div>
-      <div class="form-group col-md-3">
-          <label for="lote">Lote</label>
-          <select id="lote" class="form-control">
-              <option selected>Seleccionar...</option>
-              <option>Lote 1</option>
-              <option>Lote 2</option>
-          </select>
-      </div>
-      <div class="form-group col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-warning btn-block">Buscar</button>
-      </div>
-  </form>
-
-  <div class="table-responsive text-center">
-      <table class="table table-bordered">
-          <thead class="thead-light">
-              <tr>
-                  <th>#</th>
-                  <th>FECHA DE EMISIÓN</th>
-                  <th>PERIODO</th>
-                  <th>TIPO</th>
-                  <th>MONTO</th>
-                  <th>LOTE</th>
-                  <th>ACCIONES</th>
-              </tr>
-          </thead>
-          <tbody>
-
-              @for (charge of charges; track $index) {<tr>
-                  <td><input type="checkbox"></td>
-                  <td>{{charge.fechaEmision | date}}</td>
-                  <td>{{charge.periodo}}</td>
-                  <td>{{charge.tipo}}</td>
-                  <td>${{charge.monto | number}}</td>
-                  <td>{{charge.lote}}</td>
-                  <td>
-                      <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(charge)">
-                          <i class="bi bi-eye"></i>
-                      </button>
-
-                      <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.id)">
-                          <i class="bi bi-trash"></i>
-                      </button>
-                  </td>
-              </tr> }
-          </tbody>
-      </table>
-  </div>
-
-  <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-center">
-          <li class="page-item disabled">
-              <a class="page-link" href="#" tabindex="-1">&lt;</a>
-          </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item">
-              <a class="page-link" href="#">&gt;</a>
-          </li>
-      </ul>
-  </nav>
-</div>
-
 <div class="liquidation container mt-5">
-  <h3 class="mb-4">Cargos</h3>
   <div class="details">
-    <h3>{{liquidationExpenseDetail.category}}</h3>
+    <h3 class="mb-4">Expensa</h3>
     <div class="general-details">
       <div>
         <label><b>Tipo de expensa</b></label>
-        <p>{{liquidationExpenseDetail.type}}</p>
+        <p>{{liquidationExpense.bill_type?.name}}</p>
+        <label><b>Periodo</b></label>
+        <p>{{liquidationExpense.period?.month}} / {{liquidationExpense.period?.year}}</p>
       </div>
       <div>
         <label><b>Monto Total</b></label>
-        <p>{{liquidationExpenseDetail.total_amount | currency}}</p>
+        <p>{{liquidationExpense.total_amount | currency}}</p>
+        <label><b>Fecha de solicitud</b></label>
+        <p>{{liquidationExpense.solicitacion_date | date: 'dd/MM/yyyy'}}</p>
       </div>
     </div>
   </div>
-  <div class="bills">
-    <table class="table table-striped">
-      <thead>
+  <div class="bills table-responsive text-center">
+    <table class="table table-bordered">
+      <thead class="thead-light">
         <tr>
           <th scope="col">#</th>
           <th scope="col">Fecha</th>
-          <th scope="col">Proveedor</th>
+          <th scope="col">Categoría</th>
           <th scope="col">Monto</th>
-          <th scope="col">Estado</th>
           <th scope="col">Descripción</th>
+          <th scope="col">Pagado</th>
         </tr>
       </thead>
       <tbody>
-        @for (factura of liquidationExpenseDetail.bills; track $index) {
-          <tr>
-            <th scope="row">{{$index}}</th>
-            <td>{{factura.date}}</td>
-            <td>{{factura.provider}}</td>
-            <td>{{ factura.amount | currency }}</td>
-            <td>
-              @if (factura.paid) {
-                Pagado
-              } @else {
-                No Pagado
-              }
-            </td>
-            <td>{{factura.description}}</td>
-          </tr>
+        @for (detail of liquidationExpense.liquidation_expenses_details; track $index) {
+          @for(bill of detail.bills; track $index) {
+            <tr>
+              <th scope="row">{{bill.expenditureId}}</th>
+              <td>{{bill.date | date: 'dd/MM/yyyy'}}</td>
+              <td>{{detail.category?.name}}</td>
+              <td>{{bill.amount | currency }}</td>
+              <td>{{bill.description}}</td>
+              <td>
+                <i class="bi bi-eye" (click)="paid('viendo')"></i>
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>
   </div>
-  <button class="btn btn-go-back" (click)="goBack()">Volver</button>
+  <button class="btn btn-warning" (click)="goBack()">Volver</button>
 </div>

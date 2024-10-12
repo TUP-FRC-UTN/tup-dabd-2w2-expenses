@@ -45,9 +45,3 @@
   overflow-y: scroll;
   width: 100%;
 }
-
-.btn-go-back {
-  background-color: rgb(253, 139, 45);
-  padding: 10px 20px;
-  color: #FFF;
-}
