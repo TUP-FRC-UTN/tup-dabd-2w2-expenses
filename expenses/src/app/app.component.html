@@ -1,23 +1,23 @@
+<div class="row" style="height: 100%; width: 100%;">
+    <div class="col-2 " style="height: 100%;" >
+        <nav class="bg-dark " style="height: 100%; padding-top: 15px;"  >
+                    <ul class="navbar-nav" style="padding: 5px; gap: 5px;">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" routerLink="/list-charges" routerLinkActive="active">Listar Cargos</a>
+                        </li>
+                        <li class="nav-item" >
+                            <a class="nav-link  text-white" routerLink="/add-charge" routerLinkActive="active">Agregar Cargo</a>
+                        </li>
+                        <li class="nav-item" >
+                            <a class="nav-link  text-white" routerLink="/liquidation-expense" routerLinkActive="active">Liquidacion expensas</a>
+                        </li>
+                    </ul>
+        </nav>
+    </div>
+    <div class="col-10 sticky-content">
+        <router-outlet></router-outlet>
 
-
-
-<div class="container mt-5">
-    <router-outlet></router-outlet>
+    </div>
+    
 </div>
 
-<app-navigation-menu></app-navigation-menu>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/list-charges" routerLinkActive="active">Listar Cargos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" routerLink="/add-charge" routerLinkActive="active">Agregar Cargo</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<router-outlet></router-outlet>
