@@ -1,0 +1,91 @@
+<p>list-bills works!</p>
+<div class="container mt-5">
+    <h3 class="mb-4">Listado de movimientos</h3>
+
+    <form class="form-row mb-4" #form ="ngForm" >
+        <div class="form-group col-md-3">
+            <label for="period">Período</label>
+            <select id="period" class="form-control" name="period" [(ngModel)]="selectedPeriod">
+                @for(period of periodsList; track $index){
+                    <option [ngValue]="period">{{period.month}} - {{period.year}}</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="provider">Proveedor</label>
+            <select id="provider" class="form-control" name="provider" [(ngModel)]="selectedProvider" >
+                @for(provider of providersList; track $index){
+                    <option [ngValue]="provider">{{provider.name}}</option>
+                }
+                
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="category">Categoria</label>
+            <select id="category" class="form-control" name="category" [(ngModel)]="selectedCategory">
+                @for(category of categoryList; track $index){
+                    <option [ngValue]="category">{{category.name}}</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-3 d-flex align-items-end">
+            <button type="button" class="btn btn-warning btn-block" (click)="filterBills()">Buscar</button>
+        </div>
+        <div class="form-group col-md-3 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-block" (click)="unFilterBills()">Limpiar filtros</button>
+        </div>
+    </form>
+
+    <div class="table-responsive text-center">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>COMPROBANTE NRO</th>
+                    <th>TIPO DE COMPROBANTE</th>
+                    <th>PROVEEDOR</th>
+                    <th>MONTO</th>
+                    <th>PERIODO</th>
+                    <th>CATEGORIA</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (bill of filteredBills; track $index) {<tr>
+                    <td><input type="checkbox"></td>
+                    <td>{{bill.receiptNumber}}</td>
+                    <td>{{bill.billType}}</td>
+                    <td>{{bill.provider.name}}</td>
+                    <td>${{bill.amount}}</td>
+                    <td>{{bill.period.month}} - {{bill.period.year}}</td>
+                    <td>{{bill.category.description}}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(bill)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.receiptNumber)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr> }
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&lt;</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">&gt;</a>
+            </li>
+        </ul>
+    </nav>
+</div>
