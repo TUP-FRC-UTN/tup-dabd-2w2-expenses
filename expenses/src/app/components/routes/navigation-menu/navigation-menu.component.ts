@@ -1,15 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
-import {LiquidationExpenseComponent} from "../liquidation-expense/liquidation-expense.component";
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navigation-menu',
   standalone: true,
   imports: [
-    NavbarComponent,
-    LiquidationExpenseComponent
-  ],
+    NavbarComponent  ],
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })

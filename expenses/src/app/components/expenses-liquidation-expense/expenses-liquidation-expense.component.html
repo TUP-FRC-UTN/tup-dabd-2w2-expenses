@@ -1,0 +1,53 @@
+<div
+  class="container"
+  style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
+>
+  <div class="row">
+    <div class="col">
+      <h2>Liquidacion de expensas</h2>
+    </div>
+  </div>
+  <div class="col-2">
+    <app-period-select
+      (periodSelected)="selectPeriodChange($event)"
+      [redirectOnInit]="true"
+    ></app-period-select>
+  </div>
+
+  <div>
+    @if (liquidationExpensesList.length>0) {
+    <div>
+      <span>Estado: {{ liquidationExpensesList[0].period?.state }} </span>
+    </div>
+    <span
+      >Periodo: {{ liquidationExpensesList[0].period?.month }} -
+      {{ liquidationExpensesList[0].period?.year }}
+    </span>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Categoria</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">monto</th>
+        </tr>
+      </thead>
+      @for (liquid of liquidationExpensesList; track $index) {
+      <tbody>
+        @for (bill of liquid.liquidation_expenses_details; track $index) {
+        <tr>
+          <td style="width: 33%">{{ bill.category?.name }}</td>
+          <td style="width: 33%">{{ liquid.bill_type?.name }}</td>
+          <td style="width: 33%">${{ bill.amount }}</td>
+        </tr>
+        }
+        <tr>
+          <td colspan="3" class="bg-dark text-white">
+            {{ liquid.bill_type?.name }} ${{ liquid.total_amount }}
+          </td>
+        </tr>
+      </tbody>
+      }
+    </table>
+    } @else { No hay liquidaciones }
+  </div>
+</div>
