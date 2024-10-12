@@ -71,4 +71,9 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
         });
     }
   }
+
+  seeDetail(id: number | null) {
+    if (id === null) return;
+    this.router.navigate([`liquidation-expense/details/${id}`]);
+  }
 }

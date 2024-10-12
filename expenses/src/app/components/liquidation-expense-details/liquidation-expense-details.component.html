@@ -1,0 +1,58 @@
+<div class="liquidation container mt-5">
+  <div class="details">
+    <h3 class="mb-4">Liquidación de Expensa</h3>
+    <div class="general-details">
+      <div>
+        <div>
+          <label><b>Tipo de expensa</b></label>
+          <p>{{liquidationExpense.bill_type?.name}}</p>
+        </div>
+        <div>
+          <label><b>Monto Total</b></label>
+          <p>{{liquidationExpense.total_amount | currency}}</p>
+        </div>
+        <div>
+          <label><b>Periodo</b></label>
+          <p>{{liquidationExpense.period?.month}} / {{liquidationExpense.period?.year}}</p>
+        </div>
+        <div>
+          <label><b>Fecha de solicitud</b></label>
+          <p>{{liquidationExpense.solicitacion_date | date: 'dd/MM/yyyy'}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bills table-responsive text-center">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Categoría</th>
+          <th scope="col">Monto</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Pagado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (detail of liquidationExpense.liquidation_expenses_details; track $index) {
+          @for(bill of detail.bills; track $index) {
+            <tr>
+              <th scope="row">{{bill.expenditureId}}</th>
+              <td>{{bill.date | date: 'dd/MM/yyyy'}}</td>
+              <td>{{detail.category?.name}}</td>
+              <td>{{bill.amount | currency }}</td>
+              <td>{{bill.description}}</td>
+              <td>
+                <button type="button" class="btn btn-warning" (click)="openModal()"><i class="bi bi-eye"></i></button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-warning" (click)="goBack()">Volver</button>
+</div>
+
+

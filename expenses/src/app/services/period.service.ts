@@ -14,10 +14,10 @@ export class PeriodService {
 
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/period"
+  private apiUrl = "http://localhost:8081/period";
 
   get(): Observable<Period[]> {
-  
+
     try{
      const response = this.http.get<Period[]>(this.apiUrl)
       return response
@@ -25,6 +25,6 @@ export class PeriodService {
       console.log(e)
       throw  e
     }
-      
+
   }
 }

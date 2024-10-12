@@ -66,7 +66,7 @@
             class="bg-dark"
             style="display: flex; flex-direction: row; gap: 4px"
           >
-            <button class="btn btn-success">Ver</button>
+            <button class="btn btn-success" (click)="seeDetail(liquid.expense_id)">Ver</button>
             <button
               class="btn"
               [ngClass]="liquid.close ? 'btn-primary' : 'btn-danger'"

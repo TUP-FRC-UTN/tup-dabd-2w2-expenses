@@ -1,3 +1,4 @@
+import { Bill } from "./bill"
 import BillType from "./billType"
 import Category from "./category"
 import Period from "./period"
@@ -20,6 +21,6 @@ class LiquidationExpenseDetail {
 
     category:Category|null=null
 
-
+    bills:Bill[]=[]
 }
 

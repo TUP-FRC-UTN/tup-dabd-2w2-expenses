@@ -11,12 +11,13 @@ export class LiquidationExpenseService {
 
   private apiUrl = 'http://localhost:8081/liquidation/';
 
-  get(id: number): Observable<LiquidationExpense[]> {
-    return this.http.get<LiquidationExpense[]>(`${this.apiUrl}calculate/${id}`);
+  get(id:number): Observable<LiquidationExpense[]>{
+    return this.http.get<LiquidationExpense[]>(`${this.apiUrl}calculate/${id}`,)
   }
   getById(id: number): Observable<LiquidationExpense> {
     return this.http.get<LiquidationExpense>(`${this.apiUrl}find/${id}`);
   }
+
   putCloseLiquidation(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}close/${id}`, null);
   }
