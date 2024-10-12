@@ -1,13 +1,21 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import LiquidationExpense from '../../models/liquidationExpense';
 import { LiquidationExpenseService } from '../../services/liquidation-expense.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PeriodSelectComponent } from '../selects/period-select/period-select.component';
 import { CommonModule } from '@angular/common';
+import { ExpensesModalComponent } from '../expenses-modal/expenses-modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-expenses-liquidation-expense',
   standalone: true,
-  imports: [PeriodSelectComponent, CommonModule],
+  imports: [PeriodSelectComponent, CommonModule, ExpensesModalComponent],
   templateUrl: './expenses-liquidation-expense.component.html',
   styleUrl: './expenses-liquidation-expense.component.css',
 })
@@ -15,20 +23,49 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   liquidationExpensesService: LiquidationExpenseService = inject(
     LiquidationExpenseService
   );
+
+  private modalService = inject(NgbModal);
+
+  // private modalService = inject(NgbModal)
   route: ActivatedRoute = inject(ActivatedRoute);
+
   router: Router = inject(Router);
   liquidationExpensesList: LiquidationExpense[] = [];
-  id: number | null = null; // Variable to store the ID
+  id: number | null = null;
+  selectedItemId: number | null = null;
+  isModalVisible = false;
+  selectedPeriodId: number | null = null;
+
+  open(content: TemplateRef<any>, id:number|null) {
+    this.selectedItemId=id
+    const modalRef = this.modalService.open(content, {
+      ariaLabelledBy: 'modal-basic-title',
+    });
+
+    modalRef.componentInstance.title = 'Delete Item';
+
+    modalRef.componentInstance.onAccept.subscribe(() => {
+      this.closeLiquidationPeriod();
+    });
+  }
+
+  showModal(id: number | null) {
+    this.selectedPeriodId = id;
+    this.isModalVisible = true;
+  }
+
+  hideModal() {
+    this.isModalVisible = false;
+  }
 
   ngOnInit(): void {
     this.loadId();
     this.loadList(this.id);
   }
   private loadId(): void {
-    // Retrieve the 'id' parameter from the route
     this.route.paramMap.subscribe((params) => {
-      this.id = Number(params.get('id')); // Cast to number if necessary
-      console.log('Retrieved ID:', this.id); // Debugging line
+      this.id = Number(params.get('id')); 
+      console.log('Retrieved ID:', this.id);
     });
     console.log(this.liquidationExpensesList);
   }
@@ -44,7 +81,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   selectPeriodChange(id: any) {
     this.router.navigate([`/liquidation-expense/${id}`]).then(() => {
       this.loadList(id);
-    })
+    });
   }
 
   closeLiquidation(id: number | null) {
@@ -58,17 +95,17 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
       });
     }
   }
-  closeLiquidationPeriod(id: number | null) {
-    console.log(id);
 
-    if (id) {
+  closeLiquidationPeriod() {
+    if (this.selectedItemId) {
       this.liquidationExpensesService
-        .putCloseLiquidationExpensesPeriod(id)
+        .putCloseLiquidationExpensesPeriod(this.selectedItemId)
         .subscribe({
           next: () => {
             this.loadList(this.id);
           },
         });
+      this.selectedItemId = null;
     }
   }
 }
