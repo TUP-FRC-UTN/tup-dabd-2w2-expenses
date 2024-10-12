@@ -1,15 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
-import {LiquidationExpenseComponent} from "../liquidation-expense/liquidation-expense.component";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navigation-menu',
   standalone: true,
   imports: [
-    NavbarComponent,
-    LiquidationExpenseComponent
-  ],
+    NavbarComponent  ],
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
@@ -48,7 +45,7 @@ export class NavigationMenuComponent implements OnInit {
   ];
 
   onMenuVisited(key: string) {
-    this.router.navigate(['expense/1'])
+    this.router.navigate(['liquidation-expense/1'])
     // this.visibleSection = key;
     // this.items.forEach(value => value.key == key ? value.active = true : value.active = false)
 

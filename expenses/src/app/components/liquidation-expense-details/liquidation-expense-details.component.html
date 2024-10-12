@@ -1,18 +1,24 @@
 <div class="liquidation container mt-5">
   <div class="details">
-    <h3 class="mb-4">Expensa</h3>
+    <h3 class="mb-4">Liquidación de Expensa</h3>
     <div class="general-details">
       <div>
-        <label><b>Tipo de expensa</b></label>
-        <p>{{liquidationExpense.bill_type?.name}}</p>
-        <label><b>Periodo</b></label>
-        <p>{{liquidationExpense.period?.month}} / {{liquidationExpense.period?.year}}</p>
-      </div>
-      <div>
-        <label><b>Monto Total</b></label>
-        <p>{{liquidationExpense.total_amount | currency}}</p>
-        <label><b>Fecha de solicitud</b></label>
-        <p>{{liquidationExpense.solicitacion_date | date: 'dd/MM/yyyy'}}</p>
+        <div>
+          <label><b>Tipo de expensa</b></label>
+          <p>{{liquidationExpense.bill_type?.name}}</p>
+        </div>
+        <div>
+          <label><b>Monto Total</b></label>
+          <p>{{liquidationExpense.total_amount | currency}}</p>
+        </div>
+        <div>
+          <label><b>Periodo</b></label>
+          <p>{{liquidationExpense.period?.month}} / {{liquidationExpense.period?.year}}</p>
+        </div>
+        <div>
+          <label><b>Fecha de solicitud</b></label>
+          <p>{{liquidationExpense.solicitacion_date | date: 'dd/MM/yyyy'}}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -38,7 +44,7 @@
               <td>{{bill.amount | currency }}</td>
               <td>{{bill.description}}</td>
               <td>
-                <i class="bi bi-eye" (click)="paid('viendo')"></i>
+                <button type="button" class="btn btn-warning" (click)="openModal()"><i class="bi bi-eye"></i></button>
               </td>
             </tr>
           }
@@ -48,3 +54,5 @@
   </div>
   <button class="btn btn-warning" (click)="goBack()">Volver</button>
 </div>
+
+

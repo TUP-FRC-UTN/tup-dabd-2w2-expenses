@@ -10,7 +10,8 @@ export default class LiquidationExpense{
     bill_type: BillType|null=null
     period:Period|null=null
     total_amount:number|null=null
-
+    close:boolean=false
+    blocked:boolean=false
 }
 
 class LiquidationExpenseDetail {

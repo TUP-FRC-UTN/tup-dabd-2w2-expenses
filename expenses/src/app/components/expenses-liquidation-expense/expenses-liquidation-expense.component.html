@@ -1,0 +1,84 @@
+<div
+  class="container"
+  style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
+>
+  <div class="row">
+    <div class="col">
+      <h2>Liquidacion de expensas</h2>
+    </div>
+  </div>
+  <div class="col-2">
+    <app-period-select
+      (periodSelected)="selectPeriodChange($event)"
+      [redirectOnInit]="true"
+    ></app-period-select>
+  </div>
+
+  <div>
+    @if (liquidationExpensesList.length>0) {
+    <div
+      style="display: flex; flex-direction: row; gap: 12px; align-items: center"
+    >
+      <span>Estado: {{ liquidationExpensesList[0].period?.state }} </span>
+      <button
+        class="btn"
+        [ngClass]="
+          liquidationExpensesList[0]?.blocked?'btn-primary' : 'btn-danger'
+        "
+        (click)="
+          closeLiquidationPeriod(liquidationExpensesList[0].period?.id || null)
+        "
+      >
+        @if (liquidationExpensesList[0]?.blocked) { Abrir } @else { Cerrar
+        }
+      </button>
+    </div>
+    <span
+      >Periodo: {{ liquidationExpensesList[0].period?.month }} -
+      {{ liquidationExpensesList[0].period?.year }}
+    </span>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Categoria</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Monto</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      @for (liquid of liquidationExpensesList; track $index) {
+      <tbody>
+        @for (bill of liquid.liquidation_expenses_details; track $index) {
+        <tr>
+          <td style="width: 33%">{{ bill.category?.name }}</td>
+          <td style="width: 33%">{{ liquid.bill_type?.name }}</td>
+          <td style="width: 33%">${{ bill.amount }}</td>
+          <td></td>
+        </tr>
+        }
+        <tr>
+          <td class="bg-dark text-white">Total</td>
+          <td class="bg-dark text-white">
+            {{ liquid.bill_type?.name }}
+          </td>
+          <td class="bg-dark text-white">${{ liquid.total_amount }}</td>
+          <td
+            class="bg-dark"
+            style="display: flex; flex-direction: row; gap: 4px"
+          >
+            <button class="btn btn-success" (click)="seeDetail(liquid.expense_id)">Ver</button>
+            <button
+              class="btn"
+              [ngClass]="liquid.close ? 'btn-primary' : 'btn-danger'"
+              (click)="closeLiquidation(liquid.expense_id)"
+            >
+              @if (liquid.close) { Desbloquear } @else { Bloquear }
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      }
+    </table>
+    } @else { No hay liquidaciones }
+  </div>
+</div>
