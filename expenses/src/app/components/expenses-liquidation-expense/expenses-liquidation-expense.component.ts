@@ -23,18 +23,16 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   liquidationExpensesService: LiquidationExpenseService = inject(
     LiquidationExpenseService
   );
-
-  private modalService = inject(NgbModal);
-
-  // private modalService = inject(NgbModal)
   route: ActivatedRoute = inject(ActivatedRoute);
-
   router: Router = inject(Router);
+
   liquidationExpensesList: LiquidationExpense[] = [];
   id: number | null = null;
   selectedItemId: number | null = null;
   isModalVisible = false;
   selectedPeriodId: number | null = null;
+//USO DEL MODAL CORRECTO.
+private modalService = inject(NgbModal);
 
   open(content: TemplateRef<any>, id:number|null) {
     this.selectedItemId=id
@@ -48,15 +46,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
       this.closeLiquidationPeriod();
     });
   }
-
-  showModal(id: number | null) {
-    this.selectedPeriodId = id;
-    this.isModalVisible = true;
-  }
-
-  hideModal() {
-    this.isModalVisible = false;
-  }
+  //modal
 
   ngOnInit(): void {
     this.loadId();
