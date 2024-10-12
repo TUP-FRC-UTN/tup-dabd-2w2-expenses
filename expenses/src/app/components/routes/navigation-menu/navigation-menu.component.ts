@@ -1,6 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
-import {LiquidationExpenseComponent} from "../liquidation-expense/liquidation-expense.component";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExpenseComponent } from '../expense/expense/expense.component';
 import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
@@ -14,11 +13,13 @@ import { PeriodSelectComponent } from "../../selects/period-select/period-select
     ExpenseComponent,
     PeriodSelectComponent
 ],
+
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
 export class NavigationMenuComponent implements OnInit {
-  private readonly route = inject(Router); 
+
+  private readonly router = inject(Router);
 
   visibleSection: string = '';
 
@@ -57,12 +58,10 @@ export class NavigationMenuComponent implements OnInit {
   ];
 
   onMenuVisited(key: string) {
-    console.log(key)
-    if(key==="liquidation-expense"){
-      this.route.navigate(["expense/3"])
-    } 
-    this.visibleSection = key;
-    this.items.forEach(value => value.key == key ? value.active = true : value.active = false)
+    this.router.navigate(['liquidation-expense/1'])
+    // this.visibleSection = key;
+    // this.items.forEach(value => value.key == key ? value.active = true : value.active = false)
+
   }
 
   ngOnInit(): void {

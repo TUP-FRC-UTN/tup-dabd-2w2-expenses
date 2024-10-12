@@ -1,5 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+
 import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import Period from '../models/period';
 
@@ -8,12 +9,15 @@ import Period from '../models/period';
 })
 export class PeriodService {
 
+
+  constructor() { }
+
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/period"
+  private apiUrl = "http://localhost:8081/period";
 
   get(): Observable<Period[]> {
-  
+
     try{
      const response = this.http.get<Period[]>(this.apiUrl)
       return response
@@ -21,9 +25,6 @@ export class PeriodService {
       console.log(e)
       throw  e
     }
-      
+
   }
-
-
-
 }
