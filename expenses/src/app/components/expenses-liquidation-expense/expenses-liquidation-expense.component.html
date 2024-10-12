@@ -8,6 +8,7 @@
     </div>
   </div>
   <div class="col-2">
+    <label for="">Periodo</label>
     <app-period-select
       (periodSelected)="selectPeriodChange($event)"
       [redirectOnInit]="true"
@@ -23,14 +24,11 @@
       <button
         class="btn"
         [ngClass]="
-          liquidationExpensesList[0]?.blocked?'btn-primary' : 'btn-danger'
+          liquidationExpensesList[0].blocked ? 'btn-primary' : 'btn-danger'
         "
-        (click)="
-          closeLiquidationPeriod(liquidationExpensesList[0].period?.id || null)
-        "
+        (click)="open(modalTemplate, liquidationExpensesList[0].expense_id||null)"
       >
-        @if (liquidationExpensesList[0]?.blocked) { Abrir } @else { Cerrar
-        }
+        @if (liquidationExpensesList[0].blocked) { Abrir } @else { Cerrar }
       </button>
     </div>
     <span
@@ -82,3 +80,12 @@
     } @else { No hay liquidaciones }
   </div>
 </div>
+
+<ng-template #modalTemplate let-modal>
+  <app-expenses-modal
+    [title]="'Liquidacion de expensas'"
+    [paragraph]="'La liquidación se cerrará. No se podrán asociar mas gastos a este período.'"
+    (onAccept)="closeLiquidationPeriod()"
+    (onCancel)="modal.dismiss('cancel')"
+  ></app-expenses-modal>
+</ng-template>

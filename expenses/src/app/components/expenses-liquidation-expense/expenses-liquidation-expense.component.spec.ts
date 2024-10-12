@@ -5,7 +5,6 @@ import { ExpensesLiquidationExpenseComponent } from './expenses-liquidation-expe
 describe('ExpensesLiquidationExpenseComponent', () => {
   let component: ExpensesLiquidationExpenseComponent;
   let fixture: ComponentFixture<ExpensesLiquidationExpenseComponent>;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ExpensesLiquidationExpenseComponent]
