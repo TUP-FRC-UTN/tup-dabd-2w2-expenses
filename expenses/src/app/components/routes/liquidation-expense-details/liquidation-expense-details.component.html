@@ -1,4 +1,90 @@
-<div class="liquidation">
+<div class="container mt-5">
+  <h3 class="mb-4">Cargos</h3>
+
+  <form class="form-row mb-4">
+      <div class="form-group col-md-3">
+          <label for="periodo">Período</label>
+          <select id="periodo" class="form-control">
+              <option selected>Seleccionar...</option>
+              <option>Período 1</option>
+              <option>Período 2</option>
+          </select>
+      </div>
+      <div class="form-group col-md-3">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" class="form-control">
+              <option selected>Seleccionar...</option>
+              <option>Tipo 1</option>
+              <option>Tipo 2</option>
+          </select>
+      </div>
+      <div class="form-group col-md-3">
+          <label for="lote">Lote</label>
+          <select id="lote" class="form-control">
+              <option selected>Seleccionar...</option>
+              <option>Lote 1</option>
+              <option>Lote 2</option>
+          </select>
+      </div>
+      <div class="form-group col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-warning btn-block">Buscar</button>
+      </div>
+  </form>
+
+  <div class="table-responsive text-center">
+      <table class="table table-bordered">
+          <thead class="thead-light">
+              <tr>
+                  <th>#</th>
+                  <th>FECHA DE EMISIÓN</th>
+                  <th>PERIODO</th>
+                  <th>TIPO</th>
+                  <th>MONTO</th>
+                  <th>LOTE</th>
+                  <th>ACCIONES</th>
+              </tr>
+          </thead>
+          <tbody>
+
+              @for (charge of charges; track $index) {<tr>
+                  <td><input type="checkbox"></td>
+                  <td>{{charge.fechaEmision | date}}</td>
+                  <td>{{charge.periodo}}</td>
+                  <td>{{charge.tipo}}</td>
+                  <td>${{charge.monto | number}}</td>
+                  <td>{{charge.lote}}</td>
+                  <td>
+                      <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(charge)">
+                          <i class="bi bi-eye"></i>
+                      </button>
+
+                      <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.id)">
+                          <i class="bi bi-trash"></i>
+                      </button>
+                  </td>
+              </tr> }
+          </tbody>
+      </table>
+  </div>
+
+  <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">&lt;</a>
+          </li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item">
+              <a class="page-link" href="#">&gt;</a>
+          </li>
+      </ul>
+  </nav>
+</div>
+
+<div class="liquidation container mt-5">
+  <h3 class="mb-4">Cargos</h3>
   <div class="details">
     <h3>{{liquidationExpenseDetail.category}}</h3>
     <div class="general-details">

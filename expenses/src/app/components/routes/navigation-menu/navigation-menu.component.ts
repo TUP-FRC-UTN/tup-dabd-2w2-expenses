@@ -49,6 +49,9 @@ export class NavigationMenuComponent implements OnInit {
 
   onMenuVisited(key: string) {
     this.router.navigate(['expense/1'])
+    // this.visibleSection = key;
+    // this.items.forEach(value => value.key == key ? value.active = true : value.active = false)
+
   }
 
   ngOnInit(): void {
