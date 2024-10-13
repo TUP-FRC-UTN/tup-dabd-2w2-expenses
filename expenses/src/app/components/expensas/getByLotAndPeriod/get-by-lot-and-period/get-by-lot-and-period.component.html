@@ -25,7 +25,7 @@ style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">Lote</th>
+             
               <th scope="col">Período</th>
               <th scope="col">Monto Total</th>
               <th scope="col">Fecha de liquidación</th>
@@ -36,7 +36,6 @@ style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
           <tbody>
             @for (expense of expenses; track $index ) {
               <tr>
-                <td>{{expense.lotId}} </td>
                 <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
                 <td>{{expense.totalAmount}} </td>
                 <td>{{expense.liquidationDate}}</td>
