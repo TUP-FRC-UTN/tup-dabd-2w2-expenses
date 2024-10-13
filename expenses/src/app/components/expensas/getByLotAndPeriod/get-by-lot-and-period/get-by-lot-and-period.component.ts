@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,9 @@ export class GetByLotAndPeriodComponent implements OnInit {
   periodId : number = 1
   lotId : number = 1
 
+  @Input() selectedOptionPeriod!: number;
+  @Input() selectedOptionLot!: number;
+
   ngOnInit(): void {
     this.loadSelect()
     this.loadExpense(this.periodId,this.lotId)
@@ -48,8 +51,14 @@ export class GetByLotAndPeriodComponent implements OnInit {
     this.periodService.get()
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
-      console.log(this.lots)
     })
   }
-  
+  ngOnChanges(changes: SimpleChanges): void{
+
+  }
+  onOptionChange(newValue: number): void {
+    this.lotId = newValue;
+    console.log('lotId: '+this.lotId)
+    this.loadExpense(this.periodId, this.lotId)
+  }
 }

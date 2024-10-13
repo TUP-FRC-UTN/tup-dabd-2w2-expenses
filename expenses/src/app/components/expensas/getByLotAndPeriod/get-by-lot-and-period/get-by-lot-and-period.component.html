@@ -15,7 +15,7 @@ style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
      
     <div class="col-2">
           <label for="">Lote</label>
-          <select name="lote" id="lote" class="form-select" aria-label="Default select example">
+          <select name="lote" id="lote" class="form-select" aria-label="Default select example" [ngModel]="selectedOptionLot" (ngModelChange)="onOptionChange($event)">
             @for (lot of lots; track $index ) {
               <option [value]="lot.id">{{lot.plot_number}}</option>
             }
@@ -29,20 +29,21 @@ style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
               <th scope="col">Período</th>
               <th scope="col">Monto Total</th>
               <th scope="col">Fecha de liquidación</th>
+              <th scope="col">Estado</th>
               <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            @for (expense of expenses; track $index) {
+            @for (expense of expenses; track $index ) {
               <tr>
                 <td>{{expense.lotId}} </td>
                 <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
                 <td>{{expense.totalAmount}} </td>
                 <td>{{expense.liquidationDate}}</td>
+                <td>{{expense.state}}</td>
                 <td><button class="btn btn-primary" >Accion</button></td>
               </tr>
             }
-                  
           </tbody>
         </table>
       </div>
