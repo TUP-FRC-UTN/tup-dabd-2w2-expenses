@@ -16,6 +16,7 @@ export const routes: Routes = [
     { path: 'liquidation-expense', component:ExpensesLiquidationExpenseComponent },
     { path: 'liquidation-expense/:id', component:ExpensesLiquidationExpenseComponent },
     { path: 'expenses', component:ExpenseComponent},
+    {path: 'expenses/periodId/lotId', component:ExpenseComponent},
     { path: 'getExpenseByLotAndPeriod', component:GetByLotAndPeriodComponent}
     //{ path: '', redirectTo: '', pathMatch: 'full' },
     //{ path: '**', redirectTo: '' },

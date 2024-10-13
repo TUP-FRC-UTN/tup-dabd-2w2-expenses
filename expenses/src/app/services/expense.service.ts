@@ -17,12 +17,13 @@ export class ExpenseServiceService {
     console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)
   }
-  getByPeriod(period:Period):Observable<Expense>{
+  getByPeriod(periodId:number):Observable<Expense>{
     console.log('cargando por periodos')
-    return this.http.get<Expense>(`${this.apiUrl}period/${period}`)
+    return this.http.get<Expense>(`${this.apiUrl}period/${periodId}`)
   }
-  getByPeriodAndPlot(period:Period, plotId:Number):Observable<Expense>{
-    return this.http.get<Expense>(`${this.apiUrl}periodoAndPlot/${period}${plotId}`)
+  getByPeriodAndPlot(periodId:number, plotId:Number):Observable<Expense[]>{
+    console.log(periodId)
+    return this.http.get<Expense[]>(`${this.apiUrl}periodAndPlot?periodId=${periodId}&idPlot=${plotId}`)
   }
   getExpenseCurrentPeriod():Observable<Expense[]> {
     return this.http.get<Expense[]>(`${this.apiUrl}/currentPeriod/`)

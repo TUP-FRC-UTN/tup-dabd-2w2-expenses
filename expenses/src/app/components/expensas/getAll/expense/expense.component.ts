@@ -33,13 +33,9 @@ export class ExpenseComponent implements OnInit{
      this.expenses = data;
      console.log(this.expenses)
         });
-      
-    
-    
   }
   onPeriodSelected(periodId: number): void {
     console.log(periodId)
-  
   }
 
 }
