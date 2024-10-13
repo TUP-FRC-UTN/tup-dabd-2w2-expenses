@@ -1,15 +1,16 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExpenseComponent } from '../expense/expense/expense.component';
+import { ExpenseComponent } from '../../expensas/getAll/expense/expense.component';
 import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
+import { ExpensesLiquidationExpenseComponent } from '../../expenses-liquidation-expense/expenses-liquidation-expense.component';
 
 @Component({
   selector: 'app-navigation-menu',
   standalone: true,
   imports: [
     NavbarComponent,
-    LiquidationExpenseComponent,
+    ExpensesLiquidationExpenseComponent,
     ExpenseComponent,
     PeriodSelectComponent
 ],
