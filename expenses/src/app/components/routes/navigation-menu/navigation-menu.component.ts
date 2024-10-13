@@ -3,13 +3,14 @@ import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExpenseComponent } from '../expense/expense/expense.component';
 import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
+import { LiquidationExpenseDetailsComponent } from '../../liquidation-expense-details/liquidation-expense-details.component';
 
 @Component({
   selector: 'app-navigation-menu',
   standalone: true,
   imports: [
     NavbarComponent,
-    LiquidationExpenseComponent,
+    LiquidationExpenseDetailsComponent,
     ExpenseComponent,
     PeriodSelectComponent
 ],
