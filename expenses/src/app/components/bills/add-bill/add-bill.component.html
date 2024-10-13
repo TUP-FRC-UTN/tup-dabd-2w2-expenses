@@ -1,0 +1,100 @@
+<p>add-bill works!</p>
+
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 600px;">
+      <div class="card-body">
+        <h3 class="card-title text-center mb-4">Registrar cargo a lote</h3>
+        <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="fechaEmision">Fecha de emisión</label>
+              <div class="input-group">
+                <input type="date" class="form-control" id="fechaEmision" formControlName="fechaEmision">
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="lote">Lote</label>
+              <input type="text" class="form-control" id="lote" placeholder="Lote" formControlName="lote">
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group col-md-5">
+              <label for="tipo">Tipo</label>
+              <select id="tipo" class="form-control" formControlName="tipo">
+                <option value="">Seleccionar...</option>
+                <option value="Tipo 1">Tipo 1</option>
+                <option value="Tipo 2">Tipo 2</option>
+                <option value="Tipo 3">Tipo 3</option>
+              </select>
+            </div>
+            <div class="form-group col-md-1 text-center d-flex align-items-center justify-content-center mt-4">
+              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#categoriaModal">+</button>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="periodo">Período</label>
+              <select id="periodo" class="form-control" formControlName="periodo">
+                <option value="">Seleccionar...</option>
+                <option value="Período 1">Período 1</option>
+                <option value="Período 2">Período 2</option>
+                <option value="Período 3">Período 3</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="monto">Monto</label>
+              <input type="text" class="form-control" id="monto" placeholder="Monto" formControlName="monto">
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" class="form-control" rows="3" placeholder="Descripción" formControlName="descripcion"></textarea>
+          </div>
+  
+          <div class="form-row justify-content-center">
+            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">Cancelar</button>
+            <button type="submit" class="btn btn-warning" [disabled]="chargeForm.invalid">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  <!-- esto va en el componente de add new category -->
+  <div class="modal fade" id="categoriaModal" tabindex="-1" role="dialog" aria-labelledby="categoriaModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoriaModalLabel">Agregar nueva categoría</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="nombreCategoria">Nombre de la categoría</label>
+              <input type="text" class="form-control" id="nombreCategoria"
+                placeholder="Ingresa el nombre de la categoría">
+            </div>
+            <div class="form-group">
+              <label for="descripcionCategoria">Descripción</label>
+              <textarea id="descripcionCategoria" class="form-control" rows="3"
+                placeholder="Descripción de la categoría"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary">Guardar categoría</button>
+        </div>
+      </div>
+    </div>
+  </div>
