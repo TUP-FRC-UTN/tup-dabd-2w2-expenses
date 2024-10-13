@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class PeriodSelectComponent implements OnInit {
   private servicePeriod: PeriodService = inject(PeriodService);
-  private router: Router = inject(Router); // Inyecta el Router
+  private router: Router = inject(Router); 
 
   periodList: Period[] = [];
   ngOnInit(): void {

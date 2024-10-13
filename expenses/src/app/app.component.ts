@@ -3,12 +3,11 @@ import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { BorrarItemComponent } from './components/borrar-item/borrar-item.component';
 import { ListChargesComponent } from './components/cargo/list-charges/list-charges.component';
-import {NavigationMenuComponent} from "./components/routes/navigation-menu/navigation-menu.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, NavigationMenuComponent],
+  imports: [RouterOutlet, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

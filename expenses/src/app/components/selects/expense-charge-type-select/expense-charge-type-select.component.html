@@ -1,0 +1,9 @@
+<select
+  class="form-select"
+  aria-label="Default select example"
+  (change)="onPeriodChange($event)"
+>
+  @for (item of listCharge; track $index) {
+  <option value="{{ item.id }}">{{ item.name }}</option>
+  }
+</select>

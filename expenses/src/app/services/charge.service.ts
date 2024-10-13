@@ -32,6 +32,7 @@ export class ChargeService {
 
   private apiUrl = 'http://localhost:8081/charges';
   createCharge(charge: Charge): Observable<Charge> {
+    console.log(charge)
     return this.http.post<Charge>(this.apiUrl, charge);
   }
 }

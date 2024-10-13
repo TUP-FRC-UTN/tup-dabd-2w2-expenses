@@ -3,11 +3,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ChargeService } from '../../../services/charge.service';
 import { Charge } from '../../../models/charge';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import { ExpenseChargeTypeSelectComponent } from '../../selects/expense-charge-type-select/expense-charge-type-select.component';
+import { PeriodService } from '../../../services/period.service';
+import Period from '../../../models/period';
 
 @Component({
   selector: 'app-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent,ExpenseChargeTypeSelectComponent],
   templateUrl: './add-charge.component.html',
   styleUrl: './add-charge.component.css'
 })
@@ -15,34 +18,8 @@ export class AddChargeComponent {
   // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
-
-  // constructor() {
-  //   this.chargeForm = this.fb.group({
-  //     fechaEmision: ['', Validators.required],
-  //     lote: ['', Validators.required],
-  //     tipo: ['', Validators.required],
-  //     periodo: ['', Validators.required],
-  //     monto: ['', [Validators.required, Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$')]],
-  //     descripcion: ['', Validators.required]
-  //   });
-  // }
-
-  // onSubmit() {
-  //   if (this.chargeForm.valid) {
-  //     const newCharge: Charge = {
-  //       id: Math.floor(Math.random() * 1000),
-  //       ...this.chargeForm.value
-  //     };
-
-  //     this.chargeService.addCharge(newCharge).subscribe(response => {
-  //       console.log('se agregó', response);
-  //       this.chargeForm.reset();
-  //     });
-  //   } else {
-  //     console.log('formulario invalido');
-  //   }
-  // }
-
+  private periodosService = inject(PeriodService)
+  periodList:Period[]=[]
   selectedPeriodId: number | null = null;
 
   onCancel() {
@@ -54,18 +31,23 @@ export class AddChargeComponent {
 
   constructor() {
     this.chargeForm = this.fb.group({
-      fineId: ['', Validators.required],
       lotId: ['', Validators.required],
       date: ['', Validators.required],
-      periodId: ['', Validators.required],
+      periodId: [0, Validators.required],
       amount: ['', Validators.required],
-      categoryChargeId: ['', Validators.required]
+      categoryChargeId: [0, Validators.required]
+    });
+
+  }
+
+  ngOnInit(): void {
+    this.periodosService.get().subscribe((data: Period[]) => {
+      this.periodList = data;
     });
   }
 
-  ngOnInit(): void {}
-
   onSubmit(): void {
+    console.log(this.chargeForm.value)
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
       const charge: Charge = {
