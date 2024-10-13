@@ -31,15 +31,12 @@ export class ExpenseComponent implements OnInit{
     console.log('Cargando expensas')
     this.service.get().subscribe((data: Expense[]) => {
      this.expenses = data;
+     this.expenses.sort((a, b) => a.lotId - b.lotId)
      console.log(this.expenses)
         });
-      
-    
-    
   }
   onPeriodSelected(periodId: number): void {
     console.log(periodId)
-  
   }
 
 }
