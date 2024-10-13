@@ -32,11 +32,11 @@ export class ListChargesComponent implements OnInit {
   }
 
   toggleSelection(charge: Charge) {
-    const index = this.selectedCharges.indexOf(charge.id);
+    const index = this.selectedCharges.indexOf(charge.fineId);
     if (index > -1) {
       this.selectedCharges.splice(index, 1);
     } else {
-      this.selectedCharges.push(charge.id);
+      this.selectedCharges.push(charge.fineId);
     }
   }
 
@@ -56,7 +56,7 @@ export class ListChargesComponent implements OnInit {
 
   deleteCharge(chargeId: number) {
     this.chargeService.deleteCharge(chargeId).subscribe(() => {
-      this.charges = this.charges.filter((charge) => charge.id !== chargeId);
+      this.charges = this.charges.filter((charge) => charge.fineId !== chargeId);
     });
   }
 
