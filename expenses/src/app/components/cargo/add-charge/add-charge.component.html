@@ -1,4 +1,39 @@
 <div class="container mt-5">
+  <h3 class="mb-4">Registrar Cargo</h3>
+  
+  <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="fineId">ID de Multa</label>
+      <input type="number" class="form-control" id="fineId" formControlName="fineId" required>
+    </div>
+    <div class="form-group">
+      <label for="lotId">ID de Lote</label>
+      <input type="number" class="form-control" id="lotId" formControlName="lotId" required>
+    </div>
+    <div class="form-group">
+      <label for="date">Fecha</label>
+      <input type="datetime-local" class="form-control" id="date" formControlName="date" required>
+    </div>
+    <div class="form-group">
+      <label for="period">Período</label>
+      <input type="number" class="form-control" id="period" formControlName="periodId" required>
+      <app-period-select></app-period-select>
+    </div>
+    
+    <div class="form-group">
+      <label for="amount">Monto</label>
+      <input type="number" class="form-control" id="amount" formControlName="amount" required>
+    </div>
+    <div class="form-group">
+      <label for="categoryChargeId">ID de Categoría</label>
+      <input type="number" class="form-control" id="categoryChargeId" formControlName="categoryChargeId" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Enviar</button>
+  </form>
+</div>
+
+
+<div class="container mt-5">
   <div class="card mx-auto" style="max-width: 600px;">
     <div class="card-body">
       <h3 class="card-title text-center mb-4">Registrar cargo a lote</h3>
@@ -37,7 +72,8 @@
               <option value="Período 2">Período 2</option>
               <option value="Período 3">Período 3</option>
             </select>
-          </div>
+            
+          </div><app-period-select></app-period-select>
         </div>
 
         <div class="form-row">
@@ -60,8 +96,6 @@
     </div>
   </div>
 </div>
-
-
 
 
 <!-- esto va en el componente de add new category -->
