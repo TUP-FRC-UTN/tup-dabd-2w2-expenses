@@ -14,9 +14,9 @@ export interface Charge {
     periodId: number;
     category: CategoryCharge;
     status: boolean;
-    charge_Id: number;
-    fine_Id: number;
-    lot_Id: number;
+    charge_id: number;
+    fine_id: number;
+    lot_id: number;
 }
 
 export interface CategoryCharge {

@@ -31,7 +31,7 @@
           </div>
           <div class="col-md-6">
             <label for="periodo" class="form-label">Período</label>
-            <app-period-select formControlName="periodo"></app-period-select>
+            <app-period-select (periodSelected)="loadSelect()"></app-period-select>
           </div>
         </div>
 
