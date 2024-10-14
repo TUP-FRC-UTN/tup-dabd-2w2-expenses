@@ -5,11 +5,15 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BorrarItemComponent } from '../../borrar-item/borrar-item.component';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
 import { CommonModule } from '@angular/common';
+import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import Lot from '../../../models/lot';
+import { LotsService } from '../../../services/lots.service';
+import { PeriodService } from '../../../services/period.service';
 
 @Component({
   selector: 'app-list-charges',
   standalone: true,
-  imports: [UpdateChargeComponent, CommonModule],
+  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent],
   templateUrl: './list-charges.component.html',
   styleUrl: './list-charges.component.css',
 })
@@ -21,8 +25,14 @@ export class ListChargesComponent implements OnInit {
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
 
+  lots: Lot[] = [];
+
+  private readonly periodService = inject(PeriodService);
+  private readonly lotsService = inject(LotsService);
+
   ngOnInit(): void {
     this.loadCharges();
+    this.loadSelect();
   }
 
   loadCharges(): void {
@@ -31,12 +41,19 @@ export class ListChargesComponent implements OnInit {
     });
   }
 
+  loadSelect() {
+    this.periodService.get()
+    this.lotsService.get().subscribe((data: Lot[]) => {
+      this.lots = data;
+    })
+  }
+
   toggleSelection(charge: Charge) {
-    const index = this.selectedCharges.indexOf(charge.fineId);
+    const index = this.selectedCharges.indexOf(charge.fine_id);
     if (index > -1) {
       this.selectedCharges.splice(index, 1);
     } else {
-      this.selectedCharges.push(charge.fineId);
+      this.selectedCharges.push(charge.fine_id);
     }
   }
 
@@ -56,7 +73,9 @@ export class ListChargesComponent implements OnInit {
 
   deleteCharge(chargeId: number) {
     this.chargeService.deleteCharge(chargeId).subscribe(() => {
-      this.charges = this.charges.filter((charge) => charge.fineId !== chargeId);
+      this.charges = this.charges.filter(
+        (charge) => charge.fine_id !== chargeId
+      );
     });
   }
 
