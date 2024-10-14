@@ -11,10 +11,8 @@ import { ExpensesLiquidationExpenseComponent } from '../../expenses-liquidation-
   imports: [
     NavbarComponent,
     ExpensesLiquidationExpenseComponent,
+    LiquidationExpenseDetailsComponent,
     ExpenseComponent,
-    PeriodSelectComponent
-],
-
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
