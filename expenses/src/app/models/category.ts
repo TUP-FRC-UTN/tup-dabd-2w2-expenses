@@ -1,5 +1,5 @@
 export default class Category{
-    categoryBillId:number|null=null
+    category_id:number|null=null
 
     description:string=''
 

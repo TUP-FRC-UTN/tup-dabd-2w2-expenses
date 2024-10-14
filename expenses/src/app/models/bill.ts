@@ -4,14 +4,14 @@ import Category from "./category";
 import BillType from "./billType";
 
 export interface Bill {
-  expenditureId: number;
+  expenditure_id: number;
   date: Date | null;
   amount: number | null;
   description: string;
-  supplier_id: Provider;
-  period_id: Period;
-  category_id: Category;
-  type_id: BillType;
+  supplier: Provider;
+  period: Period;
+  category: Category;
+  bill_type: BillType;
   status: string;
   //TODO PASAR TODO EN SNAKE CASE
 

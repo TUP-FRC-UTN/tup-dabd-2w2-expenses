@@ -40,7 +40,7 @@
             <thead class="thead-light">
                 <tr>
                     <th>#</th>
-                    <th>COMPROBANTE NRO</th>
+<!--                    <th>NRO</th>-->
                     <th>TIPO</th>
                     <th>PROVEEDOR</th>
                     <th>MONTO</th>
@@ -53,18 +53,18 @@
 
                 @for (bill of filteredBills; track $index) {<tr>
                     <td><input type="checkbox"></td>
-                    <td>{{bill.expenditureId}}</td>
-                    <td>{{bill.type_id.name}}</td>
-                    <td>{{bill.supplier_id.name}}</td>
+<!--                    <td>{{bill.expenditure_id}}</td>-->
+                    <td>{{bill.bill_type.name}}</td>
+                    <td>{{bill.supplier.name}}</td>
                     <td>${{bill.amount}}</td>
-                    <td>{{bill.period_id.month}} - {{bill.period_id.year}}</td>
-                    <td>{{bill.category_id.name}}</td>
+                    <td>{{bill.period.month}}/{{bill.period.year}}</td>
+                    <td>{{bill.category.name}}</td>
                     <td>
                         <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(bill)">
                             <i class="bi bi-eye"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.expenditureId)">
+                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.expenditure_id)">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>

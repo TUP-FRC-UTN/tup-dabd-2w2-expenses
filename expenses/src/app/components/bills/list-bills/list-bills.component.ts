@@ -49,9 +49,9 @@ export class ListBillsComponent implements OnInit {
     console.log(JSON.stringify(this.selectedProvider))
     console.log(JSON.stringify(this.selectedCategory))
     this.filteredBills = this.filteredBills.filter((bill) => {
-      const matchesPeriod = this.selectedPeriod ? (bill.period_id.month === this.selectedPeriod.month && bill.period_id.year === this.selectedPeriod.year) : true;
-      const matchesProvider = this.selectedProvider ? (bill.supplier_id.id === this.selectedProvider.id) : true;
-      const matchesCategory = this.selectedCategory ? (bill.category_id.categoryBillId === this.selectedCategory.categoryBillId) : true;
+      const matchesPeriod = this.selectedPeriod ? (bill.period.month === this.selectedPeriod.month && bill.period.year === this.selectedPeriod.year) : true;
+      const matchesProvider = this.selectedProvider ? (bill.supplier.id === this.selectedProvider.id) : true;
+      const matchesCategory = this.selectedCategory ? (bill.category.category_id === this.selectedCategory.category_id) : true;
 
       return matchesPeriod && matchesProvider && matchesCategory
     })

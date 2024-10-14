@@ -3,4 +3,6 @@ export default class Period {
   month: number = 0;
   year: number = 0;
   state:string="";
+  start_date: Date | null = null;
+  end_date: Date | null = null;
 }
