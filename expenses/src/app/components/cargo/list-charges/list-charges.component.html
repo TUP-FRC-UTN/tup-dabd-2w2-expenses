@@ -36,11 +36,11 @@
             <thead class="thead-light">
                 <tr>
                     <th>#</th>
-                    <th>Fecha</th>
                     <th>Periodo</th>
                     <th>Descripcion</th>
                     <th>Monto</th>
-                    <th>ID</th>
+                    <th>Lote</th>
+                    <th>Fine</th>
                     <th>ACCIONES</th>
                 </tr>
             </thead>
@@ -48,17 +48,17 @@
 
                 @for (charge of charges; track $index) {<tr>
                     <td><input type="checkbox"></td>
-                    <td>{{charge.date | date}}</td>
-                    <td>{{charge.periodId}}</td>
-                    <td>{{charge.categoryChargeId}}</td>
+                    <td>{{charge.date}}</td>
+                    <td>{{charge.category.name}}</td>
                     <td>${{charge.amount | number}}</td>
-                    <td>{{charge.fineId}}</td>
+                    <td>{{charge.lot_Id}}</td>
+                    <td>{{charge.fine_Id}}</td>
                     <td>
                         <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(charge)">
                             <i class="bi bi-eye"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.fineId)">
+                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.fine_Id)">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>

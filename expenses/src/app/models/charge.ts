@@ -9,10 +9,18 @@ export interface Charge2 {
 }
 
 export interface Charge {
-    fineId: number;
-    lotId: number;
     date: Date;
-    periodId: number;
     amount: number;
+    periodId: number;
+    category: CategoryCharge;
+    status: boolean;
+    charge_Id: number;
+    fine_Id: number;
+    lot_Id: number;
+}
+
+export interface CategoryCharge {
     categoryChargeId: number;
+    name: string;
+    description: string;
 }
