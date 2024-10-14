@@ -9,7 +9,7 @@ import {CategoryService} from "../../../services/category.service";
 import {ProviderService} from "../../../services/provider.service";
 import {PeriodService} from "../../../services/period.service";
 import {BillService} from "../../../services/bill.service";
-import {AsyncPipe} from "@angular/common";
+import {AsyncPipe, NgClass} from "@angular/common";
 import BillType from "../../../models/billType";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {NgModalComponent} from "../../utilities/ng-modal/ng-modal.component";
@@ -18,7 +18,7 @@ import {NgModalComponent} from "../../utilities/ng-modal/ng-modal.component";
 @Component({
   selector: 'app-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass],
   templateUrl: './add-bill.component.html',
   styleUrl: './add-bill.component.css'
 })

@@ -38,7 +38,7 @@
         @for (detail of liquidationExpense.liquidation_expenses_details; track $index) {
           @for(bill of detail.bills; track $index) {
             <tr>
-              <th scope="row">{{bill.expenditureId}}</th>
+              <th scope="row">{{bill.expenditure_id}}</th>
               <td>{{bill.date | date: 'dd/MM/yyyy'}}</td>
               <td>{{detail.category?.name}}</td>
               <td>{{bill.amount | currency }}</td>

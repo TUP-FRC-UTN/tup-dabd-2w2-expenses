@@ -5,8 +5,8 @@ import BillType from "./billType";
 
 export interface Bill {
   expenditure_id: number;
-  date: Date | null;
-  amount: number | null;
+  date: Date;
+  amount: number;
   description: string;
   supplier: Provider;
   period: Period;
