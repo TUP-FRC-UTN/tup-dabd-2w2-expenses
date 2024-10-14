@@ -2,39 +2,49 @@
 <div class="container mt-5">
     <h3 class="mb-4">Listado de gastos</h3>
 
-    <form class="form-row mb-4" #form="ngForm">
-        <div class="form-group col-md-3">
+    <div class="container">
+        <!-- Fila para los campos de entrada -->
+        <form class="row mb-4" #form="ngForm">
+          <div class="form-group col-md-3">
             <label for="period">Período</label>
             <select id="period" class="form-control" name="period" [(ngModel)]="selectedPeriod">
-                @for(period of periodsList; track $index){
-                <option [ngValue]="period">{{period.month}} - {{period.year}}</option>
-                }
+              @for(period of periodsList; track $index) {
+                <option [ngValue]="period">{{ period.month }} - {{ period.year }}</option>
+              }
             </select>
-        </div>
-        <div class="form-group col-md-3">
+          </div>
+      
+          <div class="form-group col-md-3">
             <label for="provider">Proveedor</label>
             <select id="provider" class="form-control" name="provider" [(ngModel)]="selectedProvider">
-                @for(provider of providersList; track $index){
-                <option [ngValue]="provider">{{provider.name}}</option>
-                }
-
+              @for(provider of providersList; track $index) {
+                <option [ngValue]="provider">{{ provider.name }}</option>
+              }
             </select>
-        </div>
-        <div class="form-group col-md-3">
-            <label for="category">Categoria</label>
+          </div>
+      
+          <div class="form-group col-md-3">
+            <label for="category">Categoría</label>
             <select id="category" class="form-control" name="category" [(ngModel)]="selectedCategory">
-                @for(category of categoryList; track $index){
-                <option [ngValue]="category">{{category.name}}</option>
-                }
+              @for(category of categoryList; track $index) {
+                <option [ngValue]="category">{{ category.name }}</option>
+              }
             </select>
-        </div>
-        <div class="form-group col-md-3 d-flex align-items-end">
-            <button type="button" class="btn btn-primary btn-block" (click)="filterBills()">Buscar</button>
-        </div>
-        <div class="form-group col-md-3 d-flex align-items-end">
-            <button type="button" class="btn btn-secondary btn-block" (click)="unFilterBills()">Limpiar filtros</button>
-        </div>
-    </form>
+          </div>
+          <div class="row m-3 justify-content-end">
+            <div class="form-group col-md-1">
+              <button type="button" class="btn btn-primary btn-block" (click)="filterBills()">Buscar</button>
+            </div>
+            <div class="form-group col-md-5">
+              <button type="button" class="btn btn-secondary btn-block" (click)="unFilterBills()">Limpiar filtros</button>
+            </div>
+          </div>
+        </form>
+    </div>
+        
+        <!-- Fila para los botones -->
+      
+      
 
     <div class="table-responsive text-center">
         <table class="table table-bordered">
@@ -66,9 +76,9 @@
                             <i class="bi bi-eye" (click)="viewBill(bill)"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.expenditure_id)">
+                        <!--<button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.expenditure_id)">
                             <i class="bi bi-trash"></i>
-                        </button>
+                        </button> -->
                     </td>
                 </tr> }
             </tbody>
