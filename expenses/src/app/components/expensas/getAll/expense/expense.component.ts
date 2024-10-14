@@ -31,7 +31,7 @@ export class ExpenseComponent implements OnInit{
     console.log('Cargando expensas')
     this.service.get().subscribe((data: Expense[]) => {
      this.expenses = data;
-     this.expenses.sort((a, b) => a.lotId - b.lotId)
+     this.expenses.sort((a, b) =>( a.lotId ?? 0)  - (b.lotId ?? 0))
      console.log(this.expenses)
         });
   }

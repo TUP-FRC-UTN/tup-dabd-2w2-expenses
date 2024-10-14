@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ExpenseComponent } from '../../expensas/getAll/expense/expense.component';
 import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
 import { ExpensesLiquidationExpenseComponent } from '../../expenses-liquidation-expense/expenses-liquidation-expense.component';
+import { LiquidationExpenseDetailsComponent } from '../../liquidation-expense-details/liquidation-expense-details.component';
 
 @Component({
   selector: 'app-navigation-menu',
@@ -12,7 +13,7 @@ import { ExpensesLiquidationExpenseComponent } from '../../expenses-liquidation-
     NavbarComponent,
     ExpensesLiquidationExpenseComponent,
     LiquidationExpenseDetailsComponent,
-    ExpenseComponent,
+    ExpenseComponent,],
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
