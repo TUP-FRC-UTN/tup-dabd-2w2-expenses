@@ -5,7 +5,8 @@ import { LiquidationExpenseDetailsComponent } from './components/liquidation-exp
 import { AppComponent } from './app.component';
 import { ExpensesLiquidationExpenseComponent } from './components/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import {AddBillComponent} from "./components/bills/add-bill/add-bill.component";
-import {ListBillsComponent} from "./components/bills/list-bills/list-bills.component";
+import { ListBillsComponent } from './components/bills/list-bills/list-bills.component';
+
 
 export const routes: Routes = [
     { path: 'expense/period/{period_id}', component:AppComponent }, // Ruta para productos
