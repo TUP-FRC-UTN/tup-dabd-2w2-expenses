@@ -1,100 +1,108 @@
-<p>add-bill works!</p>
 
-<div class="container mt-5">
-    <div class="card mx-auto" style="max-width: 600px;">
-      <div class="card-body">
-        <h3 class="card-title text-center mb-4">Registrar cargo a lote</h3>
-        <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="fechaEmision">Fecha de emisión</label>
-              <div class="input-group">
-                <input type="date" class="form-control" id="fechaEmision" formControlName="fechaEmision">
-              </div>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="lote">Lote</label>
-              <input type="text" class="form-control" id="lote" placeholder="Lote" formControlName="lote">
-            </div>
-          </div>
-  
-          <div class="form-row">
-            <div class="form-group col-md-5">
-              <label for="tipo">Tipo</label>
-              <select id="tipo" class="form-control" formControlName="tipo">
-                <option value="">Seleccionar...</option>
-                <option value="Tipo 1">Tipo 1</option>
-                <option value="Tipo 2">Tipo 2</option>
-                <option value="Tipo 3">Tipo 3</option>
-              </select>
-            </div>
-            <div class="form-group col-md-1 text-center d-flex align-items-center justify-content-center mt-4">
-              <button type="button" class="btn btn-link" data-toggle="modal" data-target="#categoriaModal">+</button>
-            </div>
-            <div class="form-group col-md-6">
-              <label for="periodo">Período</label>
-              <select id="periodo" class="form-control" formControlName="periodo">
-                <option value="">Seleccionar...</option>
-                <option value="Período 1">Período 1</option>
-                <option value="Período 2">Período 2</option>
-                <option value="Período 3">Período 3</option>
-              </select>
-            </div>
-          </div>
-  
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="monto">Monto</label>
-              <input type="text" class="form-control" id="monto" placeholder="Monto" formControlName="monto">
-            </div>
-          </div>
-  
-          <div class="form-group">
-            <label for="descripcion">Descripción</label>
-            <textarea id="descripcion" class="form-control" rows="3" placeholder="Descripción" formControlName="descripcion"></textarea>
-          </div>
-  
-          <div class="form-row justify-content-center">
-            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">Cancelar</button>
-            <button type="submit" class="btn btn-warning" [disabled]="chargeForm.invalid">Guardar</button>
-          </div>
-        </form>
+<div class="container mt-4">
+  <h3 class="mb-4">Registrar gasto</h3>
+  <form [formGroup]="billForm" (ngSubmit)="onSubmit()" class="container mt-4">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="supplier_id" class="form-label">Proveedor</label>
+        <select id="supplier_id" formControlName="supplier_id" class="form-select">
+          <option value="">Seleccione un proveedor</option>
+          @for (provider of providers | async; track provider.id) {
+            @if (provider.type == "SUPPLIER"){
+              <option [value]="provider.id">{{ provider.name }}</option>
+            }
+          }
+        </select>
       </div>
-    </div>
-  </div>
-  
-  
-  
-  
-  <!-- esto va en el componente de add new category -->
-  <div class="modal fade" id="categoriaModal" tabindex="-1" role="dialog" aria-labelledby="categoriaModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="categoriaModalLabel">Agregar nueva categoría</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="form-group">
-              <label for="nombreCategoria">Nombre de la categoría</label>
-              <input type="text" class="form-control" id="nombreCategoria"
-                placeholder="Ingresa el nombre de la categoría">
-            </div>
-            <div class="form-group">
-              <label for="descripcionCategoria">Descripción</label>
-              <textarea id="descripcionCategoria" class="form-control" rows="3"
-                placeholder="Descripción de la categoría"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary">Guardar categoría</button>
+
+      <div class="col-md-6 mb-3">
+        <label for="category_id" class="form-label">Categoria</label>
+        <div class="input-group">
+          <select id="category_id" formControlName="category_id" class="form-select">
+            <option value="">Seleccione una categoría</option>
+            @for (category of categories | async; track category.categoryBillId) {
+              <option [value]="category.categoryBillId">{{ category.name }}</option>
+            }
+          </select>
+          <button class="btn btn-outline-secondary" type="button" (click)="openNewCategoryModal()">+</button>
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="period_id" class="form-label">Periodo</label>
+        <select id="period_id" formControlName="period_id" class="form-select">
+          <option value="">Seleccione un periodo</option>
+          @for (period of periods | async; track period.id) {
+            <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="type_id" class="form-label">Tipo</label>
+        <select id="type_id" formControlName="type_id" class="form-select">
+          <option value="">Seleccione un tipo</option>
+          @for (type of types | async; track type.typeId) {
+            <option [value]="type.typeId">{{ type.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Descripción</label>
+      <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="amount" class="form-label">Monto</label>
+        <input type="number" id="amount" formControlName="amount" class="form-control">
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="date" class="form-label">Fecha</label>
+        <input type="date" id="date" formControlName="date" class="form-control">
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="status" class="form-label">Estado</label>
+        <select id="status" formControlName="status" class="form-select">
+          <option value="ACTIVE">Activo</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button type="button" (click)="resetForm()" class="btn btn-danger me-2">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+    </div>
+  </form>
+</div>
+
+
+<ng-template #newCategoryModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Nueva Categoría</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
+  <div class="modal-body">
+    <form [formGroup]="newCategoryForm">
+      <div class="mb-3">
+        <label for="newCategoryName" class="form-label">Nombre de la categoría</label>
+        <input type="text" class="form-control" id="newCategoryName" formControlName="name">
+      </div>
+      <div class="mb-3">
+        <label for="newCategoryDescription" class="form-label">Descripcion</label>
+        <input type="text" class="form-control" id="newCategoryDescription" formControlName="description">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="saveNewCategory()">Confirmar</button>
+    <button type="button" class="btn btn-danger" (click)="modal.dismiss()">Cancelar</button>
+  </div>
+</ng-template>

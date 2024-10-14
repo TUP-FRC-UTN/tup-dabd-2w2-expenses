@@ -1,4 +1,3 @@
-<p>list-bills works!</p>
 <div class="container mt-5">
     <h3 class="mb-4">Listado de movimientos</h3>
 
@@ -17,7 +16,7 @@
                 @for(provider of providersList; track $index){
                     <option [ngValue]="provider">{{provider.name}}</option>
                 }
-                
+
             </select>
         </div>
         <div class="form-group col-md-3">
@@ -42,7 +41,7 @@
                 <tr>
                     <th>#</th>
                     <th>COMPROBANTE NRO</th>
-                    <th>TIPO DE COMPROBANTE</th>
+                    <th>TIPO</th>
                     <th>PROVEEDOR</th>
                     <th>MONTO</th>
                     <th>PERIODO</th>
@@ -54,18 +53,18 @@
 
                 @for (bill of filteredBills; track $index) {<tr>
                     <td><input type="checkbox"></td>
-                    <td>{{bill.receiptNumber}}</td>
-                    <td>{{bill.billType}}</td>
-                    <td>{{bill.provider.name}}</td>
+                    <td>{{bill.expenditureId}}</td>
+                    <td>{{bill.type_id.name}}</td>
+                    <td>{{bill.supplier_id.name}}</td>
                     <td>${{bill.amount}}</td>
-                    <td>{{bill.period.month}} - {{bill.period.year}}</td>
-                    <td>{{bill.category.description}}</td>
+                    <td>{{bill.period_id.month}} - {{bill.period_id.year}}</td>
+                    <td>{{bill.category_id.name}}</td>
                     <td>
                         <button class="btn btn-warning btn-sm mr-2" (click)="openUpdateModal(bill)">
                             <i class="bi bi-eye"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.receiptNumber)">
+                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(bill.expenditureId)">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>

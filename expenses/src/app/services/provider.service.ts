@@ -9,7 +9,8 @@ import { Provider } from '../models/provider';
 export class ProviderService {
 
   private http = inject(HttpClient);
-  private url ="http://localhost:3000/providers"
+  // private url ="http://localhost:8081/providers"
+  private url ="https://my-json-server.typicode.com/113898-KUMIEC/getSupplier/suppliers"
 
   constructor() { }
 
@@ -17,9 +18,9 @@ export class ProviderService {
     try {
       const response = this.http.get<Provider[]>(this.url);
       return response
-      
+
     } catch (error) {
-      throw error; 
+      throw error;
     }
   }
 }

@@ -9,7 +9,7 @@ import { PeriodSelectComponent } from "../../selects/period-select/period-select
   standalone: true,
   imports: [
     NavbarComponent,
-    LiquidationExpenseComponent,
+    /*LiquidationExpenseComponent,*/
     ExpenseComponent,
     PeriodSelectComponent
 ],
