@@ -11,6 +11,7 @@ import { PeriodSelectComponent } from '../../selects/period-select/period-select
 import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
+import Period from '../../../models/period';
 
 @Component({
   selector: 'app-add-charge',
@@ -23,11 +24,11 @@ export class AddChargeComponent implements OnInit{
   // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
-
   lots : Lot[] = []
 
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
+   listPeriodo:Period[] =[]
 
   selectedPeriodId: number | null = null;
 
@@ -36,7 +37,9 @@ export class AddChargeComponent implements OnInit{
   }
 
   loadSelect() {
-    this.periodService.get()
+    this.periodService.get().subscribe((data=>{
+      this.listPeriodo=data
+    }))
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
     })
@@ -45,12 +48,12 @@ export class AddChargeComponent implements OnInit{
 
   constructor() {
     this.chargeForm = this.fb.group({
-      fineId: ['', Validators.required],
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
       amount: ['', Validators.required],
       categoryChargeId: ['', Validators.required],
+      description:['']
     });
   }
 
@@ -59,6 +62,9 @@ export class AddChargeComponent implements OnInit{
   }
 
   onSubmit(): void {
+    console.log(this.chargeForm.value)
+    console.log(this.chargeForm.valid)
+
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
       const charge: Charge = {
@@ -79,6 +85,7 @@ export class AddChargeComponent implements OnInit{
       );
     } else {
       alert('Por favor, complete todos los campos requeridos.');
+        this.chargeForm.markAllAsTouched(); 
     }
   }
 }

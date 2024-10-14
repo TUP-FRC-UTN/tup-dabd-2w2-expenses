@@ -21,7 +21,7 @@ export class ChargeService {
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
-    return this.http.put<Charge>(`${this.url}/${charge.fine_Id}`, charge);
+    return this.http.put<Charge>(`${this.url}/${charge.charge_id}`, charge);
   }  
 
   deleteCharge(charge: number): Observable<Charge> {

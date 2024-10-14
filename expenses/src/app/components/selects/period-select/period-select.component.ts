@@ -11,8 +11,9 @@ import { Router } from '@angular/router';
   styleUrl: './period-select.component.css',
 })
 export class PeriodSelectComponent implements OnInit {
-  private servicePeriod: PeriodService = inject(PeriodService);
   private router: Router = inject(Router); // Inyecta el Router
+
+  private servicePeriod: PeriodService = inject(PeriodService);
 
   periodList: Period[] = [];
   ngOnInit(): void {
