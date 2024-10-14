@@ -13,7 +13,11 @@ import { LiquidationExpenseDetailsComponent } from '../../liquidation-expense-de
     NavbarComponent,
     ExpensesLiquidationExpenseComponent,
     LiquidationExpenseDetailsComponent,
-    ExpenseComponent,],
+    /*LiquidationExpenseComponent,*/
+    ExpenseComponent,
+    PeriodSelectComponent
+],
+
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })
