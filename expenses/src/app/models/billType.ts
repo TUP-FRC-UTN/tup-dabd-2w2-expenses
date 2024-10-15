@@ -1,7 +1,7 @@
 export default class BillType{
-    typeId:number|null=null
+    bill_type_id:number=0;
 
-    name:string |null=null
+    name:string='';
 
-    description:string|null=null
-}    
+    description:string='';
+}

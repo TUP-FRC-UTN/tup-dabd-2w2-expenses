@@ -1,98 +1,86 @@
-<div class="container mt-5">
-  <div class="card mx-auto" style="max-width: 600px;">
+<div class="container" style="padding-top: 16px;">
+  <h3 class="card-title mb-4">Registrar cargo a lote</h3>
+
     <div class="card-body">
-      <h3 class="card-title text-center mb-4">Registrar cargo a lote</h3>
       <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="fechaEmision">Fecha de emisión</label>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="fechaEmision" class="form-label">Fecha de emisión</label>
+            <input type="date" class="form-control" id="fechaEmision" formControlName="date">
+            @if (chargeForm.controls['date'].touched && chargeForm.controls['date'].hasError('required')) {
+              <div class="text-danger">
+               La fecha de cargo es obligatorio.
+              </div> 
+            }
+          </div>
+          <div class="col-md-6">
+            <label for="lote" class="form-label">Lote</label>
+            <input type="text" class="form-control" id="lote" placeholder="Lote" formControlName="lotId">
+            @if (chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')) {
+              <div class="text-danger">
+                 El lote  es obligatorio.
+              </div> 
+            }
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="tipo" class="form-label">Tipo</label>
             <div class="input-group">
-              <input type="date" class="form-control" id="fechaEmision" formControlName="fechaEmision">
+              <select id="tipo" class="form-select" formControlName="categoryChargeId">
+                <option value="">Seleccionar...</option>
+                <option value="1">Servicio de limpieza</option>
+                <option value="2">Varios</option>
+                <option value="3">Deuda</option>
+              </select>
+           
+  
             </div>
+               @if (chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required')) {
+                <div class="text-danger">
+                   El tipo de cargo es obligatorio.
+                </div> 
+              }
           </div>
-          <div class="form-group col-md-6">
-            <label for="lote">Lote</label>
-            <input type="text" class="form-control" id="lote" placeholder="Lote" formControlName="lote">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group col-md-5">
-            <label for="tipo">Tipo</label>
-            <select id="tipo" class="form-control" formControlName="tipo">
-              <option value="">Seleccionar...</option>
-              <option value="Tipo 1">Tipo 1</option>
-              <option value="Tipo 2">Tipo 2</option>
-              <option value="Tipo 3">Tipo 3</option>
+          <div class="col-md-6">
+            <label for="periodo" class="form-label">Período</label>
+            <select class="form-select" aria-label="Default select example" formControlName="periodId">
+              @for (item of listPeriodo; track $index) {
+                  <option value={{item.id}}>{{item.month}} / {{item.year}} </option>
+              }
+              
             </select>
-          </div>
-          <div class="form-group col-md-1 text-center d-flex align-items-center justify-content-center mt-4">
-            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#categoriaModal">+</button>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="periodo">Período</label>
-            <select id="periodo" class="form-control" formControlName="periodo">
-              <option value="">Seleccionar...</option>
-              <option value="Período 1">Período 1</option>
-              <option value="Período 2">Período 2</option>
-              <option value="Período 3">Período 3</option>
-            </select>
+            @if (chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required')) {
+              <div class="text-danger">
+                El Periodo es obligatorio.
+              </div> 
+            }
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="monto">Monto</label>
-            <input type="text" class="form-control" id="monto" placeholder="Monto" formControlName="monto">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="monto" class="form-label">Monto</label>
+            <input type="number" class="form-control" id="monto" placeholder="Monto" formControlName="amount">
+            @if (chargeForm.controls['amount'].touched && chargeForm.controls['amount'].hasError('required')) {
+              <div class="text-danger">
+                El monto es obligatorio.
+              </div> 
+            }
+          
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" class="form-control" rows="3" placeholder="Descripción" formControlName="descripcion"></textarea>
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea id="descripcion" class="form-control" rows="3" placeholder="Descripción" formControlName="description"></textarea>
         </div>
 
         <div class="form-row justify-content-center">
           <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">Cancelar</button>
-          <button type="submit" class="btn btn-warning" [disabled]="chargeForm.invalid">Guardar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="chargeForm.invalid">Guardar</button>
         </div>
       </form>
     </div>
-  </div>
-</div>
-
-
-
-
-<!-- esto va en el componente de add new category -->
-<div class="modal fade" id="categoriaModal" tabindex="-1" role="dialog" aria-labelledby="categoriaModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="categoriaModalLabel">Agregar nueva categoría</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="nombreCategoria">Nombre de la categoría</label>
-            <input type="text" class="form-control" id="nombreCategoria"
-              placeholder="Ingresa el nombre de la categoría">
-          </div>
-          <div class="form-group">
-            <label for="descripcionCategoria">Descripción</label>
-            <textarea id="descripcionCategoria" class="form-control" rows="3"
-              placeholder="Descripción de la categoría"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Guardar categoría</button>
-      </div>
-    </div>
-  </div>
 </div>

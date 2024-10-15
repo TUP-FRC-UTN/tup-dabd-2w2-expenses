@@ -1,48 +1,91 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
 import { Charge } from '../../../models/charge';
+import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import Lot from '../../../models/lot';
+import { PeriodService } from '../../../services/period.service';
+import { LotsService } from '../../../services/lots.service';
+import Period from '../../../models/period';
 
 @Component({
   selector: 'app-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PeriodSelectComponent],
   templateUrl: './add-charge.component.html',
-  styleUrl: './add-charge.component.css'
+  styleUrl: './add-charge.component.css',
 })
-export class AddChargeComponent {
-  chargeForm: FormGroup;
+export class AddChargeComponent implements OnInit{
+  // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
+  lots : Lot[] = []
 
-  constructor() {
-    this.chargeForm = this.fb.group({
-      fechaEmision: ['', Validators.required],
-      lote: ['', Validators.required],
-      tipo: ['', Validators.required],
-      periodo: ['', Validators.required],
-      monto: ['', [Validators.required, Validators.pattern('^[0-9]+(\.[0-9]{1,2})?$')]],
-      descripcion: ['', Validators.required]
-    });
-  }
+  private readonly periodService = inject(PeriodService)
+  private readonly lotsService = inject(LotsService)
+   listPeriodo:Period[] =[]
 
-  onSubmit() {
-    if (this.chargeForm.valid) {
-      const newCharge: Charge = {
-        id: Math.floor(Math.random() * 1000),
-        ...this.chargeForm.value
-      };
-
-      this.chargeService.addCharge(newCharge).subscribe(response => {
-        console.log('se agregó', response);
-        this.chargeForm.reset();
-      });
-    } else {
-      console.log('formulario invalido');
-    }
-  }
+  selectedPeriodId: number | null = null;
 
   onCancel() {
     this.chargeForm.reset();
+  }
+
+  loadSelect() {
+    this.periodService.get().subscribe((data=>{
+      this.listPeriodo=data
+    }))
+    this.lotsService.get().subscribe((data: Lot[]) => {
+      this.lots = data;
+    })
+  }
+  chargeForm: FormGroup;
+
+  constructor() {
+    this.chargeForm = this.fb.group({
+      lotId: ['', Validators.required],
+      date: ['', Validators.required],
+      periodId: ['', Validators.required],
+      amount: ['', Validators.required],
+      categoryChargeId: ['', Validators.required],
+      description:['']
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadSelect();
+  }
+
+  onSubmit(): void {
+    console.log(this.chargeForm.value)
+    console.log(this.chargeForm.valid)
+
+    if (this.chargeForm.valid) {
+      const formValue = this.chargeForm.value;
+      const charge: Charge = {
+        ...formValue,
+        date: new Date(formValue.date).toISOString(),
+      };
+
+      this.chargeService.createCharge(charge).subscribe(
+        (response) => {
+          console.log('Cargo registrado exitosamente:', response);
+          alert('Cargo registrado exitosamente');
+          this.chargeForm.reset();
+        },
+        (error) => {
+          console.error('Error al registrar el cargo:', error);
+          alert('Hubo un error al registrar el cargo');
+        }
+      );
+    } else {
+      alert('Por favor, complete todos los campos requeridos.');
+        this.chargeForm.markAllAsTouched(); 
+    }
   }
 }

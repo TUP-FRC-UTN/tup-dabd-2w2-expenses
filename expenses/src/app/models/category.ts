@@ -1,7 +1,7 @@
 export default class Category{
-    categoryBillId:number|null=null
+    category_id:number = 0;
 
-    description:string|null=null
-    
-    name:string |null=null
+    description:string='';
+
+    name:string='';
 }
