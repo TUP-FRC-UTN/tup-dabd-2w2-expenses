@@ -37,11 +37,11 @@ export class UpdateChargeComponent implements OnInit {
     if (this.charge) {
       this.chargeForm.patchValue({
         fechaEmision: this.charge.date.toISOString().split('T')[0],
-        lote: this.charge.lot_id,
-        tipo: this.charge.category.name,
-        periodo: this.charge.periodId,
+        lote: this.charge.lotId,
+        tipo: this.charge.categoryCharge.name,
+        periodo: this.charge.period,
         monto: this.charge.amount,
-        descripcion: this.charge.category.description,
+        descripcion: this.charge.categoryCharge.description,
       });
     }
   }

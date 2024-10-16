@@ -17,11 +17,11 @@ export class ChargeService {
   }
 
   getCharges(): Observable<Charge[]> {
-    return this.http.get<Charge[]>(this.apiUrl + '/fines');
+    return this.http.get<Charge[]>(this.apiUrl);
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
-    return this.http.put<Charge>(`${this.url}/${charge.charge_id}`, charge);
+    return this.http.put<Charge>(`${this.url}/${charge.chargeId}`, charge);
   }  
 
   deleteCharge(charge: number): Observable<Charge> {
