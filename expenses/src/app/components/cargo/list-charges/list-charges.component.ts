@@ -2,21 +2,24 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Charge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BorrarItemComponent } from '../../borrar-item/borrar-item.component';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
 import { CommonModule } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
+import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
+import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
+import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
 
 @Component({
   selector: 'app-list-charges',
   standalone: true,
-  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent],
+  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent, ExpensesChargesNavComponent],
   templateUrl: './list-charges.component.html',
   styleUrl: './list-charges.component.css',
 })
+
 export class ListChargesComponent implements OnInit {
   charges: Charge[] = [];
   private chargeService = inject(ChargeService);

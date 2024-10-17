@@ -2,10 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe, Location } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
-import LiquidationExpense from './../../models/liquidationExpense';
-import { LiquidationExpenseService } from '../../services/liquidation-expense.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
+import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
+import LiquidationExpense from '../../../models/liquidationExpense';
 
 @Component({
   selector: 'app-liquidation-expense-details',

@@ -44,7 +44,7 @@
       <td>{{ detail.category?.name }}</td>
       <td>{{ bill.amount | currency }}</td>
       <td>{{ bill.description }}</td>
-      <td style="display: flex; flex-direction: row; gap: 4px;">
+      <td style="display: flex; flex-direction: row; gap: 4px">
         <button type="button" class="btn btn-warning" (click)="openModal()">
           <i class="bi bi-eye"></i>
         </button>
@@ -56,6 +56,6 @@
     } }
   </tbody>
 </table>
-<div style="display: flex; flex-direction: row; justify-content: e;">
+<div style="display: flex; flex-direction: row; justify-content: e">
   <button class="btn btn-warning" (click)="goBack()">Volver</button>
 </div>
