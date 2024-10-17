@@ -11,7 +11,6 @@ import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { AsyncPipe, NgClass } from '@angular/common';
-import {NgModalComponent} from "../../utilities/ng-modal/ng-modal.component";
 
 @Component({
   selector: 'app-list-bills',
@@ -181,7 +180,7 @@ export class ListBillsComponent implements OnInit {
     return null
   }
   showModal(title: string, message: string) {
-    const modalRef = this.modalService.open(NgModalComponent);
+    const modalRef = this.modalService.open(NgbModal);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
   }

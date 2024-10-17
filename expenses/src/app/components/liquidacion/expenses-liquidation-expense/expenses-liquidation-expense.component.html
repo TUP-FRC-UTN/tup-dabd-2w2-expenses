@@ -8,24 +8,20 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-2">
-      <label for="">Periodo</label>
-      <app-period-select
-        (periodSelected)="selectPeriodChange($event)"
-        [redirectOnInit]="true"
-      ></app-period-select>
-    </div>
-    <div class="col-2" style="display: flex;flex-direction: row; align-items: end;">
+    <div
+      class="col-2"
+      style="display: flex; flex-direction: row; align-items: end"
+    >
       <button
         class="btn"
         [ngClass]="
-          liquidationExpensesList[0].blocked ? 'btn-primary' : 'btn-danger'
+          liquidationExpensesList[0]?.blocked ? 'btn-primary' : 'btn-danger'
         "
         (click)="
           open(modalTemplate, liquidationExpensesList[0].expense_id || null)
         "
       >
-        @if (liquidationExpensesList[0].blocked) { Abrir } @else { Cerrar }
+        @if (liquidationExpensesList[0]?.blocked) { Abrir } @else { Cerrar }
       </button>
     </div>
   </div>
