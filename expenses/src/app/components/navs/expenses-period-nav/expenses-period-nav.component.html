@@ -1,7 +1,17 @@
-<div style="display: flex; flex-direction: row; gap: 2px; align-items: end;padding-left: 4px;padding-bottom: 20px;">
-  <h1>Perido</h1>
-  <div style="display: flex; flex-direction: row; gap: 4px;">
-    <!-- <a href="" class="link-dark"> liquidacion</a> /
-    <a href="" class="link-dark"> expensas</a> -->
-  </div>
+<div
+  style="
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    align-items: end;
+    padding-left: 4px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  "
+>
+  <h2>Perido</h2>
+    @if (id) {
+    <h6><a [href]="'periodo/' + id + '/liquidacion'" class="link-dark"> liquidacion</a> /</h6> 
+    <h6><a [href]="'periodo/' + id + '/expensas'" class="link-dark"> expensas</a></h6>
+    }
 </div>
