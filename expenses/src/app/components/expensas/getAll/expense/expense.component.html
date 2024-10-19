@@ -1,12 +1,37 @@
 <div class="container" style="margin-top: 18px;">
     <div class="row">
-      <div class="col-2">
-    
+        <h3>Expensas</h3>
+      <div class="col-2" >
+          <label for="perido">Periodo</label>
+          <app-period-select (periodSelected)="loadSelect()"></app-period-select>
+          
       </div>
+      <div class="col-2">
+        <label for="">Lote</label>
+        <select name="lote" id="lote" class="form-select" aria-label="Default select example" [ngModel]="selectedOptionLot" (ngModelChange)="onOptionChange($event)">
+          <option [defaultSelected]="0" [value]="0">Todos</option>
+          @for (lot of lots; track $index ) {
+            <option [value]="lot.id">{{lot.plot_number}}</option>
+          }
+        </select>
+      </div>
+      <div class="col-2">
+        <label for="">Categoria</label>
+        <select name="lote" id="lote" class="form-select" aria-label="Default select example" [ngModel]="selectedOptionLot" (ngModelChange)="onOptionChange($event)">
+          <option [defaultSelected]="0" [value]="0">Todos</option>
+          @for (lot of lots; track $index ) {
+            <option [value]="lot.id">{{lot.plot_number}}</option>
+          }
+        </select>
+      </div>
+      <div class="col-2">
+          <button class="btn btn-primary">Limpiar filtros</button>
+      </div>
+     
     </div>
-    
+   <br>
     <div>
-      <h3>Todas las expensas</h3>
+      
       <table class="table">
         <thead>
           <tr>
@@ -20,7 +45,7 @@
         <tbody>
           @for (expense of expenses; track $index) {
             <tr>
-              <td>{{expense.lotId}} </td>
+              <td>{{expense.plotNumber}} </td>
               <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
               <td>{{expense.totalAmount}} </td>
               <td>{{expense.liquidationDate}}</td>

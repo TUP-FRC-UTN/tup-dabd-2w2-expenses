@@ -58,6 +58,7 @@ export class GetByLotAndPeriodComponent implements OnInit {
   }
   onOptionChange(newValue: number): void {
     this.lotId = newValue;
+   
     console.log('lotId: '+this.lotId)
     this.loadExpense(this.periodId, this.lotId)
   }

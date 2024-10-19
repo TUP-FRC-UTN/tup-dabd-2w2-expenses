@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { ExpensesLiquidationExpenseComponent } from './components/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import {AddBillComponent} from "./components/bills/add-bill/add-bill.component";
 import { ListBillsComponent } from './components/bills/list-bills/list-bills.component';
+import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
 
 
 export const routes: Routes = [
@@ -17,7 +18,8 @@ export const routes: Routes = [
     { path: 'liquidation-expense', component:ExpensesLiquidationExpenseComponent },
     { path: 'liquidation-expense/:id', component:ExpensesLiquidationExpenseComponent },
     { path: 'add-bill', component: AddBillComponent },
-    { path: 'list-bills', component: ListBillsComponent }
+    { path: 'list-bills', component: ListBillsComponent },
+    { path: 'expenses', component: ExpenseComponent}
     //{ path: '', redirectTo: '', pathMatch: 'full' },
     //{ path: '**', redirectTo: '' },
   ];
