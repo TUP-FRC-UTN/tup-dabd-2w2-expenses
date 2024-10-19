@@ -27,4 +27,13 @@ export class PeriodService {
     }
 
   }
+  getOpens():Observable<Period[]>{
+    try{4
+      const response = this.http.get<Period[]>(`${this.apiUrl}/open`)
+       return response
+     }catch( e) {
+       console.log(e)
+       throw  e
+     }
+  }
 }

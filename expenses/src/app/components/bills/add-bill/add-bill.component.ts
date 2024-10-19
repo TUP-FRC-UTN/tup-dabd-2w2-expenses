@@ -12,7 +12,7 @@ import {BillService} from "../../../services/bill.service";
 import {AsyncPipe, NgClass} from "@angular/common";
 import BillType from "../../../models/billType";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {NgModalComponent} from "../../utilities/ng-modal/ng-modal.component";
+import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 
 
 @Component({

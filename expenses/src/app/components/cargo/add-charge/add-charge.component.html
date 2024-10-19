@@ -1,85 +1,123 @@
-<div class="container" style="padding-top: 16px;">
+<app-expenses-charges-nav />
+<div class="container" style="padding-top: 16px">
   <h3 class="card-title mb-4">Registrar cargo a lote</h3>
 
-    <div class="card-body">
-      <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="fechaEmision" class="form-label">Fecha de emisión</label>
-            <input type="date" class="form-control" id="fechaEmision" formControlName="date">
-            @if (chargeForm.controls['date'].touched && chargeForm.controls['date'].hasError('required')) {
-              <div class="text-danger">
-               La fecha de cargo es obligatorio.
-              </div> 
-            }
-          </div>
-          <div class="col-md-6">
-            <label for="lote" class="form-label">Lote</label>
-            <input type="text" class="form-control" id="lote" placeholder="Lote" formControlName="lotId">
-            @if (chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')) {
-              <div class="text-danger">
-                 El lote  es obligatorio.
-              </div> 
-            }
-          </div>
+  <div class="card-body">
+    <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="fechaEmision" class="form-label">Fecha de emisión</label>
+          <input
+            type="date"
+            class="form-control"
+            id="fechaEmision"
+            formControlName="date"
+          />
+          @if (chargeForm.controls['date'].touched &&
+          chargeForm.controls['date'].hasError('required')) {
+          <div class="text-danger">La fecha de cargo es obligatorio.</div>
+          }
         </div>
+        <div class="col-md-6">
+          <label for="lote" class="form-label">Lote</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lote"
+            placeholder="Lote"
+            formControlName="lotId"
+          />
+          @if (chargeForm.controls['lotId'].touched &&
+          chargeForm.controls['lotId'].hasError('required')) {
+          <div class="text-danger">El lote es obligatorio.</div>
+          }
+        </div>
+      </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="tipo" class="form-label">Tipo</label>
-            <div class="input-group">
-              <select id="tipo" class="form-select" formControlName="categoryChargeId">
-                @for (item of categoriaCargos; track $index) {
-                  <option value={{item.categoryChargeId}}>{{item.name}} </option>
-              }
-              </select>
-           
-  
-            </div>
-               @if (chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required')) {
-                <div class="text-danger">
-                   El tipo de cargo es obligatorio.
-                </div> 
-              }
-          </div>
-          <div class="col-md-6">
-            <label for="periodo" class="form-label">Período</label>
-            <select class="form-select" aria-label="Default select example" formControlName="periodId">
-              @for (item of listPeriodo; track $index) {
-                  <option value={{item.id}}>{{item.month}} / {{item.year}} </option>
-              }
-              
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="tipo" class="form-label">Tipo</label>
+          <div class="input-group">
+            <select
+              id="tipo"
+              class="form-select"
+              formControlName="categoryChargeId"
+            >
+              <option value="">Seleccionar...</option>
+              <option value="1">Servicio de limpieza</option>
+              <option value="2">Varios</option>
+              <option value="3">Deuda</option>
             </select>
-            @if (chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required')) {
-              <div class="text-danger">
-                El Periodo es obligatorio.
-              </div> 
-            }
           </div>
+          @if (chargeForm.controls['categoryChargeId'].touched &&
+          chargeForm.controls['categoryChargeId'].hasError('required')) {
+          <div class="text-danger">El tipo de cargo es obligatorio.</div>
+          }
         </div>
-
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="monto" class="form-label">Monto</label>
-            <input type="number" class="form-control" id="monto" placeholder="Monto" formControlName="amount">
-            @if (chargeForm.controls['amount'].touched && chargeForm.controls['amount'].hasError('required')) {
-              <div class="text-danger">
-                El monto es obligatorio.
-              </div> 
+        <div class="col-md-6">
+          <label for="periodo" class="form-label">Período</label>
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            formControlName="periodId"
+          >
+            @for (item of listPeriodo; track $index) {
+            <option value="{{ item.id }}">
+              {{ item.month }} / {{ item.year }}
+            </option>
             }
-          
-          </div>
+          </select>
+          @if (chargeForm.controls['periodId'].touched &&
+          chargeForm.controls['periodId'].hasError('required')) {
+          <div class="text-danger">El Periodo es obligatorio.</div>
+          }
         </div>
+      </div>
 
-        <div class="mb-3">
-          <label for="descripcion" class="form-label">Descripción</label>
-          <textarea id="descripcion" class="form-control" rows="3" placeholder="Descripción" formControlName="description"></textarea>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="monto" class="form-label">Monto</label>
+          <input
+            type="number"
+            class="form-control"
+            id="monto"
+            placeholder="Monto"
+            formControlName="amount"
+          />
+          @if (chargeForm.controls['amount'].touched &&
+          chargeForm.controls['amount'].hasError('required')) {
+          <div class="text-danger">El monto es obligatorio.</div>
+          }
         </div>
+      </div>
 
-        <div class="form-row justify-content-center">
-          <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="chargeForm.invalid">Guardar</button>
-        </div>
-      </form>
-    </div>
+      <div class="mb-3">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <textarea
+          id="descripcion"
+          class="form-control"
+          rows="3"
+          placeholder="Descripción"
+          formControlName="description"
+        ></textarea>
+      </div>
+
+      <div class="form-row justify-content-center">
+        <button
+          type="button"
+          class="btn btn-secondary mr-2"
+          (click)="onCancel()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="chargeForm.invalid"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

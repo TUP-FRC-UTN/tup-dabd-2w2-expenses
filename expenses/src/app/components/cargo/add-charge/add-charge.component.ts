@@ -12,11 +12,12 @@ import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Period from '../../../models/period';
+import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
 
 @Component({
   selector: 'app-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent],
   templateUrl: './add-charge.component.html',
   styleUrl: './add-charge.component.css',
 })

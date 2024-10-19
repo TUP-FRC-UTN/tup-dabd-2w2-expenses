@@ -5,17 +5,23 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import LiquidationExpense from '../../models/liquidationExpense';
-import { LiquidationExpenseService } from '../../services/liquidation-expense.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PeriodSelectComponent } from '../selects/period-select/period-select.component';
 import { CommonModule } from '@angular/common';
-import { ExpensesModalComponent } from '../expenses-modal/expenses-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
+import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
+import LiquidationExpense from '../../../models/liquidationExpense';
+import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 @Component({
   selector: 'app-expenses-liquidation-expense',
   standalone: true,
-  imports: [PeriodSelectComponent, CommonModule, ExpensesModalComponent],
+  imports: [
+    PeriodSelectComponent,
+    CommonModule,
+    ExpensesModalComponent,
+    TableComponent,
+  ],
   templateUrl: './expenses-liquidation-expense.component.html',
   styleUrl: './expenses-liquidation-expense.component.css',
 })
@@ -23,19 +29,25 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   liquidationExpensesService: LiquidationExpenseService = inject(
     LiquidationExpenseService
   );
+  
+  //table
+
+  items: any[] = [];
+  sizeOptions: number[] = [];
+
   route: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
-
   liquidationExpensesList: LiquidationExpense[] = [];
   id: number | null = null;
   selectedItemId: number | null = null;
   isModalVisible = false;
   selectedPeriodId: number | null = null;
-//USO DEL MODAL CORRECTO.
-private modalService = inject(NgbModal);
 
-  open(content: TemplateRef<any>, id:number|null) {
-    this.selectedItemId=id
+  //USO DEL MODAL CORRECTO.
+  private modalService = inject(NgbModal);
+
+  open(content: TemplateRef<any>, id: number | null) {
+    this.selectedItemId = id;
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
@@ -54,25 +66,23 @@ private modalService = inject(NgbModal);
   }
   private loadId(): void {
     this.route.paramMap.subscribe((params) => {
-      this.id = Number(params.get('id')); 
+      this.id = Number(params.get('period_id'));
       console.log('Retrieved ID:', this.id);
     });
     console.log(this.liquidationExpensesList);
   }
   private loadList(id: number | null) {
+    console.log(id)
     if (id) {
       this.liquidationExpensesService
         .get(id)
         .subscribe((data: LiquidationExpense[]) => {
+          console.log(data)
           this.liquidationExpensesList = data;
         });
     }
   }
-  selectPeriodChange(id: any) {
-    this.router.navigate([`/liquidation-expense/${id}`]).then(() => {
-      this.loadList(id);
-    });
-  }
+
 
   closeLiquidation(id: number | null) {
     if (id) {
