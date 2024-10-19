@@ -43,11 +43,10 @@
               class="form-select"
               formControlName="categoryChargeId"
             >
-              <option value="">Seleccionar...</option>
-              <option value="1">Servicio de limpieza</option>
-              <option value="2">Varios</option>
-              <option value="3">Deuda</option>
-            </select>
+            @for (item of categoriaCargos; track $index) {
+              <option value={{item.categoryChargeId}}>{{item.name}} </option>
+          }
+          </select>
           </div>
           @if (chargeForm.controls['categoryChargeId'].touched &&
           chargeForm.controls['categoryChargeId'].hasError('required')) {
