@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Charge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
+import { CategoryCharge } from '../../../models/charge';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
 import { CommonModule } from '@angular/common';
@@ -11,6 +12,7 @@ import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
 import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
 import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-list-charges',
@@ -27,18 +29,30 @@ export class ListChargesComponent implements OnInit {
 
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
+  categoryCharges: CategoryCharge[] = [];
+  params : number[] = [];
 
   lots: Lot[] = [];
 
   private readonly periodService = inject(PeriodService);
   private readonly lotsService = inject(LotsService);
 
+  filtros : FormGroup;
+
   ngOnInit(): void {
-    this.loadCharges();
     this.loadSelect();
+    this.loadCategoryCharge();
+    this.loadCharges();
+
+    this.filtros
   }
 
   loadCharges(): void {
+    
+    if(this.lots.length !=0) {
+      this.params.push();
+
+    }
     this.chargeService.getCharges().subscribe((charges) => {
       this.charges = charges;
       console.log(charges);
@@ -51,13 +65,18 @@ export class ListChargesComponent implements OnInit {
       this.lots = data;
     })
   }
+  loadCategoryCharge(){
+    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+      this.categoryCharges = data;
+    })
+  }
 
   toggleSelection(charge: Charge) {
-    const index = this.selectedCharges.indexOf(charge.fineId);
+    const index = this.selectedCharges.indexOf(charge.chargeId);
     if (index > -1) {
       this.selectedCharges.splice(index, 1);
     } else {
-      this.selectedCharges.push(charge.fineId);
+      this.selectedCharges.push(charge.chargeId);
     }
   }
 

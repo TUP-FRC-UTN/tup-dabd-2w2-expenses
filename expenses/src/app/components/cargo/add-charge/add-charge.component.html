@@ -43,6 +43,7 @@
               class="form-select"
               formControlName="categoryChargeId"
             >
+            <option value="">Categoria de cargos</option>
             @for (item of categoriaCargos; track $index) {
               <option value={{item.categoryChargeId}}>{{item.name}} </option>
           }

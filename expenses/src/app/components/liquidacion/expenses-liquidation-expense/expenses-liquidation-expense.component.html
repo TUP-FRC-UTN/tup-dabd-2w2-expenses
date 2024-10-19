@@ -15,13 +15,13 @@
       <button
         class="btn"
         [ngClass]="
-          liquidationExpensesList[0]?.blocked ? 'btn-primary' : 'btn-danger'
+          liquidationExpensesList[0].blocked ? 'btn-primary' : 'btn-danger'
         "
         (click)="
           open(modalTemplate, liquidationExpensesList[0].expense_id || null)
         "
       >
-        @if (liquidationExpensesList[0]?.blocked) { Abrir } @else { Cerrar }
+        @if (liquidationExpensesList[0].blocked) { Abrir } @else { Cerrar }
       </button>
     </div>
   </div>

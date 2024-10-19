@@ -1,18 +1,22 @@
 <app-expenses-charges-nav/>
 <div class="container mt-5">
     <h3 class="mb-4">Cargos</h3>
-    <form class="form-row mb-4 d-flex align-items-end">
+    <form [formGrup]="filtros" class="form-row mb-4 d-flex align-items-end">
         <div class="form-group col-md-3 me-3">
             <label for="periodo">Período</label>
             <app-period-select (periodSelected)="loadSelect()"></app-period-select>
         </div>
         <div class="form-group col-md-3 me-3">
             <label for="tipo">Tipo</label>
-            <select id="tipo" class="form-control">
-                <option selected>Seleccionar...</option>
-                <option>Tipo 1</option>
-                <option>Tipo 2</option>
-            </select>
+            <select
+              id="tipo"
+              class="form-select"
+              formControlName="categoryChargeId"
+            >
+            <option value=""></option>
+            @for (item of categoryCharges; track $index) {
+              <option value={{item.categoryChargeId}}>{{item.name}} </option>
+          } </select>
         </div>
         <div class="form-group col-md-3 me-3">
             <label for="lote">Lote</label>
@@ -23,7 +27,7 @@
             </select>
         </div>
         <div class="form-group col-md-3 d-flex align-items-end">
-            <button type="button" class="btn btn-primary btn-block">Buscar</button>
+            <button type="button" class="btn btn-primary btn-block" (click)="loadCharges()">Buscar</button>
         </div>
     </form>
 
@@ -32,8 +36,8 @@
             <thead class="thead-light">
                 <tr>
                     <th>Fecha</th>
-                    <th>Descripcion</th>
                     <th>Lote</th>
+                    <th>Descripcion</th>
                     <th>Monto</th>
                     <th>ACCIONES</th>
                 </tr>
@@ -41,8 +45,8 @@
             <tbody>
                 @for (charge of charges; track $index) {<tr>                    
                     <td>{{charge.date | date:"dd/MM/YYYY"}}</td>
-                    <td>{{charge.description}}</td>
                     <td>{{charge.lotId}}</td>
+                    <td>{{charge.description}}</td>
                     <td>${{charge.amount | number}}</td>
                     <td>
                         <button class="btn btn-primary btn-sm mr-2" (click)="openUpdateModal(charge)">
@@ -57,69 +61,6 @@
             </tbody>
         </table>
     </div>
-    <div class="form-group col-md-3 me-3">
-      <label for="tipo">Tipo</label>
-      <select id="tipo" class="form-control">
-        <option selected>Seleccionar...</option>
-        <option>Tipo 1</option>
-        <option>Tipo 2</option>
-      </select>
-    </div>
-    <div class="form-group col-md-3 me-3">
-      <label for="lote">Lote</label>
-      <select id="lote" class="form-control">
-        <option selected>Seleccionar...</option>
-        <option>Lote 1</option>
-        <option>Lote 2</option>
-      </select>
-    </div>
-    <div class="form-group col-md-3 d-flex align-items-end">
-      <button type="button" class="btn btn-primary btn-block">Buscar</button>
-    </div>
-  </form>
-
-  <div class="table-responsive text-center">
-    <table class="table table-bordered">
-      <thead class="thead-light">
-        <tr>
-          <th>#</th>
-          <th>Periodo</th>
-          <th>Descripcion</th>
-          <th>Monto</th>
-          <th>Lote</th>
-          <th>Fine</th>
-          <th>ACCIONES</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (charge of charges; track $index) {
-        <tr>
-          <td><input type="checkbox" /></td>
-          <td>{{ charge.date }}</td>
-          <td>{{ charge.category.name }}</td>
-          <td>${{ charge.amount | number }}</td>
-          <td>{{ charge.lot_id }}</td>
-          <td>{{ charge.fine_id }}</td>
-          <td>
-            <button
-              class="btn btn-primary btn-sm mr-2"
-              (click)="openUpdateModal(charge)"
-            >
-              <i class="bi bi-eye"></i>
-            </button>
-
-            <button
-              class="btn btn-danger btn-sm"
-              (click)="openDeleteModal(charge.fine_id)"
-            >
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
 
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">

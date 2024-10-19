@@ -12,7 +12,7 @@ import { LiquidationExpenseService } from '../../../services/liquidation-expense
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import LiquidationExpense from '../../../models/liquidationExpense';
-import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+//import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
 @Component({
   selector: 'app-expenses-liquidation-expense',
   standalone: true,
@@ -20,7 +20,7 @@ import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
     PeriodSelectComponent,
     CommonModule,
     ExpensesModalComponent,
-    TableComponent,
+  //  TableComponent
   ],
   templateUrl: './expenses-liquidation-expense.component.html',
   styleUrl: './expenses-liquidation-expense.component.css',
