@@ -9,12 +9,13 @@ import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/ex
 import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
+import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
 
 
 export const routes: Routes = [
   // Ruta periodos - manejo del estado del periodo
   { path: 'periodo', component: ExpensesPeriodListComponent },
-  { path: 'periodo/:period_id/expensas', component: GetByPeriodComponent },
+  { path: 'periodo/:period_id/expensas', component: ExpensesPeriodExpensesComponent },
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationExpenseComponent },
   { path: 'periodo/:period_id/liquidacion/:id', component: LiquidationExpenseDetailsComponent },
 

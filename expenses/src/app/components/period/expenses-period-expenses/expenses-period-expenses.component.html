@@ -1,1 +1,23 @@
-<app-expenses-period-nav/>
+<app-expenses-period-nav />
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Lote</th>
+        <th scope="col">Propietario</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (expense of listExpenses; track $index) {
+      <tr>
+        <th scope="row">{{expense.lotId}} </th>
+        <td></td>
+        <td>{{expense.totalAmount}} </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
