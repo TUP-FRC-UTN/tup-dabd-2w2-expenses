@@ -41,7 +41,7 @@ export class UpdateChargeComponent implements OnInit {
         tipo: this.charge.categoryCharge.name,
         periodo: this.charge.period,
         monto: this.charge.amount,
-        descripcion: this.charge.categoryCharge.description,
+        description: this.charge.categoryCharge.description,//Esto se podria cambiar por charge.description
       });
     }
   }

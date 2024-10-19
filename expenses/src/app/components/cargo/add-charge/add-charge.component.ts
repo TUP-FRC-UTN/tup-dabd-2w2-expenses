@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
-import { Charge } from '../../../models/charge';
+import { CategoryCharge, Charge } from '../../../models/charge';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
@@ -28,7 +28,8 @@ export class AddChargeComponent implements OnInit{
 
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
-   listPeriodo:Period[] =[]
+   listPeriodo:Period[] =[];
+   categoriaCargos: CategoryCharge[] = [];
 
   selectedPeriodId: number | null = null;
 
@@ -42,6 +43,9 @@ export class AddChargeComponent implements OnInit{
     }))
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
+    })
+    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+      this.categoriaCargos = data;
     })
   }
   chargeForm: FormGroup;
@@ -71,7 +75,7 @@ export class AddChargeComponent implements OnInit{
         ...formValue,
         date: new Date(formValue.date).toISOString(),
       };
-
+      console.log(charge);
       this.chargeService.createCharge(charge).subscribe(
         (response) => {
           console.log('Cargo registrado exitosamente:', response);

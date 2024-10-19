@@ -17,6 +17,7 @@ export interface Charge {
     lotId: number;
     period: number;
     status: boolean;
+    description: string;
     
 }
 
