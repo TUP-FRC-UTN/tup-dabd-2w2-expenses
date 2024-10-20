@@ -3,8 +3,8 @@ import {MenuItems, NavbarComponent} from "ngx-dabd-2w1-core";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExpenseComponent } from '../../expensas/getAll/expense/expense.component';
 import { PeriodSelectComponent } from "../../selects/period-select/period-select.component";
-import { ExpensesLiquidationExpenseComponent } from '../../expenses-liquidation-expense/expenses-liquidation-expense.component';
-import { LiquidationExpenseDetailsComponent } from '../../liquidation-expense-details/liquidation-expense-details.component';
+import { LiquidationExpenseDetailsComponent } from '../../liquidacion/liquidation-expense-details/liquidation-expense-details.component';
+import { ExpensesLiquidationExpenseComponent } from '../../liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
 
 @Component({
   selector: 'app-navigation-menu',
@@ -17,7 +17,6 @@ import { LiquidationExpenseDetailsComponent } from '../../liquidation-expense-de
     ExpenseComponent,
     PeriodSelectComponent
 ],
-
   templateUrl: './navigation-menu.component.html',
   styleUrl: './navigation-menu.component.css'
 })

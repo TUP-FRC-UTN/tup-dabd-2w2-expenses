@@ -1,0 +1,12 @@
+<app-expenses-period-nav />
+<div style="display: flex; flex-direction: row; gap: 18px">
+  <h3>Activos:</h3>
+
+  @for (period of listPeriod; track $index) {
+
+  <div class="card bg-light mb-3" style="max-width: 18rem">
+    <a [href]="'/period/' + period.id + '/liquidation'" class="link-dark" ><div class="card-header">{{ period.month }} / {{ period.year }}</div></a>
+  </div>
+
+  }
+</div>
