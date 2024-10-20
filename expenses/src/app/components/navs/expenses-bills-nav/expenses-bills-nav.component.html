@@ -1,5 +1,32 @@
-<div style="display: flex; flex-direction: row; gap: 2px">
-  <h1>Gastos</h1>
-  <a href=""><h6>/nuevo</h6></a>
-  <a href=""><h6>/reportes</h6></a>
+<div class="d-flex text-nowrap align-items-center">
+  <div class="row align-items-center gap-2">
+    <div class="col nav-item">
+      <h1>Gastos</h1>
+    </div>
+
+    <div class="col nav-item">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        routerLink="/gastos"
+      >
+        Listado
+      </button>
+    </div>
+
+    <div class="col nav-item">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        routerLink="nuevo"
+      >
+        Crear
+      </button>
+    </div>
+
+<!--    <div class="col nav-item">-->
+<!--      <button type="button" class="btn btn-outline-secondary">Reportes</button>-->
+<!--    </div>-->
+
+  </div>
 </div>
