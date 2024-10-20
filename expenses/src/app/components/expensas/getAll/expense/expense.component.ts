@@ -57,7 +57,7 @@ export class ExpenseComponent implements OnInit{
   }
 
   loadExpenses(page: number = 0, size: number = 10): void {
-    this.service.getExpenses(page, size).subscribe(data => {
+    this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId).subscribe(data => {
       this.expenses = data;
     });
   }

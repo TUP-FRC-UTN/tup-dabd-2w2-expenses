@@ -12,20 +12,22 @@ export class ExpenseServiceService {
 
   constructor() { }
   private readonly http = inject(HttpClient)
-   private apiUrl = "http://localhost:8081/expense/"
+   private apiUrl = "http://localhost:8081/expense/all"
    getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
-    this.apiUrl = this.apiUrl + "all"
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
 
     if (periodId) {
+      console.log('periodo= '+periodId)
       params = params.set('periodId', periodId);
     }
     if (plotId) {
+      console.log('lote= '+plotId)
       params = params.set('plotId', plotId);
     }
     if (typeId) {
+      console.log('tipo= '+typeId)
       params = params.set('typeId', typeId);
     }
 
