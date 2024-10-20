@@ -27,7 +27,7 @@ export class BillService {
   }
   
   getBillTypes(): Observable<BillType[]>{
-    return this.http.get<BillType[]>(this.url + '/billType')
+    return this.http.get<BillType[]>(this.url + '/bill-type')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
     return this.http.put<Bill>(this.url+"/bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);

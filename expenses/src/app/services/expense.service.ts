@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import Expense from '../models/expense';
 import Period from '../models/period';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 
 @Injectable({
@@ -13,19 +13,23 @@ export class ExpenseServiceService {
   constructor() { }
   private readonly http = inject(HttpClient)
    private apiUrl = "http://localhost:8081/expense/"
-   get(): Observable<Expense[]>{
-    console.log('cargando todas')
-    return this.http.get<Expense[]>(`${this.apiUrl}all`)
+   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
+    this.apiUrl = this.apiUrl + "all"
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if (periodId) {
+      params = params.set('periodId', periodId);
+    }
+    if (plotId) {
+      params = params.set('plotId', plotId);
+    }
+    if (typeId) {
+      params = params.set('typeId', typeId);
+    }
+
+    return this.http.get<Expense[]>(this.apiUrl, { params });
   }
-  getByPeriod(periodId:number):Observable<Expense>{
-    console.log('cargando por periodos')
-    return this.http.get<Expense>(`${this.apiUrl}period/${periodId}`)
-  }
-  getByPeriodAndPlot(periodId:number, plotId:Number):Observable<Expense[]>{
-    console.log(periodId)
-    return this.http.get<Expense[]>(`${this.apiUrl}periodAndPlot?periodId=${periodId}&idPlot=${plotId}`)
-  }
-  getExpenseCurrentPeriod():Observable<Expense[]> {
-    return this.http.get<Expense[]>(`${this.apiUrl}/currentPeriod/`)
-  }
+
 }
