@@ -2,7 +2,7 @@
 <div style="display: flex; flex-direction: row; gap: 18px">
   <h3>Activos:</h3>
 
-  @for (period of listPeriod; track $index) {
+  @for (period of listOpenPeriod; track $index) {
 
   <div class="card bg-light mb-3" style="max-width: 18rem">
     <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark" ><div class="card-header">{{ period.month }} / {{ period.year }}</div></a>
@@ -10,3 +10,39 @@
 
   }
 </div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Fecha</th>
+      <th scope="col">Total Extraordinarias</th>
+      <th scope="col">Total Ordinarias</th>
+      <th scope="col">Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (period of listPeriod; track $index) {
+      <tr>
+        <th scope="row">{{period.id }}</th>
+        <td>{{period.month}} / {{period.year}}</td>
+        <td>{{period.ordinary?.amount}}</td>
+        <td>{{period.extraordinary?.amount}}</td>
+        <td>{{period.state}}</td>
+      </tr>
+    }
+  </tbody>
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item">
+        <a class="page-link" (click)="changeIndex(this.indexActive - 1)" [ngClass]="{'disabled': this.indexActive == 0}">&lt;</a>
+      </li>
+      @for (item of cantPages; track $index) {
+        <li class="page-item"><a class="page-link" (click)="changeIndex($index)" [ngClass]="{'active': this.indexActive == $index}">{{$index + 1}}</a></li>
+      }
+      <li class="page-item">
+        <a class="page-link" (click)="changeIndex(this.indexActive + 1)" [ngClass]="{'disabled': this.indexActive == this.cantPages.length -1}">&gt;</a>
+      </li>
+    </ul>
+  </nav>
+</table>
