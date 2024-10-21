@@ -1,7 +1,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import Period from '../models/period';
 
 @Injectable({
@@ -35,5 +35,18 @@ export class PeriodService {
        console.log(e)
        throw  e
      }
+  }
+
+  getPage(size: number, page:number):Observable<Period[]>{
+
+    try{
+      return this.http.get<{ content: Period[] }>(`${this.apiUrl}/page?size=${size}&page=${page}`).pipe(
+        map(response => response.content)
+      );
+     }catch( e) {
+       console.log(e)
+       throw  e
+     }
+
   }
 }
