@@ -12,6 +12,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { AsyncPipe, NgClass } from '@angular/common';
 
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
+
 @Component({
   selector: 'app-list-bills',
   standalone: true,
@@ -44,7 +52,7 @@ export class ListBillsComponent implements OnInit {
   private modalService = inject(NgbModal);
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
-  
+
 
 
   constructor(){
@@ -66,7 +74,7 @@ export class ListBillsComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-    
+
   }
 
 
@@ -75,7 +83,6 @@ export class ListBillsComponent implements OnInit {
     this.getCategories();
     this.getProviders();
     this.getPeriods();
-
   }
 
   viewBill(bill:Bill){
@@ -95,15 +102,15 @@ export class ListBillsComponent implements OnInit {
     }
     this.viewList = false;
   }
- 
+
   saveBill() {
     if (this.billForm.valid) {
       const updatedBill = { ...this.selectedBill, ...this.billForm.value };
       this.billservice.updateBill(updatedBill).subscribe(() => {
         this.loadBills();
         this.disableUpdate();
-        this.viewList = true; 
-        this.selectedBill = undefined; 
+        this.viewList = true;
+        this.selectedBill = undefined;
       });
     }
   }
@@ -139,12 +146,17 @@ export class ListBillsComponent implements OnInit {
     return null
   }
 
+
   loadBills() {
     this.billservice.getAllBills().subscribe((bills) => {
+
+      console.log("estas son las bills "+bills);
+
       this.bills = bills;
       this.filteredBills = bills
+
+    console.log("estas son las bills " + this.bills);
     })
-    console.log(this.bills);
   }
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -232,5 +244,56 @@ export class ListBillsComponent implements OnInit {
     //cerrar el modal y actualiza la lista de categorías
     this.modalService.dismissAll();
     this.newCategoryForm.reset();
+  }
+
+
+
+/*
+  // Método para exportar a PDF
+  exportToPDF() {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text('Listado de Gastos', 14, 22);
+    doc.setFontSize(12);
+
+    // Crear el contenido de la tabla
+    const tableData = this.filteredBills.map(bill => [bill.bill_type, bill.supplier, bill.amount, bill.period, bill.category]);
+
+    // Definir columnas
+    const columns = ['Tipo', 'Proveedor', 'Monto', 'Período', 'Categoría'];
+
+    doc.autoTable({
+      head: [columns],
+      body: tableData,
+      startY: 30,
+    });
+
+    // Descargar el PDF
+    doc.save('listado_gastos.pdf');
+  }
+*/
+
+  // Método para exportar a Excel
+  exportToExcel() {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.filteredBills);
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Gastos');
+
+    // Descargar el archivo Excel
+    XLSX.writeFile(workbook, 'listado_gastos.xlsx');
+  }
+
+  // Método para exportar a CSV
+  exportToCSV() {
+    const csvData = this.convertToCSV(this.filteredBills);
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'listado_gastos.csv');
+  }
+
+  private convertToCSV(data: Bill[]): string {
+    const header = 'Tipo,Proveedor,Monto,Período,Categoría\n';
+    const rows = data.map(bill =>
+      `${bill.bill_type},${bill.supplier},${bill.amount},${bill.period},${bill.category}`).join('\n');
+    return header + rows;
   }
 }

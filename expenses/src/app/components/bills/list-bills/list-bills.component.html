@@ -3,6 +3,16 @@
   <h3 class="mb-4">Listado de gastos</h3>
 
   <div class="container">
+
+
+    <div class="d-flex justify-content-end mb-3">
+      <!--
+      <button class="btn btn-primary" (click)="exportToPDF()">Exportar a PDF</button>
+      -->
+      <button class="btn btn-success ms-2" (click)="exportToExcel()">Exportar a Excel</button>
+      <button class="btn btn-info ms-2" (click)="exportToCSV()">Exportar a CSV</button>
+    </div>
+
     <!-- Fila para los campos de entrada -->
     <form class="row mb-4" #form="ngForm">
       <div class="form-group col-md-3">
@@ -69,6 +79,8 @@
         </div>
       </div>
     </form>
+
+
   </div>
 
   <!-- Fila para los botones -->
