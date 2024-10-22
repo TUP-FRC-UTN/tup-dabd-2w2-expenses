@@ -15,6 +15,7 @@ import Category from '../../../../models/category';
 import { CategoryService } from '../../../../services/category.service';
 import { BillService } from '../../../../services/bill.service';
 import BillType from '../../../../models/billType';
+import * as XLSX from 'xlsx'
 
 
 @Component({
@@ -51,6 +52,8 @@ export class ExpenseComponent implements OnInit{
   periodId : number | null = null
   lotId : number | null = null
   typeId : number | null = null
+
+  fileName : string = "ExcelSheet.xlsx"
   ngOnInit(): void {
     this.loadExpenses();
     this.loadSelect()
@@ -91,5 +94,14 @@ export class ExpenseComponent implements OnInit{
     this.billService.getBillTypes().subscribe((data: BillType[]) => {
       this.tipos = data
     })
+  }
+  downloadTable() {
+    const data = this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId).subscribe(data => {
+      this.expenses = data;
+    });
+    const ws:XLSX.WorkSheet = XLSX.utils.table_to_sheet(data)
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'sheet1')
+    XLSX.writeFile(wb,this.fileName)
   }
 }
