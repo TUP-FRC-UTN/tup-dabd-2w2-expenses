@@ -96,12 +96,24 @@ export class ExpenseComponent implements OnInit{
     })
   }
   downloadTable() {
-    const data = this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId).subscribe(data => {
-      this.expenses = data;
-    });
-    const ws:XLSX.WorkSheet = XLSX.utils.table_to_sheet(data)
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'sheet1')
-    XLSX.writeFile(wb,this.fileName)
-  }
+    this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = expenses.map(expense => ({
+        'Lot ID': expense.lotId,
+        'Period': expense.period,
+        'Total Amount': expense.totalAmount,
+        'Liquidation Date': expense.liquidationDate,
+        'State': expense.state,
+        'Plot Number': expense.plotNumber,
+        'Plot Type': expense.typePlot,
+        'Percentage': expense.percentage,
+        'Bill Type': expense.billType
+      }));
+  
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+      XLSX.writeFile(wb, this.fileName);
+    })}
 }
