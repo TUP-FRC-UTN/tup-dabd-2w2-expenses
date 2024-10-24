@@ -12,7 +12,7 @@ export class ExpenseServiceService {
 
   constructor() { }
   private readonly http = inject(HttpClient)
-   private apiUrl = "http://localhost:8081/expense/"
+   private apiUrl = "http://localhost:8088/expense/"
    get(): Observable<Expense[]>{
     console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)

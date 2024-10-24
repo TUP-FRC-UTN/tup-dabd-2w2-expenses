@@ -12,25 +12,25 @@ import {BillPostRequest} from "../models/bill-post-request";
   providedIn: 'root'
 })
 export class BillService {
-  
+
   private http = inject(HttpClient);
-  private url = "http://localhost:8081"
-  
+  private url = "http://localhost:8088"
+
   constructor() { }
-  
+
   getAllBills():Observable<Bill[]>{
     return this.http.get<Bill[]>(this.url + '/bill/full-list')
   }
-  
+
   addBill(bill: BillPostRequest): Observable<Bill> {
     return this.http.post<Bill>(this.url + '/bill', bill);
   }
-  
+
   getBillTypes(): Observable<BillType[]>{
-    return this.http.get<BillType[]>(this.url + '/billType')
+    return this.http.get<BillType[]>(this.url + '/bill-type')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
     return this.http.put<Bill>(this.url+"/bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
   }
-  
+
 }

@@ -9,7 +9,7 @@ import Category from '../models/category';
 export class CategoryService {
 
   private http = inject(HttpClient);
-  private url = "http://localhost:8081/categories"
+  private url = "http://localhost:8088/categories"
   constructor() { }
 
   getAllCategories():Observable<Category[]>{

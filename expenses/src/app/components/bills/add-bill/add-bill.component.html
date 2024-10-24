@@ -8,9 +8,12 @@
         <select id="supplier_id" formControlName="supplier_id" class="form-select" [ngClass]="{'is-invalid': billForm.get('supplier_id')?.invalid && (billForm.get('supplier_id')?.dirty || billForm.get('supplier_id')?.touched)}">
           <option value="">Seleccione un proveedor</option>
           @for (provider of providers | async; track provider.id) {
-            @if (provider.type == "SUPPLIER"){
+
+            <!--@if (provider.type == "SUPPLIER"){
               <option [value]="provider.id">{{ provider.name }}</option>
-            }
+            }-->
+
+            <option [value]="provider.id">{{ provider.name }}</option>
           }
         </select>
         <div class="invalid-feedback">
@@ -27,7 +30,7 @@
               <option [value]="category.category_id">{{ category.name }}</option>
             }
           </select>
-          <button class="btn btn-outline-secondary" type="button" (click)="openNewCategoryModal()">+</button>
+          <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button" (click)="openNewCategoryModal()"><i class="bi bi-plus-lg"></i></button>
           <div class="invalid-feedback">
             Por favor, seleccione una categoría.
           </div>
