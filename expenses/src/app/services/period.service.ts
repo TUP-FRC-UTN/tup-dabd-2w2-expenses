@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import Period from '../models/period';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class PeriodService {
 
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/period";
+  private apiUrl = `${environment.url}/period`;
 
   get(): Observable<Period[]> {
 

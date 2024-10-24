@@ -11,11 +11,12 @@ import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { AsyncPipe, NgClass } from '@angular/common';
+import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 
 @Component({
-  selector: 'app-list-bills',
+  selector: 'app-list-expenses_bills',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgClass, AsyncPipe],
+  imports: [FormsModule, ReactiveFormsModule, NgClass, AsyncPipe, ExpensesBillsNavComponent],
   templateUrl: './list-bills.component.html',
   styleUrl: './list-bills.component.css'
 })
@@ -44,7 +45,9 @@ export class ListBillsComponent implements OnInit {
   private modalService = inject(NgbModal);
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
-  
+  filtersForm:FormGroup;
+
+
 
 
   constructor(){
@@ -66,7 +69,12 @@ export class ListBillsComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-    
+    this.filtersForm = this.fb.group({
+      period: [''],
+      supplier: [''],
+      category:['']
+    });
+
   }
 
 
@@ -81,13 +89,13 @@ export class ListBillsComponent implements OnInit {
   viewBill(bill:Bill){
     this.selectedBill = bill;
     this.billForm.patchValue({
-      category_id: bill.category.category_id,
+      categoryId: bill.category?.category_id,
       description:bill.description,
       amount: bill.amount,
       date: bill.date,
-      supplier_id: bill.supplier.id,
-      type_id: bill.bill_type.bill_type_id,
-      period_id: bill.period.id,
+      supplier_id: bill.supplier?.id,
+      type_id: bill.billType?.bill_type_id,
+      period_id: bill.period?.id,
       status: bill.status
     })
     if(bill.status === "Cancelado"){
@@ -95,15 +103,15 @@ export class ListBillsComponent implements OnInit {
     }
     this.viewList = false;
   }
- 
+
   saveBill() {
     if (this.billForm.valid) {
       const updatedBill = { ...this.selectedBill, ...this.billForm.value };
       this.billservice.updateBill(updatedBill).subscribe(() => {
         this.loadBills();
         this.disableUpdate();
-        this.viewList = true; 
-        this.selectedBill = undefined; 
+        this.viewList = true;
+        this.selectedBill = undefined;
       });
     }
   }
@@ -120,9 +128,9 @@ export class ListBillsComponent implements OnInit {
     console.log(JSON.stringify(this.selectedProvider))
     console.log(JSON.stringify(this.selectedCategory))
     this.filteredBills = this.filteredBills.filter((bill) => {
-      const matchesPeriod = this.selectedPeriod && this.selectedPeriod.id ? (bill.period.month === this.selectedPeriod.month && bill.period.year === this.selectedPeriod.year) : true;
-      const matchesProvider = this.selectedProvider && this.selectedProvider.id ? (bill.supplier.id === this.selectedProvider.id) : true;
-      const matchesCategory = this.selectedCategory && this.selectedCategory.category_id ? (bill.category.category_id === this.selectedCategory.category_id) : true;
+      const matchesPeriod = this.selectedPeriod && this.selectedPeriod.id ? (bill.period?.month === this.selectedPeriod.month && bill.period.year === this.selectedPeriod.year) : true;
+      const matchesProvider = this.selectedProvider && this.selectedProvider.id ? (bill.supplier?.id === this.selectedProvider.id) : true;
+      const matchesCategory = this.selectedCategory && this.selectedCategory.category_id ? (bill.category?.category_id === this.selectedCategory.category_id) : true;
 
       return matchesPeriod && matchesProvider && matchesCategory
     })
