@@ -58,7 +58,6 @@ export class AddBillComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-
   }
 
   ngOnInit() {
@@ -121,6 +120,7 @@ export class AddBillComponent implements OnInit {
       let newCategory: Category = this.newCategoryForm.value;
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
+      newCategory.is_delete = false;
       console.log(newCategory);
 
       this.categoryService.addCategory(newCategory).subscribe({
