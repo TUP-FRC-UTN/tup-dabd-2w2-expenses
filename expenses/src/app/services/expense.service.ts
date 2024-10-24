@@ -17,9 +17,9 @@ export class ExpenseServiceService {
     console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)
   }
-  getByPeriod(periodId:number):Observable<Expense>{
-    console.log('cargando por periodos')
-    return this.http.get<Expense>(`${this.apiUrl}period/${periodId}`)
+  getByPeriod(periodId:number):Observable<Expense[]>{
+    //calcular y recuperar lista de expensas de un periodo
+    return this.http.post<Expense[]>(`${this.apiUrl}create/${periodId}`,null)
   }
   getByPeriodAndPlot(periodId:number, plotId:Number):Observable<Expense[]>{
     console.log(periodId)

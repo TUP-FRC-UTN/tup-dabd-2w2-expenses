@@ -13,6 +13,8 @@ import { PeriodSelectComponent } from '../../selects/period-select/period-select
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import LiquidationExpense from '../../../models/liquidationExpense';
 import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { ExpensesPeriodListComponent } from '../../period/expenses-period-list/expenses-period-list.component';
+import { ExpensesPeriodNavComponent } from "../../navs/expenses-period-nav/expenses-period-nav.component";
 @Component({
   selector: 'app-expenses-liquidation-expense',
   standalone: true,
@@ -21,7 +23,9 @@ import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
     CommonModule,
     ExpensesModalComponent,
     TableComponent,
-  ],
+    ExpensesPeriodListComponent,
+    ExpensesPeriodNavComponent
+],
   templateUrl: './expenses-liquidation-expense.component.html',
   styleUrl: './expenses-liquidation-expense.component.css',
 })
@@ -109,8 +113,9 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     }
   }
 
-  seeDetail(id: number | null) {
+  seeDetail(id: number | null,period_id:number|null) {
     if (id === null) return;
-    this.router.navigate([`liquidation-expense/details/${id}`]);
+    
+    this.router.navigate([`periodo/${period_id}/liquidacion/${id}`]);
   }
 }
