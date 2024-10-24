@@ -3,19 +3,33 @@ import Period from "./period";
 import Category from "./category";
 import BillType from "./billType";
 
-export interface Bill {
-  expenditure_id: number;
+
+export class Bill {
+  expenditureId: number;
   date: Date;
   amount: number;
   description: string;
-  supplier: Provider;
-  period: Period;
-  category: Category;
-  bill_type: BillType;
-  status: string;
-  //TODO PASAR TODO EN SNAKE CASE
+  supplier?: Provider;
+  period?: Period;
+  category?: Category;
+  billType?: BillType;
+  status?: string;
+
+
+  constructor(id?:number, date?: Date, amount?: number, description?: string, supplier?: Provider, period?: Period, category?: Category, billType?: BillType, status?:string) {
+    this.expenditureId = id!== undefined ? id:0;
+    this.date = date !==undefined ? date: new Date();
+    this.amount = amount? amount: 0;
+    this.description = description? description : "";
+    this.supplier=supplier? supplier:undefined;
+    this.period = period? period:undefined;
+    this.category = category? category:undefined;
+    this.billType = billType ? billType:undefined;
+    this.status = status? status:undefined;
+  }
 
 }
+
 
 /*
 * {

@@ -1,3 +1,4 @@
+<app-expenses-expenses_bills-nav/>
 @if(viewList){
 <div class="container mt-5">
   <h3 class="mb-4">Listado de gastos</h3>
@@ -77,7 +78,7 @@
     <table class="table table-bordered">
       <thead class="thead-light">
         <tr>
-          <th>#</th>
+          
           <!--                    <th>NRO</th>-->
           <th>TIPO</th>
           <th>PROVEEDOR</th>
@@ -90,14 +91,14 @@
       <tbody>
         @for (bill of filteredBills; track $index) {
         <tr>
-          <td><input type="checkbox" /></td>
+          
           <!--                    <td>{{bill.expenditure_id}}</td>-->
-          <!-- <td>{{bill.bill_type ?? '-'}}</td>
-                    <td>{{bill.supplier ?? '-'}}</td>
+          <td>{{bill.billType? bill.billType.description:"-"}}</td>
+                    <td>{{bill.supplier? bill.supplier.name:'-'}}</td>
                     <td>${{bill.amount}}</td>
-                    <td>{{(bill.period?.month && bill.period?.year) ? (bill.period.month + '/' + bill.period.year) :
+                    <td>{{(bill.period?.month && bill.period?.year) ? (bill.period?.month + '/' + bill.period?.year) :
                         '-'}}</td>
-                    <td>{{bill.category?.name ?? '-'}}</td> -->
+                    <td>{{bill.category?.name ?? '-'}}</td> 
           <td>
             <button
               class="btn btn-primary btn-sm mr-2"

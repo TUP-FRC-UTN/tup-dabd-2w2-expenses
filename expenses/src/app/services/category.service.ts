@@ -2,7 +2,7 @@ import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import Category from '../models/category';
-import { PORT } from '../const';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { PORT } from '../const';
 export class CategoryService {
 
   private http = inject(HttpClient);
-  private url = `${PORT}categories`
+  private url = `${environment.url}/categories`
   constructor() { }
 
   getAllCategories():Observable<Category[]>{
