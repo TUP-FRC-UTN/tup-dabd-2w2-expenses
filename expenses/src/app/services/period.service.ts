@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import Period from '../models/period';
+import { PORT } from '../const';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class PeriodService {
 
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/period";
+  private apiUrl = `${PORT}period`;
 
   get(): Observable<Period[]> {
 
@@ -48,5 +49,14 @@ export class PeriodService {
        throw  e
      }
 
+  }
+
+  new():Observable<void>{
+      return this.http.post<void>(this.apiUrl, null)
+ 
+  }
+
+  closePeriod(id:number):Observable<void>{
+    return this.http.put<void>(`${this.apiUrl}/close/${id}`,null)
   }
 }

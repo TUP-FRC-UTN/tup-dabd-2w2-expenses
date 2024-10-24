@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-expenses-period-expenses',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent],
+  imports: [ExpensesPeriodNavComponent, ExpensesPeriodNavComponent],
   templateUrl: './expenses-period-expenses.component.html',
   styleUrl: './expenses-period-expenses.component.css',
 })

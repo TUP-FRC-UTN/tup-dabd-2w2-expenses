@@ -3,6 +3,7 @@ import Expense from '../models/expense';
 import Period from '../models/period';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { PORT } from '../const';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class ExpenseServiceService {
 
   constructor() { }
   private readonly http = inject(HttpClient)
-   private apiUrl = "http://localhost:8081/expense/"
+   private apiUrl = `${PORT}expense/`
    get(): Observable<Expense[]>{
     console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)

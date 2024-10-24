@@ -1,48 +1,94 @@
 <app-expenses-period-nav />
-<div style="display: flex; flex-direction: row; gap: 18px">
-  <h3>Activos:</h3>
-
-  @for (period of listOpenPeriod; track $index) {
-
-  <div class="card bg-light mb-3" style="max-width: 18rem">
-    <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark" ><div class="card-header">{{ period.month }} / {{ period.year }}</div></a>
+<div class="row">
+  <div class="col-2">
+    <button (click)="newPeriod()" class="btn btn-primary">Nuevo Período</button>
   </div>
+  <div class="col-10">
+    <div style="display: flex; flex-direction: row; gap: 18px">
+      <h3>Activos:</h3>
 
-  }
+      @for (period of listOpenPeriod; track $index) {
+
+      <div class="card bg-light mb-3" style="max-width: 18rem">
+        <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark"
+          ><div class="card-header">
+            {{ period.month }} / {{ period.year }}
+          </div></a
+        >
+      </div>
+
+      }
+    </div>
+  </div>
 </div>
+
 <table class="table table-striped">
   <thead>
     <tr>
-      <th scope="col">#</th>
       <th scope="col">Fecha</th>
       <th scope="col">Total Extraordinarias</th>
       <th scope="col">Total Ordinarias</th>
       <th scope="col">Estado</th>
+      <th scope="col">Acciones</th>
+
     </tr>
   </thead>
   <tbody>
     @for (period of listPeriod; track $index) {
-      <tr>
-        <th scope="row">{{period.id }}</th>
-        <td>{{period.month}} / {{period.year}}</td>
-        <td>{{period.ordinary?.amount}}</td>
-        <td>{{period.extraordinary?.amount}}</td>
-        <td>{{period.state}}</td>
-      </tr>
+    <tr>
+      <td>{{ period.month }} / {{ period.year }}</td>
+      <td>{{ period.ordinary?.amount }}</td>
+      <td>{{ period.extraordinary?.amount }}</td>
+      <td>{{ period.state }}</td>
+      <td style="display: flex;flex-direction: row; gap: 2px;">
+        <button>ver</button>
+        <button (click)="open(modalTemplate, period.id)">Cerrar</button>
+      </td>
+    </tr>
     }
   </tbody>
 
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
       <li class="page-item">
-        <a class="page-link" (click)="changeIndex(this.indexActive - 1)" [ngClass]="{'disabled': this.indexActive == 0}">&lt;</a>
+        <a
+          class="page-link"
+          (click)="changeIndex(this.indexActive - 1)"
+          [ngClass]="{ disabled: this.indexActive == 0 }"
+          >&lt;</a
+        >
       </li>
       @for (item of cantPages; track $index) {
-        <li class="page-item"><a class="page-link" (click)="changeIndex($index)" [ngClass]="{'active': this.indexActive == $index}">{{$index + 1}}</a></li>
+      <li class="page-item">
+        <a
+          class="page-link"
+          (click)="changeIndex($index)"
+          [ngClass]="{ active: this.indexActive == $index }"
+          >{{ $index + 1 }}</a
+        >
+      </li>
       }
       <li class="page-item">
-        <a class="page-link" (click)="changeIndex(this.indexActive + 1)" [ngClass]="{'disabled': this.indexActive == this.cantPages.length -1}">&gt;</a>
+        <a
+          class="page-link"
+          (click)="changeIndex(this.indexActive + 1)"
+          [ngClass]="{
+            disabled: this.indexActive == this.cantPages.length - 1
+          }"
+          >&gt;</a
+        >
       </li>
     </ul>
   </nav>
 </table>
+
+<ng-template #modalTemplate let-modal>
+  <app-expenses-modal
+    [title]="'Cierre de Periodo'"
+    [paragraph]="
+      '¿Desea cerrar el periodo?. Recuerde que una vez concluido el cierre del periodo no podra agregar, modificar o eliminar gastos o periodos.'
+    "
+    (onAccept)="closePeriod()"
+    (onCancel)="modal.dismiss('cancel')"
+  ></app-expenses-modal>
+</ng-template>

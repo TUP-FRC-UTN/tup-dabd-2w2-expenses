@@ -1,35 +1,64 @@
 <app-expenses-period-nav />
 <div
   class="container"
-  style="display: flex; flex-direction: column; gap: 24px; padding-top: 16px"
+  style="display: flex; flex-direction: column; gap: 24px"
 >
   @if (liquidationExpensesList.length>0) {
 
   <div class="row" style="justify-content: space-around">
-    <div class="row" style="justify-content: space-around;">
-      <!-- Card para Estado -->
-      <div class="col-2">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title"><b>Estado</b></h5>
-            <p class="card-text">
-              {{ liquidationExpensesList[0].period?.state }}
-            </p>
-          </div>
-        </div>
+    <div class="row" style="justify-content: space-around; align-items: center">
+      <div
+        class="col-3"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <button
+          class="btn"
+          [ngClass]="
+            liquidationExpensesList[0]?.blocked ? 'btn-primary' : 'btn-danger'
+          "
+          (click)="
+            open(modalTemplate, liquidationExpensesList[0].expense_id || null)
+          "
+        >
+          @if (liquidationExpensesList[0]?.blocked) { Abrir Liquidación } @else
+          { Cerrar Liquidación }
+        </button>
+      </div>
+      <div
+        class="col-3"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <h5 class="card-title"><b>Estado</b></h5>
+        <p class="card-text">
+          {{ liquidationExpensesList[0].period?.state }}
+        </p>
       </div>
 
       <!-- Card para Período -->
-      <div class="col-2">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title"><b>Período</b></h5>
-            <p class="card-text">
-              {{ liquidationExpensesList[0].period?.month }} -
-              {{ liquidationExpensesList[0].period?.year }}
-            </p>
-          </div>
-        </div>
+      <div
+        class="col-3"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <h5 class="card-title"><b>Período</b></h5>
+        <p class="card-text">
+          {{ liquidationExpensesList[0].period?.month }} -
+          {{ liquidationExpensesList[0].period?.year }}
+        </p>
       </div>
     </div>
   </div>
@@ -83,24 +112,6 @@
   </div>
   } } @else { No hay liquidaciones }
 </div>
-<div class="row">
-  <div
-    class="col-2"
-    style="display: flex; flex-direction: row; align-items: end"
-  >
-    <button
-      class="btn"
-      [ngClass]="
-        liquidationExpensesList[0]?.blocked ? 'btn-primary' : 'btn-danger'
-      "
-      (click)="
-        open(modalTemplate, liquidationExpensesList[0].expense_id || null)
-      "
-    >
-      @if (liquidationExpensesList[0]?.blocked) { Abrir } @else { Cerrar }
-    </button>
-  </div>
-</div>
 
 <ng-template #modalTemplate let-modal>
   <app-expenses-modal
@@ -112,3 +123,4 @@
     (onCancel)="modal.dismiss('cancel')"
   ></app-expenses-modal>
 </ng-template>
+
