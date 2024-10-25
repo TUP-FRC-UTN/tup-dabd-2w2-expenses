@@ -37,14 +37,14 @@ export class ListChargesComponent implements OnInit {
   private readonly periodService = inject(PeriodService);
   private readonly lotsService = inject(LotsService);
 
-  filtros : FormGroup;
+  //f//iltros : FormGroup;
 
   ngOnInit(): void {
     this.loadSelect();
     this.loadCategoryCharge();
     this.loadCharges();
 
-    this.filtros
+   // this.filtros = new FormGroup({});
   }
 
   loadCharges(): void {

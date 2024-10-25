@@ -9,8 +9,8 @@ import { Observable } from 'rxjs';
 export class ChargeService {
   private url = 'http://localhost:3001/cargosLote';
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8081/charges';
-  private categoryChargeUrl = 'http://localhost:8081/category-charges';
+  private apiUrl = 'http://localhost:8088/charges';
+  private categoryChargeUrl = 'http://localhost:8088/category-charges';
   constructor() {}
 
   addCharge(charge: Charge): Observable<Charge> {

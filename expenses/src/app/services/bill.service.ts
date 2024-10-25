@@ -14,7 +14,7 @@ import {BillPostRequest} from "../models/bill-post-request";
 export class BillService {
   
   private http = inject(HttpClient);
-  private url = "http://localhost:8081"
+  private url = "http://localhost:8088"
   
   constructor() { }
   
