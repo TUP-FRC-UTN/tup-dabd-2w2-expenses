@@ -1,16 +1,19 @@
 <div class="container" style="margin-top: 18px;">
     <div class="row" style="align-items:end" >
       <h3>Expensas</h3>
-
       <div class="col-2">
         <label for="periodo">Período</label>
-        <app-period-select (periodSelected)="onPeriodChange($event)"></app-period-select>
+        <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId" (ngModelChange)="onOptionChange()">
+          <option [value]="null">Todos</option>
+          @for (period of periodos; track $index) {
+            <option [value]="period.id">{{period.month}} / {{period.year}}</option>
+          }
+        </select>
       </div>
-  
       <div class="col-2">
         <label for="lote">Lote</label>
         <select name="lote" id="lote" class="form-select" aria-label="Default select example" [(ngModel)]="selectedLotId" (ngModelChange)="onOptionChange()">
-          <option [value]="0">Todos</option>
+          <option [value]="null">Todos</option>
           @for (lot of lots; track $index) {
             <option [value]="lot.id">{{lot.plot_number}}</option>
           }
@@ -20,7 +23,7 @@
       <div class="col-2">
         <label for="tipoExpensa">Tipo de expensa</label>
         <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" [(ngModel)]="selectedTypeId" (ngModelChange)="onOptionChange()">
-          <option [value]="0">Todas</option>
+          <option [value]="null">Todas</option>
           @for (tipo of tipos; track $index) {
             <option [value]="tipo.bill_type_id">{{tipo.name}}</option>
           }

@@ -43,32 +43,52 @@ export class ExpenseComponent implements OnInit{
   expenses: Expense[] = []
   lots : Lot[] = []
   tipos: BillType[] = []
+  periodos : Period[] = []
 
   totalElements: number = 0;
   currentPage: number = 0;
   pageSize: number = 10;
   totalPages: number = 0;
+  totalItems: number = 0;
 
   periodId : number | null = null
   lotId : number | null = null
   typeId : number | null = null
 
-  fileName : string = "ExcelSheet.xlsx"
+  fileName : string = "Expensas.xlsx"
+
   ngOnInit(): void {
     this.loadExpenses();
     this.loadSelect()
+    this.cargarPaginado()
   }
 
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId).subscribe(data => {
-      this.expenses = data;
+      this.expenses = data.content;
     });
   }
+  
 
   onPageChange(page: number): void {
-    this.loadExpenses(page, this.pageSize);
+    console.log(this.totalPages)
+    if (page >= 0 && page < this.totalPages) {
+    
+      console.log('Cargando página ' + page);
+      this.loadExpenses(page, this.pageSize);
+      this.currentPage = page; // Asegúrate de actualizar currentPage aquí
   }
-
+}
+cargarPaginado() {
+  // Llamar al servicio con la paginación desde el backend.
+  this.service.getExpenses(this.currentPage, this.pageSize, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(response => {
+    
+    this.expenses = response.content;  // Datos de la página actual
+    this.totalPages = response.totalPages;  // Número total de páginas
+    this.totalItems = response.totalElements;  // Total de registros
+    this.currentPage = response.number; 
+  });
+}
 
   onPeriodChange(periodId: number) {
     this.selectedPeriodId = periodId;
@@ -87,7 +107,9 @@ export class ExpenseComponent implements OnInit{
   }
   //carga el select de periodo y lote
   loadSelect() {
-    this.periodService.get()
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periodos = data
+    })
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
     })
@@ -98,9 +120,8 @@ export class ExpenseComponent implements OnInit{
   downloadTable() {
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
-      const data = expenses.map(expense => ({
-        'Lot ID': expense.lotId,
-        'Period': expense.period,
+      const data = expenses.content.map(expense => ({
+        'Period': expense.period.start_date,
         'Total Amount': expense.totalAmount,
         'Liquidation Date': expense.liquidationDate,
         'State': expense.state,

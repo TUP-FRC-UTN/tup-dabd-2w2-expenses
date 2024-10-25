@@ -4,6 +4,12 @@ import Period from '../models/period';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
+interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +19,7 @@ export class ExpenseServiceService {
   constructor() { }
   private readonly http = inject(HttpClient)
    private apiUrl = "http://localhost:8081/expense/all"
-   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
+   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Page<Expense>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -31,7 +37,7 @@ export class ExpenseServiceService {
       params = params.set('typeId', typeId);
     }
 
-    return this.http.get<Expense[]>(this.apiUrl, { params });
+    return this.http.get<Page<Expense>>(this.apiUrl, { params });
   }
 
 }
