@@ -6,4 +6,7 @@ export default class Expense{
     liquidationDate: Date = new Date()
     state: string = ""
     plotNumber: number |null = null
+    typePlot:string | null=null
+    percentage: number | null=null
+    billType:string |null=null
 }

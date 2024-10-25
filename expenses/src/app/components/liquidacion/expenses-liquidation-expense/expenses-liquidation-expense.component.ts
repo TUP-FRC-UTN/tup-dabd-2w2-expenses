@@ -57,11 +57,8 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
       ariaLabelledBy: 'modal-basic-title',
     });
 
-    modalRef.componentInstance.title = 'Delete Item';
 
-    modalRef.componentInstance.onAccept.subscribe(() => {
-      this.closeLiquidationPeriod();
-    });
+
   }
   //modal
 
@@ -97,7 +94,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
         next: () => {
           console.log('Liquidación cerrada exitosamente');
           this.loadList(this.id);
-        },
+        }
       });
     }
   }
@@ -110,6 +107,9 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
           next: () => {
             this.loadList(this.id);
           },
+        error:(err)=>{
+          this.openErrorModal(err)
+        }
         });
       this.selectedItemId = null;
     }
@@ -120,6 +120,11 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     
     this.router.navigate([`periodo/${period_id}/liquidacion/${id}`]);
   }
-
+  openErrorModal(err:any) {
+    console.log(err)
+    const modalRef = this.modalService.open(NgModalComponent);
+    modalRef.componentInstance.title = 'Error';
+    modalRef.componentInstance.message = err?.error.message;
+  }
 
 }

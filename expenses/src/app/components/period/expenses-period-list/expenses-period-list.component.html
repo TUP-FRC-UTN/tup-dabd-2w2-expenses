@@ -30,7 +30,6 @@
       <th scope="col">Total Ordinarias</th>
       <th scope="col">Estado</th>
       <th scope="col">Acciones</th>
-
     </tr>
   </thead>
   <tbody>
@@ -40,9 +39,14 @@
       <td>{{ period.ordinary?.amount }}</td>
       <td>{{ period.extraordinary?.amount }}</td>
       <td>{{ period.state }}</td>
-      <td style="display: flex;flex-direction: row; gap: 2px;">
-        <button>ver</button>
-        <button (click)="open(modalTemplate, period.id)">Cerrar</button>
+      <td style="display: flex; flex-direction: row; gap: 2px;justify-content: center;">
+        <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark">
+          <button class="btn btn-success">ver</button></a
+        >
+        @if (period.state!=="CLOSE") {
+          <button class="btn btn-danger" (click)="open(modalTemplate, period.id)">Cerrar</button>
+
+        }
       </td>
     </tr>
     }

@@ -5,8 +5,9 @@
       <tr>
         <th scope="col">Lote</th>
         <th scope="col">Propietario</th>
-        <th scope="col">Tipo</th>
+        <th scope="col">Tipo de Lote</th>
         <th scope="col">Porcentaje</th>
+        <th scope="col">Expensa</th>
         <th scope="col">Monto</th>
       </tr>
     </thead>
@@ -15,7 +16,10 @@
       <tr>
         <th scope="row">{{expense.lotId}} </th>
         <td></td>
-        <td>{{expense.totalAmount}} </td>
+        <td>{{expense.typePlot}} </td>
+        <td>{{expense.percentage }} </td>
+        <td>{{expense.billType}} </td>
+        <td>${{expense.totalAmount}} </td>
       </tr>
       }
     </tbody>
