@@ -5,4 +5,5 @@ export default class Expense{
     totalAmount: Number|null=null
     liquidationDate: Date = new Date()
     state: string = ""
+    plotNumber: number |null = null
 }
