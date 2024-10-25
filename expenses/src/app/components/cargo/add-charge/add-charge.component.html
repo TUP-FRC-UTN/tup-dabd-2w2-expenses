@@ -7,11 +7,13 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label for="fechaEmision" class="form-label">Fecha de emisión</label>
-          <input
+          
+          <input 
             type="date"
             class="form-control"
             id="fechaEmision"
             formControlName="date"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['date'].touched && chargeForm.controls['date'].hasError('required') }"
           />
           @if (chargeForm.controls['date'].touched &&
           chargeForm.controls['date'].hasError('required')) {
@@ -24,8 +26,9 @@
             type="text"
             class="form-control"
             id="lote"
-            placeholder="Lote"
             formControlName="lotId"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required') }"
+      
           />
           @if (chargeForm.controls['lotId'].touched &&
           chargeForm.controls['lotId'].hasError('required')) {
@@ -42,7 +45,8 @@
               id="tipo"
               class="form-select"
               formControlName="categoryChargeId"
-            >
+              [ngClass]="{ 'is-invalid': chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required') }"
+              >
             <option value="">Categoria de cargos</option>
             @for (item of categoriaCargos; track $index) {
               <option value={{item.categoryChargeId}}>{{item.name}} </option>
@@ -60,6 +64,7 @@
             class="form-select"
             aria-label="Default select example"
             formControlName="periodId"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required') }"      
           >
             @for (item of listPeriodo; track $index) {
             <option value="{{ item.id }}">
@@ -83,6 +88,7 @@
             id="monto"
             placeholder="Monto"
             formControlName="amount"
+            [ngClass]="{ 'is-invalid': chargeForm.controls['amount'].touched && chargeForm.controls['amount'].hasError('required') }"      
           />
           @if (chargeForm.controls['amount'].touched &&
           chargeForm.controls['amount'].hasError('required')) {
@@ -102,17 +108,21 @@
         ></textarea>
       </div>
 
-      <div class="form-row justify-content-center">
+      <div class="form-row justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">
         <button
           type="button"
-          class="btn btn-secondary mr-2"
+          class="btn btn-secondary mr-2 "
+          
           (click)="onCancel()"
         >
           Cancelar
         </button>
+        <div class="m-2"></div>
         <button
+        
           type="submit"
           class="btn btn-primary"
+          
           [disabled]="chargeForm.invalid"
         >
           Guardar
@@ -120,4 +130,10 @@
       </div>
     </form>
   </div>
+  
 </div>
+<!-- Vertically centered modal -->
+<div id="myModal" class="modal-dialog modal-dialog-centered" style="display: none;">
+  ...
+</div>
+

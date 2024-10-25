@@ -1,3 +1,5 @@
+import Period from "./period";
+
 export interface Charge2 {
     id: number;
     fechaEmision: string;
@@ -16,6 +18,7 @@ export interface Charge {
     fineId: number;
     lotId: number;
     period: number;
+    periodCharge: PeriodCharge;
     status: boolean;
     description: string;
     
@@ -25,4 +28,14 @@ export interface CategoryCharge {
     categoryChargeId: number;
     description: string;
     name: string;
+}
+
+export interface PeriodCharge {
+    id: number ;
+    month: number;
+    year: number ;
+    state:string;
+    start_date : Date;
+    end_date: Date ;
+    status : string;
 }

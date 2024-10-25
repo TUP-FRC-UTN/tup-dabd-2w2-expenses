@@ -13,11 +13,14 @@ import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Period from '../../../models/period';
 import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
-
+import { CommonModule } from '@angular/common';
+import { ModalService } from 'ngx-dabd-2w1-core';
+import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent,CommonModule,NgModalComponent],
   templateUrl: './add-charge.component.html',
   styleUrl: './add-charge.component.css',
 })
@@ -25,14 +28,16 @@ export class AddChargeComponent implements OnInit{
   // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
+  private modalService = inject(NgbModal);
   lots : Lot[] = []
 
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
-   listPeriodo:Period[] =[];
-   categoriaCargos: CategoryCharge[] = [];
+  listPeriodo:Period[] =[];
+  categoriaCargos: CategoryCharge[] = [];
 
   selectedPeriodId: number | null = null;
+
 
   onCancel() {
     this.chargeForm.reset();
@@ -79,8 +84,21 @@ export class AddChargeComponent implements OnInit{
       console.log(charge);
       this.chargeService.createCharge(charge).subscribe(
         (response) => {
+          
+          const modalRef = this.modalService.open(NgModalComponent);
+          modalRef.componentInstance.charge = charge;
+          modalRef.componentInstance.message = "El cargo se ha registrado correctamente";
+
+          modalRef.result.then(
+            (result) => {
+              if (result) {
+                //this.loadCharges();
+              }
+            },
+            () => {}
+          );
           console.log('Cargo registrado exitosamente:', response);
-          alert('Cargo registrado exitosamente');
+          //('Cargo registrado exitosamente');
           this.chargeForm.reset();
         },
         (error) => {
@@ -93,4 +111,7 @@ export class AddChargeComponent implements OnInit{
         this.chargeForm.markAllAsTouched(); 
     }
   }
+
+  
+
 }
