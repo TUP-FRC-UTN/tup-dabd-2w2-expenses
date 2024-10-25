@@ -21,7 +21,7 @@
     </div>
 
 <!-- Modal con los selectores -->
-<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true" style="z-index: 1050">
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -67,7 +67,7 @@
 </div>
       <div class="col-auto">
         <button class="btn btn-primary" (click)="clearFilters()">
-          <i class="fas fa-trash-alt"></i> <!-- Icono de papelera -->
+          <i class="fas fa-trash-alt"></i> Limpiar filtros<!-- Icono de papelera -->
         </button>
       </div>
       <div class="col row d-flex justify-content-end">
@@ -77,7 +77,7 @@
           </button>
         </div>
         <div class="col-auto">
-          <button class="btn" (click)="downloadTable()" style="background-color: red; color: white;">
+          <button class="btn" (click)="imprimir()" style="background-color: red; color: white;">
             <i class="bi bi-file-pdf"></i> <!-- Icono de pdf -->
           </button>
         </div>

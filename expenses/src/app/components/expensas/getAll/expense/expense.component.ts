@@ -16,7 +16,8 @@ import { CategoryService } from '../../../../services/category.service';
 import { BillService } from '../../../../services/bill.service';
 import BillType from '../../../../models/billType';
 import * as XLSX from 'xlsx'
-
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-expense',
@@ -131,6 +132,37 @@ throw new Error('Method not implemented.');
       this.tipos = data
     })
   }
+  imprimir() {
+    console.log('Imprimiendo')
+    const doc = new jsPDF();
+    
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Expenses Report', 14, 20);
+
+    // Llamada al servicio para obtener las expensas
+    this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+      // Usando autoTable para agregar la tabla
+      autoTable(doc, {
+        startY: 30,
+        head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
+        body: expenses.content.map(expense => [
+          expense.period.month,
+          expense.period.year,
+          expense.totalAmount,
+          expense.state,
+          expense.plotNumber,
+          expense.percentage,
+          expense.billType
+        ]),
+      });
+
+      // Guardar el PDF después de agregar la tabla
+      doc.save('expenses_report.pdf');
+      console.log('Impreso')
+    });
+  }
+     
   downloadTable() {
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
