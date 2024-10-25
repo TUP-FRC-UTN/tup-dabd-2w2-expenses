@@ -8,11 +8,9 @@
         <select id="supplier_id" formControlName="supplier_id" class="form-select" [ngClass]="{'is-invalid': billForm.get('supplier_id')?.invalid && (billForm.get('supplier_id')?.dirty || billForm.get('supplier_id')?.touched)}">
           <option value="">Seleccione un proveedor</option>
           @for (provider of providers | async; track provider.id) {
-
             <!--@if (provider.type == "SUPPLIER"){
               <option [value]="provider.id">{{ provider.name }}</option>
             }-->
-
             <option [value]="provider.id">{{ provider.name }}</option>
           }
         </select>

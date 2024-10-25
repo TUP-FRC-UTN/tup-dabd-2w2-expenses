@@ -8,6 +8,7 @@ import { LiquidationExpenseDetailsComponent } from './components/liquidacion/liq
 import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
+import {CategoryBillComponent} from "./components/bills/category-bill/category-bill.component";
 
 
 export const routes: Routes = [
@@ -16,7 +17,7 @@ export const routes: Routes = [
   { path: 'period/:period_id', component: AppComponent },
   { path: 'period/:period_id/expenses', component: AppComponent },
   { path: 'period/:period_id/liquidation', component: ExpensesLiquidationExpenseComponent },
-  
+
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpenseComponent },
   // { path: 'expenses/nuevo', component: ListChargesComponent },
@@ -31,6 +32,7 @@ export const routes: Routes = [
   { path: 'gastos', component: ListBillsComponent },
   { path: 'gastos/nuevo', component: AddBillComponent },
   { path: 'gastos/modificar/:id', component: AddBillComponent },
+  { path: 'gastos/categorias', component: CategoryBillComponent },
 
   // Ruta por defecto o de redirección (opcional)
   // { path: '', redirectTo: '', pathMatch: 'full' },

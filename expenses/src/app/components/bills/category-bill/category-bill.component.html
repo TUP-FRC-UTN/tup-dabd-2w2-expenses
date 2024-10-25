@@ -1,0 +1,123 @@
+<div class="container mt-4">
+  <app-expenses-bills-nav></app-expenses-bills-nav>
+  <div class="card">
+    <div class="card-header">
+      <h4>{{ isEditing ? 'Editar' : 'Nueva' }} Categoría</h4>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nombre de la categoría</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                formControlName="name"
+                [class.is-invalid]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+              @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+                <div class="invalid-feedback">
+                  El nombre es requerido
+                </div>
+              }
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="description" class="form-label">Descripción</label>
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                formControlName="description">
+            </div>
+          </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="categoryForm.invalid">
+            {{ isEditing ? 'Actualizar' : 'Guardar' }} Categoría
+          </button>
+          @if (isEditing) {
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="resetForm()">
+              Cancelar
+            </button>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4>Lista de Categorías</h4>
+      <div class="input-group w-25">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar categoría..."
+          [(ngModel)]="searchTerm">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      @if (isLoading) {
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      } @else if (categories.length > 0) {
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (category of categories | filterBy: ['name', 'description']: searchTerm; track category.category_id) {
+                <tr>
+                  <td>{{ category.category_id }}</td>
+                  <td>{{ category.name }}</td>
+                  <td>{{ category.description }}</td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-warning me-2"
+                      (click)="editCategory(category)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center">No se encontraron categorías</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="alert alert-info">
+          No hay categorías registradas.
+        </div>
+      }
+    </div>
+  </div>
+</div>

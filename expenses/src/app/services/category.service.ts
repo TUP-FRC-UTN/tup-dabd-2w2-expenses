@@ -28,4 +28,17 @@ export class CategoryService {
       throw error
     }
   }
+
+  updateCategory(categoryId: number, category: Partial<Category>) {
+    try {
+      const updateData = {
+        name: category.name,
+        description: category.description,
+        is_delete: category.is_delete
+      };
+      return this.http.put<Category>(`${this.url}/${categoryId}`, updateData);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
