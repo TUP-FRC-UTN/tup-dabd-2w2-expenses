@@ -26,6 +26,9 @@ import * as XLSX from 'xlsx'
   styleUrl: './expense.component.css'
 })
 export class ExpenseComponent implements OnInit{
+applyFilters() {
+throw new Error('Method not implemented.');
+}
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute); 
 
@@ -39,6 +42,8 @@ export class ExpenseComponent implements OnInit{
   selectedPeriodId: number = 0;
 
 
+  sortField: string = 'lotId';
+  sortOrder: string = 'asc';
 
   expenses: Expense[] = []
   lots : Lot[] = []
@@ -50,25 +55,46 @@ export class ExpenseComponent implements OnInit{
   pageSize: number = 10;
   totalPages: number = 0;
   totalItems: number = 0;
+  visiblePages: number[] = [];
+  maxPagesToShow: number = 5;
 
   periodId : number | null = null
   lotId : number | null = null
   typeId : number | null = null
+  
 
   fileName : string = "Expensas.xlsx"
 
   ngOnInit(): void {
+    this.currentPage = 0
     this.loadExpenses();
     this.loadSelect()
-    this.cargarPaginado()
+    this.updateVisiblePages();
   }
 
   loadExpenses(page: number = 0, size: number = 10): void {
-    this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId).subscribe(data => {
+    this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
       this.expenses = data.content;
+      this.totalPages = data.totalPages;  // Número total de páginas
+      this.totalItems = data.totalElements;  // Total de registros
+      this.currentPage = data.number; 
     });
+    this.updateVisiblePages();
   }
-  
+  updateVisiblePages(): void {
+    const half = Math.floor(this.maxPagesToShow / 2);
+    let start = Math.max(0, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + this.maxPagesToShow);
+
+    if (end - start < this.maxPagesToShow) {
+      start = Math.max(0, end - this.maxPagesToShow);
+    }
+
+    this.visiblePages = [];
+    for (let i = start; i < end; i++) {
+      this.visiblePages.push(i);
+    }
+  }
 
   onPageChange(page: number): void {
     console.log(this.totalPages)
@@ -76,33 +102,21 @@ export class ExpenseComponent implements OnInit{
     
       console.log('Cargando página ' + page);
       this.loadExpenses(page, this.pageSize);
+      this.updateVisiblePages();
       this.currentPage = page; // Asegúrate de actualizar currentPage aquí
   }
 }
-cargarPaginado() {
-  // Llamar al servicio con la paginación desde el backend.
-  this.service.getExpenses(this.currentPage, this.pageSize, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(response => {
-    
-    this.expenses = response.content;  // Datos de la página actual
-    this.totalPages = response.totalPages;  // Número total de páginas
-    this.totalItems = response.totalElements;  // Total de registros
-    this.currentPage = response.number; 
-  });
-}
-
-  onPeriodChange(periodId: number) {
-    this.selectedPeriodId = periodId;
-    this.loadExpenses(periodId);
-  }
-
   onOptionChange() {
+    this.currentPage = 0
     this.loadExpenses();
+    this.updateVisiblePages();
   }
 
   clearFilters() {
     this.selectedLotId = 0;
     this.selectedTypeId = 0;
     this.selectedPeriodId = 0;
+    this.currentPage = 0
     this.loadExpenses();
   }
   //carga el select de periodo y lote
@@ -121,14 +135,14 @@ cargarPaginado() {
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
       const data = expenses.content.map(expense => ({
-        'Period': expense.period.start_date,
-        'Total Amount': expense.totalAmount,
-        'Liquidation Date': expense.liquidationDate,
-        'State': expense.state,
-        'Plot Number': expense.plotNumber,
-        'Plot Type': expense.typePlot,
-        'Percentage': expense.percentage,
-        'Bill Type': expense.billType
+        'Periodo':  `${expense.period.month} / ${expense.period.year}`,
+        'Monto Total': expense.totalAmount,
+        'Fecha de liquidación': expense.liquidationDate,
+        'Estado': expense.state,
+        'Número de lote': expense.plotNumber,
+        'Typo de lote': expense.typePlot,
+        'Porcentaje': expense.percentage,
+        'Tipo de expensa': expense.billType
       }));
   
       // Convertir los datos tabulares a una hoja de cálculo

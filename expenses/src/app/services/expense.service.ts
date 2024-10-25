@@ -18,25 +18,27 @@ export class ExpenseServiceService {
 
   constructor() { }
   private readonly http = inject(HttpClient)
-   private apiUrl = "http://localhost:8081/expense/all"
-   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Page<Expense>> {
+   private apiUrl = "http://localhost:8088/expense/all"
+   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number, sortField?: string, sortOrder?: string): Observable<Page<Expense>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
 
+    // Parámetros adicionales
     if (periodId) {
-      console.log('periodo= '+periodId)
-      params = params.set('periodId', periodId);
+      params = params.set('periodId', periodId.toString());
     }
     if (plotId) {
-      console.log('lote= '+plotId)
-      params = params.set('plotId', plotId);
+      params = params.set('plotId', plotId.toString());
+     
     }
     if (typeId) {
-      console.log('tipo= '+typeId)
-      params = params.set('typeId', typeId);
+      params = params.set('typeId', typeId.toString());
     }
-
+  
+    if (sortField) {
+      params = params.set('sort', `${sortField},${sortOrder}`);
+    }
     return this.http.get<Page<Expense>>(this.apiUrl, { params });
   }
 
