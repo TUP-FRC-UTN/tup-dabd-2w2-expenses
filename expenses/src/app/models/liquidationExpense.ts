@@ -22,5 +22,7 @@ class LiquidationExpenseDetail {
     category:Category|null=null
 
     bills:Bill[]=[]
+
+    quantity:number|null=null
 }
 

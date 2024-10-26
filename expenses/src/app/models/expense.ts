@@ -1,4 +1,5 @@
 import Period from "./period"
+
 export default class Expense{
     lotId: number | null = null;
     period: Period = new Period();
@@ -6,9 +7,7 @@ export default class Expense{
     liquidationDate: Date = new Date();
     state: string = "";
     plotNumber: number | null = null;
-    typePlot: string = "";  // O podría ser un enum si tienes tipos de parcelas predefinidos
+    typePlot: string = "";  
     percentage: number = 0;
-    billType: string = "";   
-
-
+    billType: string = "";
 }
