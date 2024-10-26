@@ -1,7 +1,7 @@
 import {inject, Injectable } from '@angular/core';
 import { Bill } from '../models/bill';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
 import { PORT } from '../const';
@@ -18,6 +18,17 @@ export class BillService {
 
   getAllBills():Observable<Bill[]>{
     return this.http.get<Bill[]>(this.url + 'bill/full-list')
+  }
+
+  getAllBillsPaged(size: number, page:number, period: number, category: number, type: number, status:string):Observable<Bill[]>{
+    try{
+      return this.http.get<{ content: Bill[] }>(`${this.url}bill/page?size=${size}&page=${page}&period=${period}&category=${category}&type=${type}&status=${status}`).pipe(
+        map(response => response.content)
+      );
+     }catch( e) {
+       console.log(e)
+       throw  e
+     }
   }
 
   addBill(bill: BillPostRequest): Observable<Bill> {
