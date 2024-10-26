@@ -167,7 +167,7 @@ throw new Error('Method not implemented.');
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
       const data = expenses.content.map(expense => ({
-        'Periodo':  `${expense.period.month} / ${expense.period.year}`,
+        'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
         'Fecha de liquidación': expense.liquidationDate,
         'Estado': expense.state,

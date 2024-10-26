@@ -19,8 +19,8 @@ export class ExpenseServiceService {
 
   constructor() { }
   private readonly http = inject(HttpClient)
-   private apiUrl = "http://localhost:8088/expense/all"
-   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number, sortField?: string, sortOrder?: string): Observable<Page<Expense>> {
+  private apiUrl = `${PORT}expense/`
+  getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number, sortField?: string, sortOrder?: string): Observable<Page<Expense>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -43,7 +43,6 @@ export class ExpenseServiceService {
     return this.http.get<Page<Expense>>(this.apiUrl, { params });
   }
 
-   private apiUrl = `${PORT}expense/`
    get(): Observable<Expense[]>{
     console.log('cargando todas')
     return this.http.get<Expense[]>(`${this.apiUrl}all`)
