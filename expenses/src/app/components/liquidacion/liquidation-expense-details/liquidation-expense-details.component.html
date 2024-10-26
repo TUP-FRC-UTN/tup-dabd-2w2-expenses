@@ -1,28 +1,4 @@
 <div class="container mt-4">
-
-  <!-- Tercera fila: Filtros de estado
-  <div class="row mb-3">
-    <div class="col-12 text-end">
-      <div class="btn-group">
-        <button class="btn btn-outline-primary" (click)="filterByStatus('all')" >Todos</button>
-        <button class="btn btn-outline-success" (click)="filterByStatus('active')">Activos</button>
-        <button class="btn btn-outline-secondary" (click)="filterByStatus('inactive')">Inactivos</button>
-
-        <div class="dropdown">
-          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-funnel-fill"></i> Filtros
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" (click)="filterByContactType('')">Todos</a></li>
-            <li><a class="dropdown-item" (click)="filterByContactType('EMAIL')">Email</a></li>
-            <li><a class="dropdown-item" (click)="filterByContactType('PHONE')">Teléfono</a></li>
-            <li><a class="dropdown-item" (click)="filterByContactType('SOCIAL_MEDIA_LINK')">Redes Sociales</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <h1 class="mb-4">Liquidación de Expensa</h1>
 
 
@@ -35,7 +11,12 @@
       </div>
       <div class="col-3">
         <label><b>Monto Total</b></label>
-        <p>{{ liquidationExpense.total_amount | currency:'ARS':'symbol':'1.2-2' }}</p>
+        <p>{{ liquidationExpense.total_amount?.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}}</p>
       </div>
       <div class="col-3">
         <label><b>Periodo</b></label>
@@ -116,7 +97,12 @@
       <tr>
         <td class="text-start">{{ detail.category?.name }}</td>
         <td class="text-start">{{ bill.date | date : "dd/MM/yyyy" }}</td>
-        <td class="text-end">{{ bill.amount | currency:'ARS':'symbol':'1.2-2' }}</td>
+        <td class="text-end">{{ bill.amount?.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) }}</td>
         <td class="text-start">{{ bill.description }}</td>
         <td class="text-start" style="display: flex; flex-direction: row; gap: 4px">
           <button type="button" class="btn btn-secondary" (click)="openModal()">

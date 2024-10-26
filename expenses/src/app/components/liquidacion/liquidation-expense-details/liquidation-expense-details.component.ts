@@ -55,20 +55,26 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         });
       }
     });
+
+    this.liquidationExpense.liquidation_expenses_details.forEach(detaill => {})
   }
 
   private getBills(itemsPerPage: number, page: number, period: number, category: number, type: number, status: string) {
-
+    this.billsService.getAllBillsPaged(itemsPerPage, page, period, category, type, status).subscribe(data => {
+      // this.liquidationExpense.liquidation_expenses_details.bills = data;
+    })
   }
+
+
 
   goBack() {
     this.location.back();
   }
 
 
-  openModal() {
-    const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
-  }
+  //
+  // Pagination
+  //
 
   initializePagination() {
     this.totalItems = this.liquidationExpense.liquidation_expenses_details.length;
@@ -87,6 +93,10 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     this.initializePagination();
   }
 
+  //
+  // PDF Y Excel
+  //
+
   downloadTable() {
 
   }
@@ -95,11 +105,22 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
   }
 
+
+  //
+  // Modal
+  //
+
+  openModal() {
+    const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
+  }
+
   showmodal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
   }
+
+
 
   edit(id: number | null) {
     console.log(id);
