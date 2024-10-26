@@ -2,9 +2,6 @@ import {inject, Injectable } from '@angular/core';
 import { Bill } from '../models/bill';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import Period from '../models/period';
-import { Provider } from '../models/provider';
-import Category from '../models/category';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
 import { PORT } from '../const';
@@ -15,7 +12,7 @@ import { PORT } from '../const';
 export class BillService {
 
   private http = inject(HttpClient);
-  private url = "http://localhost:8088"
+  private url = PORT
 
   constructor() { }
 
