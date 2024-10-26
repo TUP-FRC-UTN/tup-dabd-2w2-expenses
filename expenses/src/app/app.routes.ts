@@ -10,7 +10,6 @@ import { ExpenseComponent } from './components/expensas/getAll/expense/expense.c
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 
 import {CategoryBillComponent} from "./components/bills/category-bill/category-bill.component";
-import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
 
 import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
 

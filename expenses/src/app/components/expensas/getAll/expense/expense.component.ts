@@ -148,6 +148,7 @@ throw new Error('Method not implemented.');
     this.currentPage = 0
     this.loadExpenses();
     this.searchTerm = ''
+    this.pageSize = 10
   }
   //carga el select de periodo y lote
   loadSelect() {
