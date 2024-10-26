@@ -58,18 +58,18 @@
           </select>
         </div>
       </div>
+     
       <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-trash-alt"></i> Limpiar filtros<!-- Icono de papelera -->
+        </button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar</button>
       </div>
     </div>
   </div>
 </div>
-      <div class="col-auto">
-        <button class="btn btn-secondary" (click)="clearFilters()">
-          <i class="fas fa-trash-alt"></i> Limpiar filtros<!-- Icono de papelera -->
-        </button>
-      </div>
+    
       <div class="col row d-flex justify-content-end">
         <div class="col-1">
           <button class="btn" (click)="downloadTable()" style="background-color: #239b56  ; color: white;">
