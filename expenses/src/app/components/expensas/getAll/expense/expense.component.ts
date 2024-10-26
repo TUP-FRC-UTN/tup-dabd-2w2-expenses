@@ -27,9 +27,6 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './expense.component.css'
 })
 export class ExpenseComponent implements OnInit{
-applyFilters() {
-throw new Error('Method not implemented.');
-}
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute); 
 
@@ -82,6 +79,18 @@ throw new Error('Method not implemented.');
     });
     this.updateVisiblePages();
   }
+
+ 
+  onPageSizeChange() {
+  this.currentPage = 0; // Reinicia a la primera página
+  console.log(this.pageSize)
+  this.loadExpenses(0,this.pageSize);   
+    }
+  applyFilters() {
+  throw new Error('Method not implemented.');
+    }
+
+
   updateVisiblePages(): void {
     const half = Math.floor(this.maxPagesToShow / 2);
     let start = Math.max(0, this.currentPage - half);
@@ -131,6 +140,13 @@ throw new Error('Method not implemented.');
     this.billService.getBillTypes().subscribe((data: BillType[]) => {
       this.tipos = data
     })
+  }
+  getMonthName(month: number): string {
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return monthNames[month - 1]; // Ajuste para índice cero
   }
   imprimir() {
     console.log('Imprimiendo')

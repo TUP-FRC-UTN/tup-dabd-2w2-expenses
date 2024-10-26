@@ -1,6 +1,12 @@
 <div class="container" style="margin-top: 18px;">
     <div class="row" style="align-items:end" >
-      <h2>Listado de expensas</h2>
+      
+      <div class="position-relative">
+        <h2>Listado de expensas</h2>
+        <button class="btn btn-danger position-absolute top-0 end-0">
+          <i class="bi bi-door-open-fill"></i> Logout
+        </button>
+      </div>
       <div class="input-group" style="max-width: 350px">
         <span class="input-group-text" id="search-icon">
           <i class="bi bi-search"></i>
@@ -108,7 +114,7 @@
             <tr>
                 <td>{{expense.plotNumber}} </td>
                 <td>{{expense.typePlot}}</td>
-                <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
+                <td>{{ getMonthName(expense.period.month) }} / {{ expense.period?.year }} </td>
                 <td>{{expense.totalAmount}}</td>
                 <td>{{expense.percentage  * 100 + '%'}}</td>
                 <td>{{expense.billType}}</td>
@@ -129,8 +135,10 @@
     <br>
     <div class="row d-flex align-items-end">
       <div class="col-2">
-        <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example">
+        <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
           <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
         </select>
       </div>
       <div class="col">
