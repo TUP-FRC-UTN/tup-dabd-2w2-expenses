@@ -1,36 +1,49 @@
 import {inject, Injectable } from '@angular/core';
 import { Bill } from '../models/bill';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import Period from '../models/period';
-import { Provider } from '../models/provider';
-import Category from '../models/category';
+import { map, Observable } from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
+import { PORT } from '../const';
+import { Page } from './expense.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BillService {
-  
+
   private http = inject(HttpClient);
-  private url = "http://localhost:8081"
-  
+  private url = PORT
+
   constructor() { }
-  
+
   getAllBills():Observable<Bill[]>{
-    return this.http.get<Bill[]>(this.url + '/bill/full-list')
+    return this.http.get<Bill[]>(this.url + 'bill/full-list')
   }
-  
+
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<Page<Bill>>{
+    let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
+
+    if (category != null) { request = request + `&category=${category}`}
+    if (period != null) request = request + `&period=${period}`
+
+    try{
+      return this.http.get<Page<Bill>>(request);
+     }catch( e) {
+       console.log(e)
+       throw  e
+     }
+  }
+
   addBill(bill: BillPostRequest): Observable<Bill> {
-    return this.http.post<Bill>(this.url + '/bill', bill);
+    return this.http.post<Bill>(this.url + 'bill', bill);
   }
-  
+
   getBillTypes(): Observable<BillType[]>{
-    return this.http.get<BillType[]>(this.url + '/billType')
+    return this.http.get<BillType[]>(this.url + '/bill-type')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
-    return this.http.put<Bill>(this.url+"/bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
+    return this.http.put<Bill>(this.url+"bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
   }
-  
+
 }

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GetByPeriodComponent } from './get-by-period.component';
+import { NodataComponent } from './nodata.component';
 
-describe('GetByPeriodComponent', () => {
-  let component: GetByPeriodComponent;
-  let fixture: ComponentFixture<GetByPeriodComponent>;
+describe('NodataComponent', () => {
+  let component: NodataComponent;
+  let fixture: ComponentFixture<NodataComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GetByPeriodComponent]
+      imports: [NodataComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GetByPeriodComponent);
+    fixture = TestBed.createComponent(NodataComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

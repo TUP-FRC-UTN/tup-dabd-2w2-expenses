@@ -5,11 +5,3 @@
     height: 100%;
     left: 0;
 }
-
-.sticky-content {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    overflow-y: auto; 
-  }
