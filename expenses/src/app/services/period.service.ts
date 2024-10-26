@@ -14,7 +14,7 @@ export class PeriodService {
 
   private readonly http = inject(HttpClient)
 
-  private apiUrl = "http://localhost:8081/period";
+  private apiUrl = "http://localhost:8088/period";
 
   get(): Observable<Period[]> {
 

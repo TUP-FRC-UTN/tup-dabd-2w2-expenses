@@ -14,7 +14,7 @@ import {BillPostRequest} from "../models/bill-post-request";
 export class BillService {
   
   private http = inject(HttpClient);
-  private url = "http://localhost:8081"
+  private url = "http://localhost:8088"
   
   constructor() { }
   
@@ -27,7 +27,7 @@ export class BillService {
   }
   
   getBillTypes(): Observable<BillType[]>{
-    return this.http.get<BillType[]>(this.url + '/billType')
+    return this.http.get<BillType[]>(this.url + '/bill-type')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
     return this.http.put<Bill>(this.url+"/bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
