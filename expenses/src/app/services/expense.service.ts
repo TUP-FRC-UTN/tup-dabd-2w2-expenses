@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PORT } from '../const';
 
-interface Page<T> {
+export interface Page<T> {
   content: T[];
   totalPages: number;
   totalElements: number;
@@ -31,12 +31,12 @@ export class ExpenseServiceService {
     }
     if (plotId) {
       params = params.set('plotId', plotId.toString());
-     
+
     }
     if (typeId) {
       params = params.set('typeId', typeId.toString());
     }
-  
+
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }

@@ -23,7 +23,7 @@ export class ChargeService {
 
   updateCharge(charge: Charge): Observable<Charge> {
     return this.http.put<Charge>(`${this.apiUrl}/${charge.charge_id}`, charge);
-  }  
+  }
 
   deleteCharge(charge: number): Observable<Charge> {
     return this.http.delete<Charge>(this.apiUrl + '/' + charge);
@@ -31,7 +31,7 @@ export class ChargeService {
 
 
 
-  
+
   createCharge(charge: Charge): Observable<Charge> {
     return this.http.post<Charge>(this.apiUrl, charge);
   }

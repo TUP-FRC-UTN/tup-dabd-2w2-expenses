@@ -11,11 +11,12 @@ import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { AsyncPipe, NgClass } from '@angular/common';
+import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 
 @Component({
   selector: 'app-list-bills',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgClass, AsyncPipe],
+    imports: [FormsModule, ReactiveFormsModule, NgClass, AsyncPipe, ExpensesBillsNavComponent],
   templateUrl: './list-bills.component.html',
   styleUrl: './list-bills.component.css'
 })
@@ -44,7 +45,7 @@ export class ListBillsComponent implements OnInit {
   private modalService = inject(NgbModal);
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
-  
+
 
 
   constructor(){
@@ -66,7 +67,7 @@ export class ListBillsComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-    
+
   }
 
 
@@ -95,15 +96,15 @@ export class ListBillsComponent implements OnInit {
     }
     this.viewList = false;
   }
- 
+
   saveBill() {
     if (this.billForm.valid) {
       const updatedBill = { ...this.selectedBill, ...this.billForm.value };
       this.billservice.updateBill(updatedBill).subscribe(() => {
         this.loadBills();
         this.disableUpdate();
-        this.viewList = true; 
-        this.selectedBill = undefined; 
+        this.viewList = true;
+        this.selectedBill = undefined;
       });
     }
   }
