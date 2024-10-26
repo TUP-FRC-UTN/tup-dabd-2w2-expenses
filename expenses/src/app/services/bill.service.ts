@@ -1,6 +1,6 @@
 import {inject, Injectable } from '@angular/core';
 import { Bill } from '../models/bill';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {map} from 'rxjs/operators'
 import Period from '../models/period';
@@ -26,18 +26,37 @@ export class BillService {
 
   
 
-  getAllBills(size?: number, page?: number): Observable<Bill[]> {
-    let endpoint = `${this.url}/bills`;
-    if (size !== undefined && page !== undefined) {
-      endpoint += `?size=${size}&page=${page}`;
-    } else if (size !== undefined) {
-      endpoint += `?size=${size}`;
-    } else if (page !== undefined) {
-      endpoint += `?page=${page}`;
+  getAllBills(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<Bill[]> {
+    let params = new HttpParams();
+
+    // Agrega solo los parámetros que tengan valores válidos
+    if (size !== undefined) {
+      params = params.set('size', size.toString());
     }
-  
-    // Llama a formatBills pasando el observable de la llamada HTTP
-    return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(endpoint));
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    if (period !== undefined) {
+      params = params.set('period', period.toString());
+    }
+    if (category !== undefined) {
+      params = params.set('category', category.toString());
+    }
+    if (supplier !== undefined) {
+      params = params.set('supplier', supplier.toString());
+    }
+    if (type !== undefined) {
+      params = params.set('type', type.toString());
+    }
+    if (provider) {
+      params = params.set('provider', provider);
+    }
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    // Realiza la solicitud HTTP con los parámetros construidos
+    return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params }));
   }
 
   
