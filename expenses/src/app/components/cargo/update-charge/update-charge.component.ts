@@ -1,8 +1,12 @@
 import { ChargeService } from './../../../services/charge.service';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Charge } from '../../../models/charge';
+import { CategoryCharge, Charge } from '../../../models/charge';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import moment from 'moment';
+import { PeriodService } from '../../../services/period.service';
+import { LotsService } from '../../../services/lots.service';
+import Lot from '../../../models/lot';
 
 @Component({
   selector: 'app-update-charge',
@@ -15,8 +19,13 @@ export class UpdateChargeComponent implements OnInit {
   chargeForm: FormGroup;
   private chargeService = inject(ChargeService);
   public activeModal = inject(NgbActiveModal);
+  private readonly periodService = inject(PeriodService);
+  private readonly lotsService = inject(LotsService);
   isEditing: boolean = false;
   @Input() charge?: Charge;
+  lots: Lot[] = [];
+  selectedCharges: number[] = [];
+  categoryCharges: CategoryCharge[] = [];
 
   constructor(private fb: FormBuilder) {
     this.chargeForm = this.fb.group({
@@ -31,19 +40,41 @@ export class UpdateChargeComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.loadSelect();
+    this.loadCategoryCharge();  
   }
 
   loadData() {
     if (this.charge) {
       this.chargeForm.patchValue({
-        fechaEmision: this.charge.date.toISOString().split('T')[0],
+        fechaEmision: (moment(this.charge.date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
         lote: this.charge.lotId,
         tipo: this.charge.categoryCharge.name,
         periodo: this.charge.period,
-        monto: this.charge.amount,
-        description: this.charge.categoryCharge.description,//Esto se podria cambiar por charge.description
+        monto: (this.charge.amount),
+        description: this.charge.description,//Esto se podria cambiar por charge.description
       });
     }
+  }
+
+  getPlotNumber(lotId : number){
+    const lot = this.lots.find(lot => lot.id === lotId);
+    return lot ? lot.plot_number : undefined;
+  }
+
+  loadSelect() {
+    this.periodService.get()
+    this.lotsService.get().subscribe((data: Lot[]) => {
+      this.lots = data;
+    })
+    this.lotsService.get().subscribe((data: Lot[]) => {
+      this.lots = data;
+    })
+  }
+  loadCategoryCharge(){
+    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+      this.categoryCharges = data;
+    })
   }
 
   enableEdit() {

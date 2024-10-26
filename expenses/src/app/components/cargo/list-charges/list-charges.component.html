@@ -1,19 +1,19 @@
 <app-expenses-charges-nav/>
-<div class="container mt-5">
-    <h3 class="mb-4">Cargos</h3>
+<div class="container mt-2">
+    <h3 class="mb-4">Listado de cargos</h3>
+    
     <form class="form-row mb-4 d-flex align-items-end">
         <div class="form-group col-md-3 me-3">
             <label for="periodo">Período</label>
             <app-period-select (periodSelected)="loadSelect()"></app-period-select>
         </div>
         <div class="form-group col-md-3 me-3">
-            <label for="tipo">Tipo</label>
+            <label for="tipo">Categoria</label>
             <select
               id="tipo"
               class="form-select"
               formControlName="categoryChargeId"
             >
-            <option value=""></option>
             @for (item of categoryCharges; track $index) {
               <option value={{item.categoryChargeId}}>{{item.name}} </option>
           } </select>
@@ -21,31 +21,28 @@
         <div class="form-group col-md-3 me-3">
             <label for="lote">Lote</label>
             <select id="lote" class="form-control">
-                <option selected>Seleccionar...</option>
-                <option>Lote 1</option>
-                <option>Lote 2</option>
+              @for (lot of lots; track $index) {
+                <option value={{lot.id}}>{{lot.plot_number}} </option>
+            }
             </select>
-        </div>
-        <div class="form-group col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-primary btn-block" (click)="loadCharges()">Buscar</button>
-        </div>
-        <div class="form-group col-md-2 d-flex align-items-end">
-            <button class="btn btn-primary" (click)="downloadTable()">Descargar Tabla</button>
-        </div>
+        </div>                
     </form>
 
+    
     <div class="table-responsive text-center">
-      <div class="col-md-6 d-flex align-items-end">
-        <button class="btn btn-success mt-4 me-2" (click)="exportToExcel()">
-          <i class="bi bi-file-earmark-spreadsheet"></i> Excel
+      <div class="col-md-12 d-flex align-items-end" style="display: flex;  justify-content:right;">
+
+        <button class="btn btn-success me-2" >
+          <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
         
-        <button class="btn btn-danger mt-4" (click)="exportToPDF()">
-          <i class="bi bi-filetype-pdf"></i> PDF
+        <button class="btn btn-danger " >
+          <i class="bi bi-filetype-pdf"></i>
         </button>
       </div>
-        <table class="table table-striped">
-            <thead class="thead-light">
+      
+        <table class="table table-striped"id="table-data">
+            <thead class="thead-light" >
                 <tr>
                     <th>Fecha</th>
                     <th>Lote</th>
@@ -57,15 +54,30 @@
             <tbody>
                 @for (charge of charges; track $index) {<tr>                    
                     <td>{{charge.date | date:"dd/MM/YYYY"}}</td>
-                    <td>{{charge.lotId}}</td>
+                    <td>{{getPlotNumber(charge.lotId)}}</td>
                     <td>{{charge.description}}</td>
                     <td>${{charge.amount | number}}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm mr-2" (click)="openUpdateModal(charge)">
+                      <!-- <div class="dropdown" role="group">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item btn btn-danger">Ver más</a></li>
+                            <li><a class="dropdown-item btn btn-info"  >Editar</a></li>
+                            <li><a class="dropdown-item btn btn-danger" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>                         
+                          
+                        </ul>
+                      </div> -->
+
+                        <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
                             <i class="bi bi-eye"></i>
                         </button>
+                        <button class="btn btn-warning btn-sm m-1" (click)="openUpdateModal(charge)">
+                          <i class="bi bi-pen"></i>
+                      </button>
 
-                        <button class="btn btn-danger btn-sm" (click)="openDeleteModal(charge.chargeId)">
+                        <button class="btn btn-danger btn-sm m-1" (click)="openDeleteModal(charge.chargeId)">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -73,36 +85,64 @@
             </tbody>
         </table>
     </div>
-    <div class="table-responsive text-center">
-      <div class="col-md-6 d-flex align-items-end">
-        <button class="btn btn-success mt-4 me-2" (click)="exportToExcel()">
-          <i class="bi bi-file-earmark-spreadsheet"></i> Excel
-        </button>
-        
-        <button class="btn btn-danger mt-4" (click)="exportToPDF()">
-          <i class="bi bi-filetype-pdf"></i> PDF
-        </button>
-      </div>
+    <div class="table-responsive text-center">      
         <table id="tableCharges" class="table table-striped display">
           <thead></thead>
           <tbody></tbody>
         </table>
       </div>
 
-    
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="rowsPerPageSelect">Mostrar </label>
+          <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">            
+            <option value=10>10</option>
+            <option value=25>25</option>
+            <option value=50>50</option>
+          </select>
+          <span> registros por página de {{this.totalItems}}</span>
+        </div>
+        <div class="col-md-6">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+        
+              <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                  [class.active]="i === currentPage">
+                <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+              </li>
+        
+              <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>        
+      </div>  
+      
+</div>
 
-  <nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-      <li class="page-item disabled">
-        <a class="page-link" href="#" tabindex="-1">&lt;</a>
-      </li>
-      <li class="page-item active"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item"><a class="page-link" href="#">4</a></li>
-      <li class="page-item">
-        <a class="page-link" href="#">&gt;</a>
-      </li>
-    </ul>
-  </nav>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              ¿Estás seguro de que deseas eliminar este Cargo?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-danger">Eliminar</button>
+          </div>
+      </div>
+  </div>
 </div>

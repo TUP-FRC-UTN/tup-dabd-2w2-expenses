@@ -1,7 +1,14 @@
 import { CategoryCharge, Charge } from './../models/charge';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
+interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -17,16 +24,36 @@ export class ChargeService {
     return this.http.post<Charge>(this.apiUrl, charge);
   }
 
-  getCharges(): Observable<Charge[]> {
+  getChargesAll(): Observable<Charge[]> {
     return this.http.get<Charge[]>(this.apiUrl);
+  }
+
+  getCharges(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Page<Charge>> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if (periodId) {
+      console.log('periodo= '+periodId)
+      params = params.set('periodId', periodId);
+    }
+    // if (plotId) {
+    //   console.log('lote= '+plotId)
+    //   params = params.set('plotId', plotId);
+    // }
+    if (typeId) {
+      console.log('tipo= '+typeId)
+      params = params.set('category_charge', typeId);
+    }
+    return this.http.get<Page<Charge>>(this.apiUrl, { params });
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
     return this.http.put<Charge>(`${this.url}/${charge.chargeId}`, charge);
   }  
 
-  deleteCharge(charge: number): Observable<Charge> {
-    return this.http.delete<Charge>(this.url + '/' + charge);
+  deleteCharge(charge: number): Observable<Boolean> {
+    return this.http.delete<Boolean>(this.apiUrl + '/' + charge);
   }
 
 
