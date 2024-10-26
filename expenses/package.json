@@ -24,12 +24,15 @@
     "bootstrap-icons": "^1.11.3",
     "jquery": "^3.7.1",
     "json-server": "^1.0.0-beta.3",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "ngx-bootstrap": "^18.0.2",
     "ngx-dabd-2w1-core": "^0.0.2",
     "ngx-dabd-grupo01": "^0.0.2",
     "ngx-pipes": "^3.2.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.10"
   },
   "devDependencies": {

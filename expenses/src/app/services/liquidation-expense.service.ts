@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import LiquidationExpense from '../models/liquidationExpense';
+import { PORT } from '../const';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ import LiquidationExpense from '../models/liquidationExpense';
 export class LiquidationExpenseService {
   private readonly http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:8088/liquidation/';
+  private apiUrl = `${PORT}liquidation/`;
 
   get(id:number): Observable<LiquidationExpense[]>{
     return this.http.get<LiquidationExpense[]>(`${this.apiUrl}calculate/${id}`,)
@@ -24,7 +25,7 @@ export class LiquidationExpenseService {
 
   putCloseLiquidationExpensesPeriod(id: number): Observable<any> {
     return this.http.put(
-      `http://localhost:8081/calculate/close/liquidation/${id}`,
+      `${PORT}calculate/close/liquidation/${id}`,
       null
     );
   }

@@ -1,62 +1,163 @@
 <div class="container" style="margin-top: 18px;">
-    <div class="row">
-        <h3>Expensas</h3>
-      <div class="col-2" >
-          <label for="perido">Periodo</label>
-          <app-period-select (periodSelected)="loadSelect()"></app-period-select>
-          
+    <div class="row" style="align-items:end" >
+      <h2>Listado de expensas</h2>
+      <div class="input-group" style="max-width: 350px">
+        <span class="input-group-text" id="search-icon">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+         placeholder="Buscar"
+          aria-describedby="search-icon"
+        />
       </div>
-      <div class="col-2">
-        <label for="">Lote</label>
-        <select name="lote" id="lote" class="form-select" aria-label="Default select example" [ngModel]="selectedOptionLot" (ngModelChange)="onOptionChange($event)">
-          <option [defaultSelected]="0" [value]="0">Todos</option>
-          @for (lot of lots; track $index ) {
-            <option [value]="lot.id">{{lot.plot_number}}</option>
-          }
-        </select>
+      <div class="col-auto">
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#filterModal">
+         <i class="bi bi-search"></i> Buscar
+        </button>
+     </div>
+     <!-- Botón que abre el modal -->
+
+     <div class="col-auto">
+       <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#filterModal">
+        <i class="bi bi-filter"></i> Filtrar
+       </button>
+    </div>
+
+<!-- Modal con los selectores -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filterModalLabel">Filtrar por:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="col-2">
-        <label for="">Categoria</label>
-        <select name="lote" id="lote" class="form-select" aria-label="Default select example" [ngModel]="selectedOptionLot" (ngModelChange)="onOptionChange($event)">
-          <option [defaultSelected]="0" [value]="0">Todos</option>
-          @for (lot of lots; track $index ) {
-            <option [value]="lot.id">{{lot.plot_number}}</option>
-          }
-        </select>
-      </div>
-      <div class="col-2">
-          <button class="btn btn-primary">Limpiar filtros</button>
+      <div class="modal-body">
+        <!-- Selectores dentro del modal -->
+        <div class="col-auto">
+          <label for="periodo">Período</label>
+          <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId" (ngModelChange)="onOptionChange()">
+            <option [value]="0">Todos</option>
+            @for (period of periodos; track $index) {
+              <option [value]="period.id">{{period.month}} / {{period.year}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="lote">Lote</label>
+          <select name="lote" id="lote" class="form-select" aria-label="Default select example" [(ngModel)]="selectedLotId" (ngModelChange)="onOptionChange()">
+            <option [value]="0">Todos</option>
+            @for (lot of lots; track $index) {
+              <option [value]="lot.id">{{lot.plot_number}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-auto">
+          <label for="tipoExpensa">Tipo de expensa</label>
+          <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" [(ngModel)]="selectedTypeId" (ngModelChange)="onOptionChange()">
+            <option [value]="0">Todas</option>
+            @for (tipo of tipos; track $index) {
+              <option [value]="tipo.bill_type_id">{{tipo.name}}</option>
+            }
+          </select>
+        </div>
       </div>
      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="clearFilters()">
+          <i class="fas fa-trash-alt"></i> Limpiar filtros<!-- Icono de papelera -->
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+      <div class="col row d-flex justify-content-end">
+        <div class="col-1">
+          <button class="btn" (click)="downloadTable()" style="background-color: #239b56  ; color: white;">
+              <i class="bi bi-file-earmark-excel"></i><!-- Icono de excel -->
+          </button>
+        </div>
+        <div class="col-auto">
+          <button class="btn" (click)="imprimir()" style="background-color: red; color: white;">
+            <i class="bi bi-file-pdf"></i> <!-- Icono de pdf -->
+          </button>
+        </div>
+      </div>
     </div>
    <br>
-    <div>
+    <div class="card">
       
-      <table class="table">
+      <table class="table table-striped" id="table-data">
         <thead>
           <tr>
-            <th scope="col">Numero de Lote</th>
+            <th scope="col">Número de Lote</th>
+            <th scope="col">Tipo de lote</th>
             <th scope="col">Período</th>
             <th scope="col">Monto Total</th>
+            <th scope="col">Porcentaje</th>
+            <th scope="col">Tipo de expensa</th>
             <th scope="col">Fecha de liquidación</th>
-            <th scope="col">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @for (expense of expenses; track $index) {
             <tr>
-              <td>{{expense.plotNumber}} </td>
-              <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
-              <td>{{expense.totalAmount}} </td>
-              <td>{{expense.liquidationDate}}</td>
-              <td><button class="btn btn-primary" >Accion</button></td>
+                <td>{{expense.plotNumber}} </td>
+                <td>{{expense.typePlot}}</td>
+                <td>{{expense.period?.month}} / {{expense.period?.year}} </td>
+                <td>{{expense.totalAmount}}</td>
+                <td>{{expense.percentage  * 100 + '%'}}</td>
+                <td>{{expense.billType}}</td>
+                <td>{{expense.liquidationDate | date:'MMM d, yyyy'}}</td>
             </tr>
-          }
+          }@empty {
+            <td colspan="7" class="text-center">
+              <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                  No hay expensas para mostrar
+                </div>
+              </div>
+            </td>}
                 
         </tbody>
-        <h3>Cantidad: {{expenses.length}} </h3>
       </table>
     </div>
-  
+    <br>
+    <div class="row d-flex align-items-end">
+      <div class="col-2">
+        <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example">
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="col">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-end" style="margin-bottom: 0;">
+            <!-- Botón de página anterior -->
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+    
+            <!-- Páginas visibles limitadas -->
+            <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
+              <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
+            </li>
+    
+            <!-- Botón de página siguiente -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    
     
   </div>

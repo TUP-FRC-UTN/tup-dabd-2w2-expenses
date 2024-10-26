@@ -7,6 +7,7 @@ import { Provider } from '../models/provider';
 import Category from '../models/category';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
+import { PORT } from '../const';
 
 @Injectable({
   providedIn: 'root'
@@ -19,18 +20,18 @@ export class BillService {
   constructor() { }
 
   getAllBills():Observable<Bill[]>{
-    return this.http.get<Bill[]>(this.url + '/bill/full-list')
+    return this.http.get<Bill[]>(this.url + 'bill/full-list')
   }
 
   addBill(bill: BillPostRequest): Observable<Bill> {
-    return this.http.post<Bill>(this.url + '/bill', bill);
+    return this.http.post<Bill>(this.url + 'bill', bill);
   }
 
   getBillTypes(): Observable<BillType[]>{
     return this.http.get<BillType[]>(this.url + '/bill-type')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
-    return this.http.put<Bill>(this.url+"/bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
+    return this.http.put<Bill>(this.url+"bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
   }
 
 }
