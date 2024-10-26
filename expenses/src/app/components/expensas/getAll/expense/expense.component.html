@@ -12,6 +12,11 @@
           aria-describedby="search-icon"
         />
       </div>
+      <div class="col-auto">
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#filterModal">
+         <i class="bi bi-search"></i> Buscar
+        </button>
+     </div>
      <!-- Botón que abre el modal -->
 
      <div class="col-auto">
@@ -84,7 +89,7 @@
       </div>
     </div>
    <br>
-    <div>
+    <div class="card">
       
       <table class="table table-striped" id="table-data">
         <thead>
@@ -120,29 +125,36 @@
                 
         </tbody>
       </table>
-      <nav aria-label="Page navigation example" style="align-items:end">
-        <ul class="pagination justify-content-end" style="margin-top: 15px;">
-          <!-- Botón de página anterior -->
-          <li class="page-item" [class.disabled]="currentPage === 0">
-            <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-      
-          <!-- Páginas visibles limitadas -->
-          <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
-            <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
-          </li>
-      
-          <!-- Botón de página siguiente -->
-          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-            <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
     </div>
-  
+    <div class="row" style="align-items: end;">
+      <div class="col-2" >
+        <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example">
+          <option value="10">10</option>
+        </select>
+    </div>
+    <nav aria-label="Page navigation example" style="align-items:end">
+      <ul class="pagination justify-content-end" style="margin-top: 15px;">
+        <!-- Botón de página anterior -->
+        <li class="page-item" [class.disabled]="currentPage === 0">
+          <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+    
+        <!-- Páginas visibles limitadas -->
+        <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
+          <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
+        </li>
+    
+        <!-- Botón de página siguiente -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+          <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    </div>
+    
     
   </div>
