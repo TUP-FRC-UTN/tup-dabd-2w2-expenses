@@ -13,26 +13,26 @@ import { PORT } from '../const';
   providedIn: 'root'
 })
 export class BillService {
-  
+
   private http = inject(HttpClient);
   private url = PORT
 
-  
+
   constructor() { }
-  
+
   getAllBills():Observable<Bill[]>{
     return this.http.get<Bill[]>(this.url + 'bill/full-list')
   }
-  
+
   addBill(bill: BillPostRequest): Observable<Bill> {
     return this.http.post<Bill>(this.url + 'bill', bill);
   }
-  
+
   getBillTypes(): Observable<BillType[]>{
     return this.http.get<BillType[]>(this.url + 'billType')
   }
   updateBill(updatedBill: Bill): Observable<Bill> {
     return this.http.put<Bill>(this.url+"bill/edit/"+updatedBill.expenditure_id+"/id", updatedBill);
   }
-  
+
 }

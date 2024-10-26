@@ -1,5 +1,32 @@
-<div class="details">
-  <h3 class="mb-4">Liquidación de Expensa</h3>
+<div class="container mt-4">
+
+  <!-- Tercera fila: Filtros de estado
+  <div class="row mb-3">
+    <div class="col-12 text-end">
+      <div class="btn-group">
+        <button class="btn btn-outline-primary" (click)="filterByStatus('all')" >Todos</button>
+        <button class="btn btn-outline-success" (click)="filterByStatus('active')">Activos</button>
+        <button class="btn btn-outline-secondary" (click)="filterByStatus('inactive')">Inactivos</button>
+
+        <div class="dropdown">
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-funnel-fill"></i> Filtros
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" (click)="filterByContactType('')">Todos</a></li>
+            <li><a class="dropdown-item" (click)="filterByContactType('EMAIL')">Email</a></li>
+            <li><a class="dropdown-item" (click)="filterByContactType('PHONE')">Teléfono</a></li>
+            <li><a class="dropdown-item" (click)="filterByContactType('SOCIAL_MEDIA_LINK')">Redes Sociales</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <h1 class="mb-4">Liquidación de Expensa</h1>
+
+
+
   <div class="general-details">
     <div class="row">
       <div class="col-3">
@@ -8,7 +35,7 @@
       </div>
       <div class="col-3">
         <label><b>Monto Total</b></label>
-        <p>{{ liquidationExpense.total_amount | currency }}</p>
+        <p>{{ liquidationExpense.total_amount | currency:'ARS':'symbol':'1.2-2' }}</p>
       </div>
       <div class="col-3">
         <label><b>Periodo</b></label>
@@ -17,45 +44,135 @@
           {{ liquidationExpense.period?.year }}
         </p>
       </div>
-      <div class="col-3">
-        <label><b>Fecha de solicitud</b></label>
-        <p>
-          {{ liquidationExpense.solicitacion_date | date : "dd/MM/yyyy" }}
-        </p>
+    </div>
+  </div>
+
+  <div class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-between">
+    <div class="row align-items-center mb-3">
+      <div class="col-sm-12 col-md-12 col-xl-12">
+        <div class="input-group" style="max-width: 360px">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            placeholder="Buscar"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end">
+      <div  class="col align-items-center mb-3 d-flex justify-content-end">
+        <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" >
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+        <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </button>
       </div>
     </div>
   </div>
-</div>
-<table class="table table-striped">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col">Fecha</th>
-      <th scope="col">Categoría</th>
-      <th scope="col">Monto</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">Pagado</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (detail of liquidationExpense.liquidation_expenses_details; track
-    $index) { @for(bill of detail.bills; track $index) {
-    <tr>
-      <td>{{ bill.date | date : "dd/MM/yyyy" }}</td>
-      <td>{{ detail.category?.name }}</td>
-      <td>{{ bill.amount | currency }}</td>
-      <td>{{ bill.description }}</td>
-      <td style="display: flex; flex-direction: row; gap: 4px">
-        <button type="button" class="btn btn-warning" (click)="openModal()">
-          <i class="bi bi-eye"></i>
+
+  <div class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-start">
+    <!-- Tercera fila: Filtros de estado -->
+    <div class="row mb-3">
+      <div class="col-12 text-end">
+        <div class="dropdown">
+          <div class="btn-group">
+            <button class="btn btn-outline-danger" ><i class="bi bi-trash-fill"></i> Limpiar</button>
+
+            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-funnel-fill"></i> Filtros
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" >Todos</a></li>
+              <li><a class="dropdown-item" >Email</a></li>
+              <li><a class="dropdown-item" >Teléfono</a></li>
+              <li><a class="dropdown-item" >Redes Sociales</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" >
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" class="text-start"><b>Categoría</b></th>
+        <th scope="col" class="text-start"><b>Fecha</b></th>
+        <th scope="col" class="text-end"><b>Monto</b></th>
+        <th scope="col" class="text-start"><b>Descripción</b></th>
+        <th scope="col" class="text-start"><b>Pagado</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (detail of liquidationExpense.liquidation_expenses_details; track
+      $index) { @for(bill of detail.bills; track $index) {
+      <tr>
+        <td class="text-start">{{ detail.category?.name }}</td>
+        <td class="text-start">{{ bill.date | date : "dd/MM/yyyy" }}</td>
+        <td class="text-end">{{ bill.amount | currency:'ARS':'symbol':'1.2-2' }}</td>
+        <td class="text-start">{{ bill.description }}</td>
+        <td class="text-start" style="display: flex; flex-direction: row; gap: 4px">
+          <button type="button" class="btn btn-secondary" (click)="openModal()">
+            <i class="bi bi-eye"></i>
+          </button>
+          <button type="button" class="btn btn-warning" (click)="edit(bill.expenditureId)">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </td>
+      </tr>
+      } }
+    </tbody>
+  </table>
+
+  <!-- Última fila: Paginador e Información -->
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+        <option [value]="10">10</option>
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex justify-content-end align-items-center">
+        <nav class="me-3">
+          <ul class="pagination mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="changePage(currentPage - 1)">Anterior</a>
+            </li>
+            @for(page of pages; track page){
+            <li class="page-item" [class.active]="currentPage === page">
+              <a class="page-link" (click)="changePage(page)">{{page}}</a>
+            </li>
+            }
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="changePage(currentPage + 1)">Siguiente</a>
+            </li>
+          </ul>
+        </nav>
+        <button class="btn btn-outline-secondary" (click)="showmodal(modalTemplate)">
+          <i class="bi bi-info-circle"></i>
         </button>
-        <button type="button" class="btn btn-success" (click)="openModal()">
-          editar
-        </button>
-      </td>
-    </tr>
-    } }
-  </tbody>
-</table>
-<div style="display: flex; flex-direction: row; justify-content: e">
-  <button class="btn btn-warning" (click)="goBack()">Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: row; justify-content: end; margin-top: 10px;">
+    <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+  </div>
 </div>
+
+<ng-template #modalTemplate let-modal>
+  <app-info-modal
+    [title]="'Acerca de'"
+    [body]="'Información de prueba'"
+    (onAccept)="modal.dismiss('cancel')"
+  ></app-info-modal>
+</ng-template>
