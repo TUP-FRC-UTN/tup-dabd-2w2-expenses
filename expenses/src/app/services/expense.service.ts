@@ -40,22 +40,12 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(this.apiUrl, { params });
+    return this.http.get<Page<Expense>>(this.apiUrl + 'all', { params });
   }
 
-   get(): Observable<Expense[]>{
-    console.log('cargando todas')
-    return this.http.get<Expense[]>(`${this.apiUrl}all`)
-  }
+ 
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
     return this.http.post<Expense[]>(`${this.apiUrl}create/${periodId}`,null)
-  }
-  getByPeriodAndPlot(periodId:number, plotId:Number):Observable<Expense[]>{
-    console.log(periodId)
-    return this.http.get<Expense[]>(`${this.apiUrl}periodAndPlot?periodId=${periodId}&idPlot=${plotId}`)
-  }
-  getExpenseCurrentPeriod():Observable<Expense[]> {
-    return this.http.get<Expense[]>(`${this.apiUrl}/currentPeriod/`)
   }
 }
