@@ -1,28 +1,31 @@
 <app-expenses-period-nav />
 <div class="row">
+  
   <div class="col-2">
-    <button (click)="newPeriod()" class="btn btn-primary">Nuevo Período</button>
+    <button (click)="newPeriod()" class="btn btn-outline-primary">Nuevo Período</button>
   </div>
-  <div class="col-10">
-    <div style="display: flex; flex-direction: row; gap: 18px">
-      <h3>Activos:</h3>
-
-      @for (period of listOpenPeriod; track $index) {
-
-      <div class="card bg-light mb-3" style="max-width: 18rem">
-        <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark"
-          ><div class="card-header">
-            {{ period.month }} / {{ period.year }}
-          </div></a
-        >
-      </div>
-
-      }
+  <div class="col-10" style="display: flex ;flex-direction: row; justify-content: end;">
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+      <input type="radio" class="btn-check" 
+      name="btnradio" id="btnradio1" 
+      autocomplete="off"  checked>
+      <label class="btn btn-outline-primary" for="btnradio1">Lotes Activos</label>
+    
+      <input type="radio" class="btn-check" 
+      name="btnradio" id="btnradio2" 
+      autocomplete="off" >
+      <label class="btn btn-outline-primary" for="btnradio2">Lotes Inactivos</label>
+    
+      <input type="radio" class="btn-check" 
+      name="btnradio" id="btnradio3" 
+      autocomplete="off" >
+      <label class="btn btn-outline-primary" for="btnradio3">Todos</label>
     </div>
   </div>
+  
 </div>
 
-<table class="table table-striped">
+<table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" >
   <thead>
     <tr>
       <th scope="col">Fecha</th>
@@ -33,23 +36,45 @@
     </tr>
   </thead>
   <tbody>
-    @for (period of listPeriod; track $index) {
-    <tr>
-      <td>{{ period.month }} / {{ period.year }}</td>
-      <td>{{ period.ordinary?.amount }}</td>
-      <td>{{ period.extraordinary?.amount }}</td>
-      <td>{{ period.state }}</td>
-      <td style="display: flex; flex-direction: row; gap: 2px;justify-content: center;">
-        <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark">
-          <button class="btn btn-success">ver</button></a
-        >
-        @if (period.state!=="CLOSE") {
-          <button class="btn btn-danger" (click)="open(modalTemplate, period.id)">Cerrar</button>
+    @if (listPeriod.length ===0) {
+      <div class="text-center p-3">
+        <div class="alert alert-secondary" role="alert">
+          No hay elementos para mostrar
+        </div>
+      </div>
 
+    } @else {
+      @for (period of listPeriod; track $index) {
+        <tr>
+          <td>{{ period.month }} / {{ period.year }}</td>
+          <td style="text-align: end;"> ${{ period.ordinary?.amount }}</td>
+          <td style="text-align: end;" >${{ period.extraordinary?.amount }}</td>
+          <td>{{ period.state }}</td>
+          <td style="display: flex; flex-direction: row; gap: 2px;justify-content: center;">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                  <li><a class="dropdown-item btn btn-danger">Reactivar</a></li>
+                  <li><a class="dropdown-item btn btn-primary" >Detalle Dueños</a></li>
+                  <li><a class="dropdown-item btn btn-info"  >Editar</a></li>
+                  <li><a class="dropdown-item btn btn-danger" data-bs-target="#exampleModal" data-bs-toggle="modal">Eliminar</a></li>
+                
+                <li><a class="dropdown-item btn btn-primary">Detalle</a></li>
+              </ul>
+            </div>
+            <a [href]="'/periodo/' + period.id + '/liquidacion'" class="link-dark">
+              <button class="btn btn-outline-success">ver</button></a
+            >
+            @if (period.state!=="CLOSE") {
+              <button class="btn btn-outline-danger" (click)="open(modalTemplate, period.id)">Cerrar</button>
+            }
+          </td>
+        </tr>
         }
-      </td>
-    </tr>
     }
+  
   </tbody>
 
   <nav aria-label="Page navigation example">

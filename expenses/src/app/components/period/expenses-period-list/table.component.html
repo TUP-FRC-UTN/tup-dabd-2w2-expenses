@@ -1,0 +1,143 @@
+<div class="d-flex mb-3">
+  <div class="w-100 d-flex justify-content-between align-items-center">
+    @if(showSearchBar){
+    <div class="input-group" style="max-width: 280px">
+      <span class="input-group-text" id="search-icon">
+        <i class="bi bi-search"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="{{ searchPlaceHolder }}"
+        [(ngModel)]="searchValue"
+        (ngModelChange)="onSearchValueChange()"
+        aria-describedby="search-icon"
+      />
+    </div>
+    } @if(showHeaderButton) {
+    <button class="btn btn-outline-primary" (click)="onHeaderButtonClick()">
+      @if(headerButtonIcon) {
+      <i class="{{ headerButtonIcon }} me-1"></i>
+      }
+      {{ headerButtonText }}
+    </button>
+    }
+  </div>
+  @if(showExportOptions) {
+  <div class="d-flex gap-2 ms-3 ps-3" style="border-left: 2px solid #e0e0e0">
+    @if(showExportExcelButton) {
+    <button
+      class="btn btn-success"
+      placement="top"
+      ngbTooltip="Exportar Excel"
+      (click)="onExcelButtonClick()"
+    >
+      <i class="bi bi-file-earmark-excel"></i>
+    </button>
+    } @if (showExportPdfButton) {
+    <button
+      class="btn btn-danger"
+      placement="top"
+      ngbTooltip="Exportar PDF"
+      (click)="onPdfButtonClick()"
+    >
+      <i class="bi bi-file-earmark-pdf"></i>
+    </button>
+    }
+  </div>
+  }
+</div>
+<ng-content></ng-content>
+<div
+  class="table-responsive border overflow-auto"
+  [ngStyle]="{ height: height }"
+>
+  @if(isLoading) {
+  <ng-container>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          @for (column of columns; track $index) {
+          <th>
+            <div class="skeleton"></div>
+          </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for(item of [1, 2, 3, 4]; track $index) {
+        <tr>
+          @for(column of columns; track $index) {
+          <td>
+            <div class="skeleton"></div>
+          </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+  </ng-container>
+  } @else if (items.length > 0){
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        @for(column of columns; track $index) {
+        <th>{{ column.headerName }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for(item of items; track $index) {
+      <tr>
+        @for(column of columns; track $index) {
+        <td>
+          @if(!column.cellRenderer) {
+          <ng-container>
+            {{ item[column.accessorKey] }}
+          </ng-container>
+          } @else {
+          <ng-container
+            *ngTemplateOutlet="
+              column.cellRenderer;
+              context: { $implicit: item }
+            "
+          ></ng-container>
+          }
+        </td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+  } @else {
+  <div class="text-center p-3">
+    <div class="alert alert-secondary" role="alert">
+      No hay elementos para mostrar
+    </div>
+  </div>
+  }
+</div>
+
+@if(pagination) {
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <ngb-pagination
+    [collectionSize]="pagination.totalItems"
+    [(page)]="pagination.page"
+    [pageSize]="pagination.size"
+    (pageChange)="onPageChange($event)"
+  ></ngb-pagination>
+
+  <div class="form-group mb-3">
+    <select
+      id="itemsPerPage"
+      class="form-select"
+      [(ngModel)]="pagination.size"
+      (change)="onItemsPerPageChange(pagination.size)"
+    >
+      @for(option of sizeOptions; track $index) {
+      <option [value]="option">{{ option }} Elementos</option>
+      }
+    </select>
+  </div>
+</div>
+}
