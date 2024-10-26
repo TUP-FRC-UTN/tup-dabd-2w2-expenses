@@ -152,8 +152,13 @@
     } @else { @for (period of listPeriod; track $index) {
     <tr>
       <td>{{ period.month }} / {{ period.year }}</td>
-      <td style="text-align: end">${{ period.ordinary?.amount }}</td>
-      <td style="text-align: end">${{ period.extraordinary?.amount }}</td>
+      <td style="text-align: end">{{ period.ordinary?.amount }}</td>
+      <td style="text-align: end">{{ period.extraordinary?.amount?.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) }}</td>
       <td>
         <app-expenses-state-period-style
           [estado]="period.state"
