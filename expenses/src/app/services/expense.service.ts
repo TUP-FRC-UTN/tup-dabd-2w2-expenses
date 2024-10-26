@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PORT } from '../const';
 
-interface Page<T> {
+export interface Page<T> {
   content: T[];
   totalPages: number;
   totalElements: number;

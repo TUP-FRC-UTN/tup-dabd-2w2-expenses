@@ -1,116 +1,72 @@
-<app-expenses-period-nav />
-<div
-  class="container"
-  style="display: flex; flex-direction: column; gap: 24px"
->
+<h1>
+  Liquidacion {{ liquidationExpensesList[0].period?.month }} /
+  {{ liquidationExpensesList[0].period?.year }}
+</h1>
+<div class="container" style="display: flex; flex-direction: column; gap: 24px">
   @if (liquidationExpensesList.length>0) {
 
-  <div class="row" style="justify-content: space-around">
-    <div class="row" style="justify-content: space-around; align-items: center">
-      <div
-        class="col-3"
-        style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        "
+  <div
+    class="col-6"
+    style="display: flex; flex-direction: row; justify-content: end"
+  >
+    <div
+      class="btn-group"
+      role="group"
+      aria-label="Basic radio toggle button group"
+    >
+      <input
+        type="radio"
+        class="btn-check"
+        name="btnradio"
+        id="btnradio2"
+        autocomplete="off"
+        (change)="changeStateQuery('Extraordinarias')"
+      />
+      <label class="btn btn-outline-primary" for="btnradio2"
+        >Extraordinarias</label
       >
-        <button
-          class="btn"
-          [ngClass]="
-            liquidationExpensesList[0]?.blocked ? 'btn-primary' : 'btn-danger'
-          "
-          (click)="
-            open(modalTemplate, liquidationExpensesList[0].expense_id || null)
-          "
-        >
-          @if (liquidationExpensesList[0]?.blocked) { Abrir Liquidación } @else
-          { Cerrar Liquidación }
-        </button>
-      </div>
-      <div
-        class="col-3"
-        style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        "
-      >
-        <h5 class="card-title"><b>Estado</b></h5>
-        <p class="card-text">
-          {{ liquidationExpensesList[0].period?.state }}
-        </p>
-      </div>
 
-      <!-- Card para Período -->
-      <div
-        class="col-3"
-        style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        "
-      >
-        <h5 class="card-title"><b>Período</b></h5>
-        <p class="card-text">
-          {{ liquidationExpensesList[0].period?.month }} -
-          {{ liquidationExpensesList[0].period?.year }}
-        </p>
-      </div>
+      <input
+        type="radio"
+        class="btn-check"
+        name="btnradio"
+        id="btnradio3"
+        autocomplete="off"
+        (change)="changeStateQuery('Ordinarias')"
+        checked
+      />
+
+      <label class="btn btn-outline-primary" for="btnradio3">Ordinarias</label>
     </div>
   </div>
+  <table
+    class="table table-striped fixed-table"
+    style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
+    #plotsTable
+  >
+    <thead>
+      <tr>
+        <th scope="col">Categoria</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (bill of listLooking[0].liquidation_expenses_details; track $index) {
 
-  @for (liquid of liquidationExpensesList; track $index) {
-  <div>
-    <div style="display: flex; flex-direction: row; gap: 6px">
-      <h4>{{ liquid.bill_type?.name }}</h4>
-      <button
-        class="btn btn-success"
-        (click)="seeDetail(liquid.expense_id, liquid.period?.id || null)"
-      >
-        Ver
-      </button>
-      <button
-        class="btn"
-        [ngClass]="liquid.close ? 'btn-primary' : 'btn-danger'"
-        (click)="closeLiquidation(liquid.expense_id)"
-      >
-        @if (liquid.close) { Desbloquear } @else { Bloquear }
-      </button>
-    </div>
+      <tr>
+        <td style="width: 33%">{{ bill.category?.name }}</td>
+        <td style="width: 33%">{{ listLooking[0].bill_type?.name }}</td>
+        <td style="width: 33%">{{ bill.quantity }}</td>
+        <td style="width: 33%">${{ bill.amount }}</td>
+        <td></td>
+      </tr>
+      }
+    </tbody>
+  </table>
 
-      <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" #plotsTable>
-      <thead>
-        <tr>
-          <th scope="col">Categoria</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Cantidad</th>
-          <th scope="col">Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (bill of liquid.liquidation_expenses_details; track $index) {
-
-        <tr>
-          <td style="width: 33%">{{ bill.category?.name }}</td>
-          <td style="width: 33%">{{ liquid.bill_type?.name }}</td>
-          <td style="width: 33%">{{ bill.quantity }}</td>
-          <td style="width: 33%">${{ bill.amount }}</td>
-          <td></td>
-        </tr>
-        }
-      </tbody>
-    </table>
-    <div style="width: 100%; justify-content: end">
-      <p style="text-align: end">
-        <b>Total: ${{ liquid.total_amount }} </b>
-      </p>
-    </div>
-  </div>
-  } } @else { No hay liquidaciones }
+  }
 </div>
 
 <ng-template #modalTemplate let-modal>
@@ -123,4 +79,3 @@
     (onCancel)="modal.dismiss('cancel')"
   ></app-expenses-modal>
 </ng-template>
-

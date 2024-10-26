@@ -40,7 +40,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
   items: any[] = [];
   sizeOptions: number[] = [];
-
+  type:string="Ordinarias"
   route: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
   liquidationExpensesList: LiquidationExpense[] = [];
@@ -50,6 +50,8 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   selectedPeriodId: number | null = null;
   //USO DEL MODAL CORRECTO.
   private modalService = inject(NgbModal);
+
+  listLooking:LiquidationExpense[]=[]
 
   open(content: TemplateRef<any>, id: number | null) {
     this.selectedItemId = id;
@@ -61,13 +63,25 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
   }
   //modal
+  changeStateQuery(text:string){
+    this.type = text
+    this.loadLookList()
 
+  }
+
+  loadLookList(){
+    this.listLooking = this.liquidationExpensesList.filter(liq=>liq.bill_type?.name===this.type)
+  }
   ngOnInit(): void {
     this.loadId();
     this.loadList(this.id);
     this.loadList(this.id);
 
   }
+
+  
+
+
   private loadId(): void {
     this.route.paramMap.subscribe((params) => {
       this.id = Number(params.get('period_id'));
@@ -82,6 +96,8 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
         .subscribe((data: LiquidationExpense[]) => {
           console.log(data)
           this.liquidationExpensesList = data;
+          this.loadLookList()
+
         });
     }
   }

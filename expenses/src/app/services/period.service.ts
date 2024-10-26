@@ -1,9 +1,10 @@
 
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import Period from '../models/period';
 import { PORT } from '../const';
+import { Page } from './expense.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +29,9 @@ export class PeriodService {
     }
 
   }
-  getOpens():Observable<Period[]>{
+  getOpens():Observable<Period>{
     try{4
-      const response = this.http.get<Period[]>(`${this.apiUrl}/open`)
+      const response = this.http.get<Period>(`${this.apiUrl}/open`)
        return response
      }catch( e) {
        console.log(e)
@@ -38,12 +39,17 @@ export class PeriodService {
      }
   }
 
-  getPage(size: number, page:number):Observable<Period[]>{
+  getPage(size: number, page:number,state:string|null):Observable<Page<Period>>{
+    let params = new HttpParams()
+    .set('size', size.toString())
+    .set('page', page.toString());
 
-    try{
-      return this.http.get<{ content: Period[] }>(`${this.apiUrl}/page?size=${size}&page=${page}`).pipe(
-        map(response => response.content)
-      );
+  if (state) {
+    params = params.set('state', state);
+  }
+  console.log(params)
+  try{
+      return this.http.get<Page<Period>>(`${this.apiUrl}/page`, { params });
      }catch( e) {
        console.log(e)
        throw  e
