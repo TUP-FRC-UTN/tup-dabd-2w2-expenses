@@ -4,4 +4,6 @@ export default class Category{
     description:string='';
 
     name:string='';
+
+    is_delete:boolean=false;
 }
