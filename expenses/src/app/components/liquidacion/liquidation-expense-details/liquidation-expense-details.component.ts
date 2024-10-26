@@ -9,6 +9,7 @@ import LiquidationExpense from '../../../models/liquidationExpense';
 import { FormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import { BillService } from '../../../services/bill.service';
 
 @Component({
   selector: 'app-liquidation-expense-details',
@@ -28,6 +29,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
   private readonly location = inject(Location);
   private readonly service = inject(LiquidationExpenseService);
+  private readonly billsService = inject(BillService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private modalService = inject(NgbModal);
@@ -53,6 +55,10 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         });
       }
     });
+  }
+
+  private getBills(itemsPerPage: number, page: number, period: number, category: number, type: number, status: string) {
+
   }
 
   goBack() {
@@ -88,16 +94,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   imprimir() {
 
   }
-
-  // showModal(title: string, message: string) {
-  //   // this.modalTitle = title;
-  //   // this.modalMessage = message;
-  //   // this.isModalOpen = true;
-
-  //   const modalRef = this.modalService.open(InfoModalComponent);
-  //   modalRef.componentInstance.title = title;
-  //   modalRef.componentInstance.body = message;
-  // }
 
   showmodal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {

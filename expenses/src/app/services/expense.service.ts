@@ -31,12 +31,12 @@ export class ExpenseServiceService {
     }
     if (plotId) {
       params = params.set('plotId', plotId.toString());
-     
+
     }
     if (typeId) {
       params = params.set('typeId', typeId.toString());
     }
-  
+
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }

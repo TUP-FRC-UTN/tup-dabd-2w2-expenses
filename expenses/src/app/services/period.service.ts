@@ -53,7 +53,7 @@ export class PeriodService {
 
   new():Observable<void>{
       return this.http.post<void>(this.apiUrl, null)
- 
+
   }
 
   closePeriod(id:number):Observable<void>{
