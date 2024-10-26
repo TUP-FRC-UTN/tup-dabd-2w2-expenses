@@ -19,7 +19,12 @@
         <td>{{expense.typePlot}} </td>
         <td>{{expense.percentage }} </td>
         <td>{{expense.billType}} </td>
-        <td>${{expense.totalAmount}} </td>
+        <td>${{expense.totalAmount.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}} </td>
       </tr>
       }
     </tbody>
