@@ -1,8 +1,7 @@
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { Charge } from '../../../models/charge';
+import { Component, ElementRef, inject, NgModule, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Charge, ChargeFilters } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
 import { CommonModule } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
@@ -17,14 +16,19 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 //import * as XLSX from 'xlsx'
 //import * as XLSX from 'xlsx';   // Para exportar a Excel
 //import jsPDF from 'jspdf';      // Para exportar a PDF
-import 'jspdf-autotable';       // Para generar tablas en PDF
+//import 'jspdf-autotable';       // Para generar tablas en PDF
 //import moment from 'moment';
-import { Subject } from 'rxjs';
+//import { Subject } from 'rxjs';
 //import { debounceTime, distinctUntilChanged, switchMap, tap, finalize, takeUntil, max } from 'rxjs/operators';
-import 'datatables.net';
-import 'datatables.net-bs5';
-import 'bootstrap';
+// import 'datatables.net';
+// import 'datatables.net-bs5';
+// import 'bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
+import Period from '../../../models/period';
+import {NgPipesModule} from "ngx-pipes";
+import { TableComponent } from 'ngx-dabd-grupo01';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export interface ViewCharge {
   amount: number;
@@ -39,14 +43,134 @@ export interface ViewCharge {
 @Component({
   selector: 'app-list-charges',
   standalone: true,
-  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent, ExpensesChargesNavComponent,FormsModule,ReactiveFormsModule],
+  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent, 
+    ExpensesChargesNavComponent,FormsModule,ReactiveFormsModule,NgPipesModule,TableComponent, ExpensesModalComponent,
+  NgbModule],
   templateUrl: './list-charges.component.html',
   styleUrl: './list-charges.component.css',
 })
 
 export class ListChargesComponent implements OnInit {
+  searchTerm = '';
+  selectedLotId: number = 0;
+  selectedCategoryId: number = 0;
+  selectedPeriodId: number = 0;
+
+  charges: Charge[] = []
+  lots : Lot[] = []
+  categorias: CategoryCharge[] = []
+  periodos : Period[] = []
+
+  //Criterios de Filtros
+  applyFilterWithNumber: boolean = false;
+  applyFilterWithCombo: boolean = false;
+  contentForFilterCombo : string[] = []
+  actualFilter : string | undefined = ChargeFilters.NOTHING;
+  filterTypes = ChargeFilters;
+  filterInput : string = "";
+
+  totalElements: number = 0;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  totalItems: number = 0;
+  cantPages: number[] = [];
+  indexActive = 1;
+
+  applyFilters() {
+    this.currentPage = 0
+    //this.loadExpenses();
+    //this.updateVisiblePages();
+  }
+  clearFilters(){
+
+  }
+
+  imprimir() {
+    console.log('Imprimiendo')
+    // const doc = new jsPDF();
+    
+    // // Título del PDF
+    // doc.setFontSize(18);
+    // doc.text('Expenses Report', 14, 20);
+
+    // // Llamada al servicio para obtener las expensas
+    // this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+    //   // Usando autoTable para agregar la tabla
+    //   autoTable(doc, {
+    //     startY: 30,
+    //     head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
+    //     body: expenses.content.map(expense => [
+    //       expense.period.month,
+    //       expense.period.year,
+    //       expense.totalAmount,
+    //       expense.state,
+    //       expense.plotNumber,
+    //       expense.percentage,
+    //       expense.billType
+    //     ]),
+    //   });
+
+    //   // Guardar el PDF después de agregar la tabla
+    //   doc.save('expenses_report.pdf');
+    //   console.log('Impreso')
+    // });
+  }
+    
+  downloadTable() {
+    // this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+    //   // Mapear los datos a un formato tabular adecuado
+    //   const data = expenses.content.map(expense => ({
+    //     'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
+    //     'Monto Total': expense.totalAmount,
+    //     'Fecha de liquidación': expense.liquidationDate,
+    //     'Estado': expense.state,
+    //     'Número de lote': expense.plotNumber,
+    //     'Typo de lote': expense.typePlot,
+    //     'Porcentaje': expense.percentage,
+    //     'Tipo de expensa': expense.billType
+    //   }));
   
-  charges: Charge[] = [];
+    //   // Convertir los datos tabulares a una hoja de cálculo
+    //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    //   XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+    //   XLSX.writeFile(wb, this.fileName);
+    // })}
+  }
+  open(content: TemplateRef<any>, id: number | null) {
+    //this.idClosePeriod = id;
+    const modalRef = this.modalService.open(content, {
+      ariaLabelledBy: 'modal-basic-title',
+    });
+    modalRef.componentInstance.onAccept.subscribe(() => {
+      //this.closePeriod();
+    });   
+     //this.idClosePeriod = null;
+  }
+
+  deleteCharge2(){
+
+  }
+
+  changeIndex(cant: number) {
+    this.indexActive = cant;
+    //this.loadPaged(cant);
+  }
+
+  onSelectChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.pageSize = Number(selectElement.value);
+    //this.loadPaged(this.indexActive)
+    //this.cargarPaginado();
+  }
+
+  addCharge(){
+    
+  }
+
+  //COMPONENTES VIEJOS FIJARSE QUE VOY  A SEGUIR UTILIZANDO
+  //charges: Charge[] = [];
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
 
@@ -55,16 +179,11 @@ export class ListChargesComponent implements OnInit {
   categoryCharges: CategoryCharge[] = [];
   params : number[] = [];
 
-  totalElements: number = 0;
-  currentPage: number = 0;
-  pageSize: number = 10;
-  totalPages: number = 0;
-  totalItems: number = 0;
   //rowsPerPage = 10;
-  lots: Lot[] = [];
+  //lots: Lot[] = [];
 
   datatable : any;
-  private dateChangeSubject = new Subject<{ from: string, to: string }>();
+  //private dateChangeSubject = new Subject<{ from: string, to: string }>();
   fileName : string = "Charges";
 
   private readonly periodService = inject(PeriodService);

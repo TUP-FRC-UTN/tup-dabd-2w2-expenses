@@ -32,11 +32,11 @@ export class PeriodService {
   getOpens():Observable<Period>{
     try{4
       const response = this.http.get<Period>(`${this.apiUrl}/open`)
-       return response
-     }catch( e) {
-       console.log(e)
-       throw  e
-     }
+        return response
+      }catch( e) {
+        console.log(e)
+        throw  e
+      }
   }
 
   getPage(size: number, page:number,state:string|null):Observable<Page<Period>>{

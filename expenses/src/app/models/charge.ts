@@ -39,3 +39,10 @@ export interface PeriodCharge {
     end_date: Date ;
     status : string;
 }
+
+export enum ChargeFilters {
+    NOTHING = 'NOTHING',
+    PERIOD_ID = 'PERIOD_ID',
+    LOT_NUMBER = 'LOT_NUMBER',
+    CATEGORY_CHARGE = 'CATEGORY_CHARGE'
+  }

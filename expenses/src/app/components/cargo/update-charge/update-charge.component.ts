@@ -3,7 +3,7 @@ import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryCharge, Charge } from '../../../models/charge';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import moment from 'moment';
+//import moment from 'moment';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Lot from '../../../models/lot';
@@ -47,7 +47,7 @@ export class UpdateChargeComponent implements OnInit {
   loadData() {
     if (this.charge) {
       this.chargeForm.patchValue({
-        fechaEmision: (moment(this.charge.date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
+        //fechaEmision: (moment(this.charge.date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
         lote: this.charge.lotId,
         tipo: this.charge.categoryCharge.name,
         periodo: this.charge.period,
