@@ -3,9 +3,6 @@
       
       <div class="position-relative">
         <h2>Listado de expensas</h2>
-        <button class="btn btn-danger position-absolute top-0 end-0">
-          <i class="bi bi-door-open-fill"></i> Logout
-        </button>
       </div>
       <div class="input-group" style="max-width: 350px">
         <span class="input-group-text" id="search-icon">
@@ -18,18 +15,8 @@
           aria-describedby="search-icon"
         />
       </div>
-      <div class="col-auto">
-        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#filterModal">
-         <i class="bi bi-search"></i> Buscar
-        </button>
-     </div>
-     <!-- Botón que abre el modal -->
-
-     <div class="col-auto">
-       <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#filterModal">
-        <i class="bi bi-filter"></i> Filtrar
-       </button>
-    </div>
+     
+    
 
 <!-- Modal con los selectores -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -70,19 +57,12 @@
         </div>
       </div>
      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="clearFilters()">
-          <i class="fas fa-trash-alt"></i> Limpiar filtros<!-- Icono de papelera -->
-        </button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" (click)="applyFilters()">Aplicar</button>
-      </div>
     </div>
   </div>
 </div>
-    
-      <div class="col row d-flex justify-content-end">
-        <div class="col-1">
+
+      <div class="col d-flex gap-1 justify-content-end">
+        <div class="col-auto">
           <button class="btn" (click)="downloadTable()" style="background-color: #239b56  ; color: white;">
               <i class="bi bi-file-earmark-excel"></i><!-- Icono de excel -->
           </button>
@@ -94,6 +74,28 @@
         </div>
       </div>
     </div>
+    <br>
+    <div class="row">
+      <div class="col-auto">
+        <div class="btn-group me-2">
+          <button type="button" class="btn btn-outline-danger" (click)="clearFilters()">
+            <i class="bi bi-trash-fill"></i> Limpiar
+          </button>
+          
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-funnel-fill"></i> Filtros
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item">Manzana</a></li>
+            <li><a class="dropdown-item">Estado de Lote</a></li>
+            <li><a class="dropdown-item">Tipo de Lote</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+
    <br>
     <div class="card">
       
@@ -135,6 +137,7 @@
     <br>
     <div class="row d-flex align-items-end">
       <div class="col-2">
+        <label for="">Cantidad de Paginas</label>
         <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
           <option value="10">10</option>
           <option value="25">25</option>

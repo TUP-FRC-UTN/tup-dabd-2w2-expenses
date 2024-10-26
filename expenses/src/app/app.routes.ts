@@ -8,7 +8,6 @@ import { LiquidationExpenseDetailsComponent } from './components/liquidacion/liq
 import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
-import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
 import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
 
 

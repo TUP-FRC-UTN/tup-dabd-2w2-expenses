@@ -18,6 +18,7 @@ import BillType from '../../../../models/billType';
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as table from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-expense',
@@ -27,6 +28,9 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './expense.component.css'
 })
 export class ExpenseComponent implements OnInit{
+onFilterTextBoxChanged($event: Event) {
+throw new Error('Method not implemented.');
+}
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute); 
 
@@ -65,9 +69,8 @@ export class ExpenseComponent implements OnInit{
 
   ngOnInit(): void {
     this.currentPage = 0
-    this.loadExpenses();
     this.loadSelect()
-    this.updateVisiblePages();
+    this.loadExpenses()
   }
 
   loadExpenses(page: number = 0, size: number = 10): void {
@@ -76,8 +79,8 @@ export class ExpenseComponent implements OnInit{
       this.totalPages = data.totalPages;  // Número total de páginas
       this.totalItems = data.totalElements;  // Total de registros
       this.currentPage = data.number; 
-    });
-    this.updateVisiblePages();
+      this.updateVisiblePages();
+    });    
   }
 
  
@@ -104,6 +107,7 @@ export class ExpenseComponent implements OnInit{
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
     }
+    
   }
 
   onPageChange(page: number): void {
