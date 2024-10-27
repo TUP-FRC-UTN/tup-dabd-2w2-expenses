@@ -213,7 +213,7 @@
     </div>
 
     <div class="row d-flex align-items-between">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <label for="rowsPerPageSelect">Mostrar </label>
         <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">            
           <option value=10>10</option>
@@ -243,7 +243,15 @@
             </li>
           </ul>
         </nav>
-      </div>        
+        
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+      
+              
     </div>  
 
 </div>

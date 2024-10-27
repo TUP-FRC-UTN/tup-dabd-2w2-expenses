@@ -120,26 +120,37 @@
         ></textarea>
       </div>
 
-      <div class="form-row justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">
+      <div class="form row mt-2">
         <button
           type="button"
-          class="btn btn-danger mr-2 "
-          
-          (click)="onCancel()"
+          class="btn btn-secondary col-1 mr-2 "   
+          (click)="onBack()"      
         >
-          Cancelar
+          Volver
         </button>
-        <div class="m-2"></div>
-        <button
+        <div class="col justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">
         
-          type="submit"
-          class="btn btn-primary"
+          <button
+            type="button"
+            class="btn btn-danger mr-2 "
+            
+            (click)="onCancel()"
+          >
+            Cancelar
+          </button>
+          <div class="m-2"></div>
+          <button
           
-          [disabled]="chargeForm.invalid"
-        >
-          Guardar
-        </button>
+            type="submit"
+            class="btn btn-primary"
+            
+            [disabled]="chargeForm.invalid"
+          >
+            Guardar
+          </button>
+        </div>
       </div>
+      
     </form>
   </div>
   

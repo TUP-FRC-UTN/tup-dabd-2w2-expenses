@@ -278,6 +278,11 @@ export class ListChargesComponent implements OnInit {
     });
     
   }
+
+  showInfo(){
+    
+  }
+
   isClosed(period : PeriodCharge) : boolean {
     debugger;
     if(period.state === 'closed'){

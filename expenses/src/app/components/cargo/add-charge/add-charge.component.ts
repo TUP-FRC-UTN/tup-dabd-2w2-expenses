@@ -76,6 +76,10 @@ export class AddChargeComponent implements OnInit{
     this.loadSelect();
   }
 
+  onBack() {
+    this.router.navigate([`cargos`]);
+  }
+
   onSubmit(): void {
     console.log(this.chargeForm.value)
     console.log(this.chargeForm.valid)
