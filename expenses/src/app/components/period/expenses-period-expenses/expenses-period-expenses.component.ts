@@ -3,9 +3,10 @@ import { ExpensesPeriodNavComponent } from '../../navs/expenses-period-nav/expen
 import { ExpenseServiceService } from '../../../services/expense.service';
 import Expense from '../../../models/expense';
 import { ActivatedRoute } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-expenses-period-expenses',
@@ -19,7 +20,7 @@ export class ExpensesPeriodExpensesComponent implements OnInit {
 finde() {
   this.loadList()
 }
-
+  toastService:ToastService = inject(ToastService)
   cantPages: number = 1;
   indexActive = 1;
   size = 10;

@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import autoTable from 'jspdf-autotable';
 import jsPDF from 'jspdf';
 import { timeout } from 'rxjs';
+import { ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -35,6 +36,7 @@ export class ExpensesPeriodListComponent implements OnInit {
   typeFilter:string|null=null
   year:number|null = null
   month:number|null=null
+  toastService:ToastService =inject(ToastService)
   ngOnInit(): void {
     this.loadPaged(1);
   }
@@ -105,7 +107,12 @@ export class ExpensesPeriodListComponent implements OnInit {
           },
           error: (err) => {
             console.log(err)
-            this.openErrorModal(err);
+            if(err){
+              this.toastService.sendError(err.error.message)
+            } else{
+              this.toastService.sendError("Ocurrio un error")
+            }
+
           }
         });
   
