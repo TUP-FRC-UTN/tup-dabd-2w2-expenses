@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { ModalService } from 'ngx-dabd-2w1-core';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-add-charge',
   standalone: true,
@@ -29,6 +30,7 @@ export class AddChargeComponent implements OnInit{
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
+  private router = inject(Router);
   lots : Lot[] = []
 
   private readonly periodService = inject(PeriodService)
@@ -41,6 +43,7 @@ export class AddChargeComponent implements OnInit{
 
   onCancel() {
     this.chargeForm.reset();
+    this.router.navigate([`cargos`])
   }
 
   loadSelect() {

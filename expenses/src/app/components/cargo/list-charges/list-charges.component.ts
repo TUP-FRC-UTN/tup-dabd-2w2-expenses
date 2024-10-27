@@ -1,5 +1,5 @@
 import { Component, ElementRef, inject, NgModule, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Charge, ChargeFilters } from '../../../models/charge';
+import { Charge, ChargeFilters, PeriodCharge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
 import { UpdateChargeComponent } from '../update-charge/update-charge.component';
@@ -30,16 +30,8 @@ import {NgPipesModule} from "ngx-pipes";
 import { TableComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { debounceTime } from 'rxjs';
 
-export interface ViewCharge {
-  amount: number;
-    categoryCharge: CategoryCharge;
-    chargeId: number;
-    date: Date;
-    lot: number;
-    period: number;
-    description: string;
-}
 
 @Component({
   selector: 'app-list-charges',
@@ -58,6 +50,7 @@ export class ListChargesComponent implements OnInit {
   selectedPeriodId: number = 0;
 
   charges: Charge[] = []
+  chargeId : number = 0;
   lots : Lot[] = []
   categorias: CategoryCharge[] = []
   periodos : Period[] = []
@@ -79,11 +72,16 @@ export class ListChargesComponent implements OnInit {
   indexActive = 1;
 
   applyFilters() {
-    this.currentPage = 0
-    //this.loadExpenses();
+    this.currentPage = 0;
+    this.cargarPaginado();
     //this.updateVisiblePages();
   }
   clearFilters(){
+    this.selectedCategoryId = 0;
+    this.selectedLotId = 0;
+    this.selectedPeriodId = 0;
+    this.cargarPaginado();
+    this.searchTerm = "";
 
   }
 
@@ -140,17 +138,23 @@ export class ListChargesComponent implements OnInit {
     // })}
   }
   open(content: TemplateRef<any>, id: number | null) {
-    //this.idClosePeriod = id;
+    //this.idClosePeriod = id;    
+    this.chargeId = id!;
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
     modalRef.componentInstance.onAccept.subscribe(() => {
-      //this.closePeriod();
+      debugger
+      this.deleteCharge(this.chargeId);
     });   
      //this.idClosePeriod = null;
   }
 
   deleteCharge2(){
+    if(this.chargeId != 0){
+      this.deleteCharge(this.chargeId);
+    }
+
 
   }
 
@@ -181,6 +185,8 @@ export class ListChargesComponent implements OnInit {
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
   private readonly router = inject(Router);
+  private readonly periodService = inject(PeriodService);
+  private readonly lotsService = inject(LotsService);
 
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
@@ -194,14 +200,14 @@ export class ListChargesComponent implements OnInit {
   //private dateChangeSubject = new Subject<{ from: string, to: string }>();
   fileName : string = "Charges";
 
-  private readonly periodService = inject(PeriodService);
-  private readonly lotsService = inject(LotsService);
 
-  //f//iltros : FormGroup;
+
+  //filtros : FormGroup;
 
   @ViewChild('exampleModal') exampleModal!: ElementRef;
 
-  constructor() {}
+  constructor() {
+  }
 
   // openModal() {
   //   const modal = new b.Modal(this.exampleModal.nativeElement);
@@ -209,14 +215,10 @@ export class ListChargesComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-    console.log(this.currentPage);
     //$.noConflict();
     this.loadSelect();
-    console.log(this.currentPage);
     this.loadCategoryCharge();  
-    console.log(this.currentPage);  
     this.cargarPaginado()
-    console.log(this.currentPage);
     //this.loadCharges(0,10);
     //this.configDataTable();
   }
@@ -252,16 +254,40 @@ export class ListChargesComponent implements OnInit {
     this.cargarPaginado();
   }
   cargarPaginado() {
-    console.log(this.currentPage);
+    console.log("Periodo Id: " + this.selectedPeriodId);
+    console.log("Categoria Id: " + this.selectedCategoryId);
+    console.log("Lote Id: " + this.selectedLotId);
+    var period = undefined;
+    var category = undefined;
+    var lot = undefined;
+    if(this.selectedPeriodId != 0){
+      period = this.selectedPeriodId 
+    }
+    if(this.selectedCategoryId != 0){
+      category = this.selectedCategoryId 
+    }
+    if(this.selectedLotId != 0){
+      lot = this.selectedLotId 
+    }
+
     // Llamar al servicio con la paginación desde el backend.
-    this.chargeService.getCharges(this.currentPage, this.pageSize, undefined, undefined, undefined).subscribe(response => {
-      
+    this.chargeService.getCharges(this.currentPage, this.pageSize, period, lot,category).subscribe(response => {
+
+      console.log("Cargos :" + JSON.stringify(response.content));
       this.charges = response.content;  // Datos de la página actual
       this.totalPages = response.totalPages;  // Número total de páginas
       this.totalItems = response.totalElements;  // Total de registros
       this.currentPage = response.number;
-      console.log(this.currentPage); 
+      console.log(this.charges);
     });
+    
+  }
+  isClosed(period : PeriodCharge) : boolean {
+    debugger;
+    if(period.state === 'closed'){
+      return true;
+    }
+    return false;
   }
   getPlotNumber(lotId : number){
     const lot = this.lots.find(lot => lot.id === lotId);
@@ -269,9 +295,8 @@ export class ListChargesComponent implements OnInit {
   }
 
   loadSelect() {
-    this.periodService.get()
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periodos = data;
     })
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
@@ -279,7 +304,7 @@ export class ListChargesComponent implements OnInit {
   }
   loadCategoryCharge(){
     this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
-      this.categoryCharges = data;
+      this.categorias = data;
     })
   }
 
@@ -307,6 +332,7 @@ export class ListChargesComponent implements OnInit {
     modalRef.result.then(
       (result) => {
         if (result) {
+          debugger
           this.deleteCharge(result);
           const modalRefer = this.modalService.open(NgModalComponent);
           modalRefer.componentInstance.message = '¡El cargo ha sido eliminado correctamente!'
@@ -318,11 +344,25 @@ export class ListChargesComponent implements OnInit {
   }
 
   deleteCharge(chargeId: number) {
-    this.chargeService.deleteCharge(chargeId).subscribe(() => {
-      this.charges = this.charges.filter(
-        (charge) => charge.fineId !== chargeId
-      );
+    this.chargeService.deleteCharge(chargeId).subscribe({
+        next: () => {
+            //alert("éxito");
+            this.currentPage = 0;
+            this.clearFilters();
+            this.cargarPaginado();
+        },
+        error: (err: Error) => {
+            this.openErrorModal(err);
+        }
     });
+    this.chargeId = 0;
+}
+
+  openErrorModal(err:any) {
+    console.log(err)
+    const modalRef = this.modalService.open(NgModalComponent);
+    modalRef.componentInstance.title = 'Error';
+    modalRef.componentInstance.message = err?.error.message;
   }
 
   openUpdateModal(charge: Charge) {

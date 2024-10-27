@@ -122,7 +122,7 @@
             maximumFractionDigits: 2
           }) }}</td>
           <td  style="display: flex; flex-direction: row; gap: 2px; justify-content: center;" >
-            @if(charge.categoryCharge.name == "Multa" ||charge.period == 1) {
+            @if(charge.categoryCharge.name == "Multa" ||charge.period.state == "CLOSE") {
               
               <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
                 <i class="bi bi-eye"></i>
@@ -146,7 +146,7 @@
                       >Ver</a
                     ><!--aca modal ver cargo-->
                   </li>            
-                  @if (charge.period== 0) {
+                  @if (charge.period.state == "OPEN") {
                   <li>
                     <a
                       class="dropdown-item btn btn-info"
@@ -250,7 +250,7 @@
 </div>
 
 
-<ng-template #modalTemplate let-modal>
+<ng-template #modalTemplate let-modal >
   <app-expenses-modal
     [title]="'Eliminar Cargo'"
     [paragraph]="'¿Desea eliminar el cargo registado al lote?'"
@@ -258,6 +258,24 @@
     (onCancel)="modal.dismiss('cancel')"
   ></app-expenses-modal>
 </ng-template>
+
+<!-- Modal --> 
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Eliminar Cargo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              ¿Estás seguro de que deseas eliminar este Cargo?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div> -->
 
 <!------------------- LISTADO VIEJO, USAR LOS DATOS------------------------------------------------------------------------------------->
 <!-- <div class="container mt-2">

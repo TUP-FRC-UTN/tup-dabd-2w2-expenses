@@ -5,7 +5,7 @@ export interface Charge2 {
     fechaEmision: string;
     lote: number;
     tipo: string;
-    periodo: string;
+    periodo: PeriodCharge;
     monto: number;
     descripcion: string;
 }
@@ -17,8 +17,7 @@ export interface Charge {
     date: Date;
     fineId: number;
     lotId: number;
-    period: number;
-    periodCharge: PeriodCharge;
+    period: PeriodCharge;
     status: boolean;
     description: string;
     
@@ -31,13 +30,10 @@ export interface CategoryCharge {
 }
 
 export interface PeriodCharge {
-    id: number ;
     month: number;
     year: number ;
     state:string;
-    start_date : Date;
-    end_date: Date ;
-    status : string;
+    id: number ;
 }
 
 export enum ChargeFilters {
@@ -45,4 +41,4 @@ export enum ChargeFilters {
     PERIOD_ID = 'PERIOD_ID',
     LOT_NUMBER = 'LOT_NUMBER',
     CATEGORY_CHARGE = 'CATEGORY_CHARGE'
-  }
+}
