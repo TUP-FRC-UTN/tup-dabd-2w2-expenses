@@ -141,7 +141,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
   }
 
-  showmodal(content: TemplateRef<any>) {
+  showModal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });

@@ -3,19 +3,25 @@ import {
   inject,
   OnInit,
   TemplateRef,
-  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import LiquidationExpense from '../../../models/liquidationExpense';
-import { TableColumn, TableComponent } from 'ngx-dabd-grupo01';
+import { TableComponent } from 'ngx-dabd-grupo01';
 import { ExpensesPeriodListComponent } from '../../period/expenses-period-list/expenses-period-list.component';
 import { ExpensesPeriodNavComponent } from "../../navs/expenses-period-nav/expenses-period-nav.component";
 import { NgModalComponent } from "../../modals/ng-modal/ng-modal.component";
+import { InfoModalComponent } from "../../modals/info-modal/info-modal.component";
+import { FormsModule } from '@angular/forms';
+import { NgPipesModule } from 'ngx-pipes';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx'
+
 @Component({
   selector: 'app-expenses-liquidation-expense',
   standalone: true,
@@ -26,16 +32,20 @@ import { NgModalComponent } from "../../modals/ng-modal/ng-modal.component";
     TableComponent,
     ExpensesPeriodListComponent,
     ExpensesPeriodNavComponent,
-    NgModalComponent
+    NgModalComponent,
+    InfoModalComponent,
+    FormsModule,
+    NgPipesModule
 ],
   templateUrl: './expenses-liquidation-expense.component.html',
   styleUrl: './expenses-liquidation-expense.component.css',
 })
 export class ExpensesLiquidationExpenseComponent implements OnInit {
-  liquidationExpensesService: LiquidationExpenseService = inject(
-    LiquidationExpenseService
-  );
-  
+
+  liquidationExpensesService: LiquidationExpenseService = inject(LiquidationExpenseService);
+
+  private readonly location = inject(Location);
+
   //table
 
   items: any[] = [];
@@ -51,6 +61,8 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   //USO DEL MODAL CORRECTO.
   private modalService = inject(NgbModal);
 
+  searchTerm = '';
+
   listLooking:LiquidationExpense[]=[]
 
   open(content: TemplateRef<any>, id: number | null) {
@@ -58,8 +70,6 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
-
-
 
   }
   //modal
@@ -72,6 +82,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   loadLookList(){
     this.listLooking = this.liquidationExpensesList.filter(liq=>liq.bill_type?.name===this.type)
   }
+
   ngOnInit(): void {
     this.loadId();
     this.loadList(this.id);
@@ -79,14 +90,11 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
   }
 
-  
-
 
   private loadId(): void {
     this.route.paramMap.subscribe((params) => {
       this.id = Number(params.get('period_id'));
     });
-    console.log(this.liquidationExpensesList);
   }
 
   private loadList(id: number | null) {
@@ -94,19 +102,16 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
       this.liquidationExpensesService
         .get(id)
         .subscribe((data: LiquidationExpense[]) => {
-          console.log(data)
           this.liquidationExpensesList = data;
           this.loadLookList()
-
         });
     }
   }
 
 
-  closeLiquidation(id: number | null) {
-    if (id) {
-      console.log(id);
-      this.liquidationExpensesService.putCloseLiquidation(id).subscribe({
+  closeLiquidation() {
+    if (this.listLooking[0].expense_id) {
+      this.liquidationExpensesService.putCloseLiquidation(this.listLooking[0].expense_id).subscribe({
         next: () => {
           console.log('Liquidación cerrada exitosamente');
           this.loadList(this.id);
@@ -131,11 +136,12 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     }
   }
 
-  seeDetail(id: number | null,period_id:number|null) {
-    if (id === null) return;
-    
-    this.router.navigate([`periodo/${period_id}/liquidacion/${id}`]);
+  seeDetail() {
+    let id = this.listLooking[0].expense_id;
+
+    this.router.navigate([`periodo/${this.id}/liquidacion/${id}`]);
   }
+
   openErrorModal(err:any) {
     console.log(err)
     const modalRef = this.modalService.open(NgModalComponent);
@@ -143,4 +149,69 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     modalRef.componentInstance.message = err?.error.message;
   }
 
+  showModal(content: TemplateRef<any>) {
+    const modalRef = this.modalService.open(content, {
+      ariaLabelledBy: 'modal-basic-title',
+    });
+  }
+
+
+  goBack() {
+    this.location.back();
+  }
+
+  imprimir() {
+    console.log('Imprimiendo');
+    const doc = new jsPDF();
+
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Expenses Report', 14, 20);
+
+    if (this.id) {
+      this.liquidationExpensesService
+          .get(this.id)
+          .subscribe((data: LiquidationExpense[]) => {
+              const doc = new jsPDF();
+
+              // Título del PDF
+              doc.setFontSize(18);
+              doc.text('Expenses Report', 14, 20);
+
+              // Usando autoTable para agregar la tabla
+              autoTable(doc, {
+                  startY: 30,
+                  head: [['Categoria', 'Tipo', 'Cantidad', 'Monto']],
+                  body: data.flatMap(liquidation =>
+                      liquidation.liquidation_expenses_details.map(liquidationExpense => [
+                          liquidationExpense.category?.name || 'N/A',
+                          liquidation.bill_type?.name || 'N/A',
+                          liquidationExpense.quantity || 0,
+                          liquidationExpense.amount || 0,
+                      ])
+                  )
+              });
+
+              // Guardar el PDF después de agregar la tabla
+              doc.save('liquidation_expenses_report.pdf');
+              console.log('Impreso');
+          });
+    }
+  };
+
+  downloadTable() {
+    // Mapear los datos a un formato tabular adecuado
+    const data = this.listLooking[0].liquidation_expenses_details.map(liquidationExpense => ({
+      'Categoria':  `${liquidationExpense.category}`,
+      'Tipo': `${this.listLooking[0].bill_type?.name}`,
+      'Cantidad': `${liquidationExpense.quantity}`,
+      'Monto': `${liquidationExpense.amount}`
+    }));
+
+    // Convertir los datos tabulares a una hoja de cálculo
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+    XLSX.writeFile(wb, "LiquidacionDeExpensas.xlsx");
+  }
 }
