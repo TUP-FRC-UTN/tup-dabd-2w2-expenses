@@ -35,6 +35,7 @@ export class ExpenseServiceService {
     }
     if (typeId) {
       params = params.set('typeId', typeId.toString());
+      console.log(typeId)
     }
 
     if (sortField) {

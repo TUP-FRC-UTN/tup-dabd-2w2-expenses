@@ -10,6 +10,13 @@ import { FormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
+import { Bill } from '../../../models/bill';
+import { CategoryService } from '../../../services/category.service';
+import Category from '../../../models/category';
+import { NgPipesModule } from 'ngx-pipes';
+import * as XLSX from 'xlsx'
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-liquidation-expense-details',
@@ -20,7 +27,8 @@ import { BillService } from '../../../services/bill.service';
     CommonModule,
     FormsModule,
     InfoModalComponent,
-    NgModalComponent
+    NgModalComponent,
+    NgPipesModule
 ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
@@ -33,7 +41,11 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private modalService = inject(NgbModal);
+  private readonly categoryService = inject(CategoryService);
+
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
+  bills: Bill[] = [];
+  categories: Category[] = [];
 
   currentPage = 1;
   itemsPerPage = 10;
@@ -41,28 +53,50 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   totalPages = 0;
   pages: number[] = [];
 
+  category: number | null = null;
+  period: number | null = null;
+  type: number | undefined = undefined;
+
+  typeFilter: string = '';
+
+  searchTerm: string = '';
 
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
+    this.loadCategories();
+  }
+
+  private loadCategories() {
+    this.categoryService.getAllCategories().subscribe(data => {
+      this.categories = data;
+    })
   }
 
   private loadLiquidationExpenseDetails() {
     this.route.paramMap.subscribe(params => {
+      const periodId = params.get('period_id');
       const id = params.get('id');
       if (id && !isNaN(Number(id))) {
         this.service.getById(Number(id)).subscribe((data: LiquidationExpense) => {
           this.liquidationExpense = data;
+          this.type = data.bill_type?.bill_type_id
+
+          if (periodId && !isNaN(Number(periodId))) {
+            this.period = parseInt(periodId);
+          }
+
+          this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
         });
       }
     });
-
-    this.liquidationExpense.liquidation_expenses_details.forEach(detaill => {})
   }
 
-  private getBills(itemsPerPage: number, page: number, period: number, category: number, type: number, status: string) {
-    this.billsService.getAllBillsPaged(itemsPerPage, page, period, category, type, status).subscribe(data => {
-      // this.liquidationExpense.liquidation_expenses_details.bills = data;
-    })
+  private getBills(itemsPerPage: number, page: number, period: number | null, category: number | null, type: number | undefined, status: string) {
+    if (type != undefined) {
+      this.billsService.getAllBillsPaged(itemsPerPage, page -1, period, category, type, status).subscribe(data => {
+        this.bills = data.content;
+      })
+    } else console.log("No hay un tipo de expensa definido");
   }
 
 
@@ -98,11 +132,58 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = bill.content.map(bill => ({
+        'Categoría':  `${bill.category.name}`,
+        'Fecha': `${bill.date}`,
+        'Proveedor': `${bill.supplier.name}`,
+        'Monto': `${bill.amount}`,
+        'Descripción': `${bill.description}`,
+      }));
 
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+      XLSX.writeFile(wb, `FacturasDeLiquidacion${this.liquidationExpense.expense_id}.xlsx`);
+    })
   }
 
   imprimir() {
+    console.log('Imprimiendo')
+    const doc = new jsPDF();
 
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Expenses Report', 14, 20);
+
+    // Llamada al servicio para obtener las expensas
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+      // Usando autoTable para agregar la tabla
+      autoTable(doc, {
+        startY: 30,
+        head: [['Categoría', 'Fecha', 'Proveedor', 'Monto', 'Descripcion']],
+        body: bill.content.map(bill => [
+          bill.category?.name || 'N/A',
+          bill.date instanceof Date
+            ? bill.date.toLocaleDateString()
+            : new Date(bill.date).toLocaleDateString() || 'N/A',
+          bill.supplier?.name || 'N/A',
+          bill?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) || "N/A",
+          bill?.description || 'N/A',
+        ]),
+      });
+
+      // Guardar el PDF después de agregar la tabla
+      doc.save(`reporte_facturas_liquidacion_${this.liquidationExpense.expense_id}.pdf`);
+      console.log('Impreso')
+    });
   }
 
 
@@ -114,7 +195,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
   }
 
-  showmodal(content: TemplateRef<any>) {
+  showModal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
@@ -127,5 +208,21 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
     if (id == null) return;
     this.router.navigate([`gastos/modificar/${id}`])
+  }
+
+  selectFilter(text:string){
+    this.typeFilter=text
+  }
+
+  handleCategoryChange(id: number) {
+    this.category = id;
+    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+  }
+
+  clean() {
+    this.category = null;
+    this.typeFilter = '';
+    this.searchTerm = '';
+    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
   }
 }

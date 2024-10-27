@@ -39,13 +39,19 @@ export class PeriodService {
      }
   }
 
-  getPage(size: number, page:number,state:string|null):Observable<Page<Period>>{
+  getPage(size: number, page:number,state:string|null,month:number|null, year:number|null):Observable<Page<Period>>{
     let params = new HttpParams()
     .set('size', size.toString())
     .set('page', page.toString());
 
   if (state) {
     params = params.set('state', state);
+  }
+  if(month){
+    params=params.set('month',month)
+  }
+  if(year){
+    params=params.set('year',year)
   }
   console.log(params)
   try{
