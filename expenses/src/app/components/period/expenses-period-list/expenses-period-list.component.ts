@@ -11,6 +11,8 @@ import { Page } from '../../../services/expense.service';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { ExpensesStatePeriodStyleComponent } from '../../expenses-state-period-style/expenses-state-period-style.component';
 import { FormsModule } from '@angular/forms';
+import autoTable from 'jspdf-autotable';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -129,5 +131,42 @@ export class ExpensesPeriodListComponent implements OnInit {
   updateMonth(event: Event): void {
     const target = event.target as HTMLSelectElement | null;
     this.month = target && target.value ? parseInt(target.value, 10) : null;
+  }
+
+  imprimir() {
+    console.log('Imprimiendo')
+    const doc = new jsPDF();
+
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Expenses Report', 14, 20);
+
+    // Llamada al servicio para obtener las expensas
+    this.periodService.getPage(10000, 0,this.state, this.month,this.year).subscribe(period => {
+      // Usando autoTable para agregar la tabla
+      autoTable(doc, {
+        startY: 30,
+        head: [['Fecha', 'Total Extraordinarias', 'Total Ordinarias', 'Estado']],
+        body: period.content.map(peri => [
+          peri.month + " / " + peri.year,
+        peri.ordinary?.amount?.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })||0,
+          peri.extraordinary?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })||0,
+          peri.state,
+        ])
+      });
+      // Guardar el PDF después de agregar la tabla
+      doc.save('expenses_report.pdf');
+      console.log('Impreso')
+    });
   }
 }
