@@ -84,10 +84,12 @@
       </select>
     </div>
     } @if (typeFilter) { }
-    <div class="ms-auto">
+    <div>
+      @if (typeFilter) {
       <button class="btn btn-secondary" type="button" (click)="search()">
         Buscar
       </button>
+      }
     </div>
   </div>
 
@@ -108,9 +110,7 @@
         autocomplete="off"
         (change)="changeStateQuery('OPEN')"
       />
-      <label class="btn btn-outline-primary" for="btnradio1"
-        >Activos</label
-      >
+      <label class="btn btn-outline-primary" for="btnradio1">Activos</label>
 
       <input
         type="radio"
@@ -120,9 +120,7 @@
         autocomplete="off"
         (change)="changeStateQuery('CLOSE')"
       />
-      <label class="btn btn-outline-primary" for="btnradio2"
-        >Cerrados</label
-      >
+      <label class="btn btn-outline-primary" for="btnradio2">Cerrados</label>
 
       <input
         type="radio"
@@ -145,8 +143,8 @@
   <thead>
     <tr>
       <th scope="col">Fecha</th>
-      <th scope="col">Total Extraordinarias</th>
-      <th scope="col">Total Ordinarias</th>
+      <th scope="col" style="text-align: end">Total Extraordinarias</th>
+      <th scope="col" style="text-align: end">Total Ordinarias</th>
       <th scope="col">Estado</th>
       <th scope="col">Acciones</th>
     </tr>
@@ -167,7 +165,16 @@
     } @else { @for (period of listPeriod; track $index) {
     <tr>
       <td>{{ period.month }} / {{ period.year }}</td>
-      <td style="text-align: end">{{ period.ordinary?.amount }}</td>
+      <td style="text-align: end">
+        {{
+          period.ordinary?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        }}
+      </td>
       <td style="text-align: end">
         {{
           period.extraordinary?.amount?.toLocaleString("es-AR", {
