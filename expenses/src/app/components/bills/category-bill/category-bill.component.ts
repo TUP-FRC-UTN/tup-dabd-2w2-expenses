@@ -1,10 +1,17 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import Category from "../../../models/category";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 import {NgPipesModule} from "ngx-pipes";
 import {CategoryService} from "../../../services/category.service";
-import {delay} from "rxjs";
+import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {EditCategoryModalComponent} from "../../modals/bills/edit-category-modal/edit-category-modal.component";
+import {DeleteCategoryModalComponent} from "../../modals/bills/delete-category-modal/delete-category-modal.component";
+import {RouterLink} from "@angular/router";
+import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
+import {CategoryBillInfoComponent} from "../../modals/info/category-bill-info/category-bill-info.component";
+import {ToastService} from "ngx-dabd-grupo01";
 
 @Component({
   selector: 'app-category-bill',
@@ -13,29 +20,19 @@ import {delay} from "rxjs";
     ReactiveFormsModule,
     FormsModule,
     ExpensesBillsNavComponent,
-    NgPipesModule
+    NgPipesModule,
+    RouterLink
   ],
   templateUrl: './category-bill.component.html',
   styleUrl: './category-bill.component.css'
 })
-export class CategoryBillComponent {
-  categoryForm: FormGroup;
+export class CategoryBillComponent implements OnInit {
   categories: Category[] = [];
   searchTerm = '';
-  isEditing = false;
-  currentCategoryId?: number;
   isLoading = false;
-  isSubmitting = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private categoryService: CategoryService
-  ) {
-    this.categoryForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
-  }
+  private toastService=inject(ToastService);
+  private categoryService=inject(CategoryService);
+  private modalService=inject(NgbModal);
 
   ngOnInit(): void {
     this.loadCategories();
@@ -50,78 +47,77 @@ export class CategoryBillComponent {
             this.categories = data;
           },
           error: (error) => {
-            console.error('Error al cargar categorías:', error);
+            this.toastService.sendError('Error al cargar categorías')
+            // console.error('Error al cargar categorías:', error);
           },
           complete: () => {
             this.isLoading = false;
           }
         });
-    }, 500);
+    }, 300);
   }
 
-  onSubmit(): void {
-    if (this.categoryForm.valid) {
-      this.isSubmitting = true;
+  openNewCategoryModal() {
+    const modalRef = this.modalService.open(NewCategoryModalComponent);
 
-      const categoryData = {
-        name: this.categoryForm.value.name,
-        description: this.categoryForm.value.description,
-        is_delete: false
-      };
-
-      if (this.isEditing && this.currentCategoryId) {
-        this.categoryService.updateCategory(this.currentCategoryId, categoryData)
-          .subscribe({
-            next: (updatedCategory) => {
-              // Actualizar la categoría en el array local
-              const index = this.categories.findIndex(
-                cat => cat.category_id === this.currentCategoryId
-              );
-              if (index !== -1) {
-                this.categories[index] = updatedCategory;
-              }
-              this.resetForm();
-              this.loadCategories();
-            },
-            error: (error) => {
-              console.error('Error al actualizar la categoría:', error);
-              // Aquí podrías agregar un manejo de errores más sofisticado
-            },
-            complete: () => {
-              this.isSubmitting = false;
-            }
-          });
-      } else {
-        this.categoryService.addCategory(categoryData as Category)
-          .subscribe({
-            next: (newCategory) => {
-              this.categories.push(newCategory);
-              this.resetForm();
-            },
-            error: (error) => {
-              console.error('Error al agregar categoría:', error);
-            },
-            complete: () => {
-              this.isSubmitting = false;
-            }
-          });
+    modalRef.result.then(
+      (result) => {
+        if (result?.success) {
+          // Recargar categorías después de agregar una nueva
+          this.loadCategories();
+        }
+      },
+      () => {
+        // Modal descartado
+        console.log('Modal cerrado');
       }
-    }
+    );
   }
 
-  editCategory(category: Category): void {
-    this.isEditing = true;
-    this.currentCategoryId = category.category_id;
-    this.categoryForm.patchValue({
-      name: category.name,
-      description: category.description
+  deleteCategory(category: Category) {
+    const modalRef = this.modalService.open(DeleteCategoryModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+
+    modalRef.componentInstance.category = category;
+
+    modalRef.result.then(
+      (result) => {
+        if (result?.success) {
+          this.loadCategories(); // Recargar la lista después de eliminar
+        }
+      },
+      () => {
+        console.log('Modal de confirmación cerrado');
+      }
+    );
+  }
+
+  editCategory(category: Category) {
+    const modalRef = this.modalService.open(EditCategoryModalComponent);
+    modalRef.componentInstance.category = category;
+
+    modalRef.result.then(
+      (result) => {
+        if (result?.success) {
+          // Recargar categorías después de la actualización
+          this.loadCategories();
+        }
+      },
+      () => {
+        console.log('Modal de edición cerrado');
+      }
+    );
+  }
+
+  showInfo(): void {
+    this.modalService.open(CategoryBillInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
     });
   }
-
-  resetForm(): void {
-    this.isEditing = false;
-    this.currentCategoryId = undefined;
-    this.categoryForm.reset();
-  }
-
 }

@@ -17,6 +17,7 @@ import { ExpensesBillsNavComponent } from "../../navs/expenses-bills-nav/expense
 import { RouterLink } from "@angular/router";
 import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
+import {ToastService} from "ngx-dabd-grupo01";
 
 @Component({
   selector: 'app-add-bill',
@@ -32,6 +33,7 @@ export class AddBillComponent implements OnInit {
   private periodService = inject(PeriodService);
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
   billForm: FormGroup;
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
@@ -90,21 +92,25 @@ export class AddBillComponent implements OnInit {
       ).subscribe({
         next: (response: any) => {
           console.log('Añadido correctamente', response);
-          this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
+          this.toastService.sendSuccess('El gasto se ha añadido correctamente.');
+          // this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
           this.resetForm();
         },
         error: (error: any) => {
           console.error('Error en el post', error);
           if (error.status === 409) {
-            this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
+            this.toastService.sendError('Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.')
+            // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
           } else {
-            this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
+            this.toastService.sendError('Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.')
+            // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
           }
         }
       });
     } else {
       console.log('Formulario inválido');
-      this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
+      this.toastService.sendError('Por favor, complete todos los campos requeridos correctamente.')
+      // this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
   }
 
@@ -113,11 +119,11 @@ export class AddBillComponent implements OnInit {
     this.loadSelectOptions();
   }
 
-  showModal(title: string, message: string) {
+  /*showModal(title: string, message: string) {
     const modalRef = this.modalService.open(NgModalComponent);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
-  }
+  }*/
 
   openNewCategoryModal() {
     const modalRef = this.modalService.open(NewCategoryModalComponent, {
@@ -128,10 +134,11 @@ export class AddBillComponent implements OnInit {
       (result) => {
         if (result) {
           if (result.success) {
-            this.showModal('Éxito', result.message);
-              this.loadSelectOptions();
+            this.toastService.sendSuccess(result.message);
+            this.loadSelectOptions();
           } else {
-            this.showModal('Error', result.message);
+            this.toastService.sendError(result.message);
+            // this.showModal('Error', result.message);
           }
         }
       }
@@ -142,7 +149,9 @@ export class AddBillComponent implements OnInit {
     this.modalService.open(BillInfoComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false
+      keyboard: false,
+      centered: true,
+      scrollable: true
     });
   }
 }
