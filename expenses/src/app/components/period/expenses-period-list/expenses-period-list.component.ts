@@ -5,55 +5,54 @@ import { PeriodService } from '../../../services/period.service';
 import Period from '../../../models/period';
 import { NgClass } from '@angular/common';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import { Page } from '../../../services/expense.service';
+import { generateNumberArray } from '../../../utils/generateArrayNumber';
+import { ExpensesStatePeriodStyleComponent } from '../../expenses-state-period-style/expenses-state-period-style.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-expenses-period-list',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent, NgClass, ExpensesModalComponent, NgModalComponent],
+  imports: [ExpensesPeriodNavComponent,ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule ],
   templateUrl: './expenses-period-list.component.html',
   styleUrl: './expenses-period-list.component.css',
 })
 export class ExpensesPeriodListComponent implements OnInit {
   private readonly periodService: PeriodService = inject(PeriodService);
   listOpenPeriod: Period[] = [];
-  listPeriod: Period[] = [];
+  listPeriod: Period[] = [];  
   cantPages: number[] = [];
-  indexActive = 0;
+  indexActive = 1;
   size = 10;
   idClosePeriod: number | null = null;
+  private state:string|null=null
   private modalService = inject(NgbModal);
-
+  currentPage:number =1
+  typeFilter:string|null=null
+  year:number|null = null
+  month:number|null=null
   ngOnInit(): void {
-    this.loadPeriod();
-    this.loadPaged(0);
+    this.loadPaged(1);
   }
 
-  loadPeriod() {
-    this.periodService.getOpens().subscribe((data) => {
-      this.listOpenPeriod = data;
-    });
-  }
+
 
   loadPaged(page: number) {
-    this.periodService.getPage(this.size, page).subscribe((data) => {
-      this.listPeriod = data;
+    page =page -1
+    this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
+      this.listPeriod = data.content;
+      this.cantPages = generateNumberArray(data.totalPages)
+    
     });
 
-    this.getPages(this.size);
   }
 
-  getPages(size: number) {
-    this.periodService.get().subscribe((data) => {
-      let len = data.length / size;
-
-      len = Math.ceil(len);
-
-      this.cantPages = Array(len)
-        .fill(0)
-        .map((x, i) => i);
-    });
+  onSelectChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.size = Number(selectElement.value);
+    this.loadPaged(this.indexActive)
   }
 
   open(content: TemplateRef<any>, id: number | null) {
@@ -70,6 +69,11 @@ export class ExpensesPeriodListComponent implements OnInit {
   changeIndex(cant: number) {
     this.indexActive = cant;
     this.loadPaged(cant);
+  }
+
+  changeStateQuery=(text:string|null)=>{
+    this.state=text
+    this.loadPaged(this.indexActive)
   }
 
   newPeriod() {
@@ -102,5 +106,28 @@ export class ExpensesPeriodListComponent implements OnInit {
   
       this.idClosePeriod = null;
     }
+  }
+
+  selectFilter(text:string|null){
+    this.typeFilter=text
+    this.year=null
+    this.month=null
+    if(!text){
+      this.loadPaged(1)
+    }
+  }
+  search(): void {
+    console.log(this.month,this.year)
+      this.loadPaged(1)
+
+  }
+  updateYear(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.year = target && target.value ? parseInt(target.value, 10) : null;
+  }
+
+  updateMonth(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.month = target && target.value ? parseInt(target.value, 10) : null;
   }
 }

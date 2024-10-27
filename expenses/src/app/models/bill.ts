@@ -4,6 +4,7 @@ import Category from "./category";
 import BillType from "./billType";
 
 export interface Bill {
+  expenditureId: number;
   expenditure_id: number;
   date: Date;
   amount: number;

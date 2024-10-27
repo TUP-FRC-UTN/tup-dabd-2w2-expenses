@@ -1,4 +1,89 @@
-<app-expenses-period-nav />
+<h1>Periodo  </h1>
+@if (listExpenses[0]) {
+  <h3>Expensas {{listExpenses[0].period.month}} - {{listExpenses[0].period.year}}</h3>
+
+}
+
+  <div
+    class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-between"
+  >
+    <div class="row align-items-center mb-3">
+      <div class="col-sm-12 col-md-12 col-xl-12">
+        <div class="input-group" style="max-width: 360px">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            placeholder="Buscar"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
+    >
+      <div class="col align-items-center mb-3 d-flex justify-content-end">
+     
+        <div style="margin-left: 20px">
+          <button
+            class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0"
+          >
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+          <button
+            class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0"
+          >
+            <i class="bi bi-file-earmark-pdf"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
+  >
+    <div
+      class="btn-group"
+      role="group"
+      aria-label="Basic radio toggle button group"
+    >
+      <input
+        type="radio"
+        class="btn-check"
+        name="btnradio"
+        id="btnradio2"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-primary" for="btnradio2"
+        >Extraordinarias</label
+      >
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="btnradio"
+        id="btnradio3"
+        autocomplete="off"
+        checked
+      />
+      <label class="btn btn-outline-primary" for="btnradio3">Ordinarias</label>
+      
+      <input
+        type="radio"
+        class="btn-check"
+        name="btnradio"
+        id="btnradio3"
+        autocomplete="off"
+        checked
+      />
+      <label class="btn btn-outline-primary" for="btnradio3">Todas</label>
+    </div>
+  </div>
 <div>
   <table class="table table-striped">
     <thead>
@@ -19,9 +104,23 @@
         <td>{{expense.typePlot}} </td>
         <td>{{expense.percentage }} </td>
         <td>{{expense.billType}} </td>
-        <td>${{expense.totalAmount}} </td>
+        <td>{{expense.totalAmount.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}} </td>
       </tr>
       }
     </tbody>
   </table>
+  <ngb-pagination
+  [(page)]="currentPage"
+  [pageSize]="size"
+  [collectionSize]="cantPages"
+  (pageChange)="changeIndex($event)"
+  [maxSize]="5"
+  [boundaryLinks]="false"
+  
+></ngb-pagination>
 </div>

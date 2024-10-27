@@ -1,15 +1,7 @@
-.nav-container {
-    display: flex;
-    flex-direction: column;
-    width: 20%;
-    height: 100%;
-    left: 0;
-}
 
-.sticky-content {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    overflow-y: auto; 
+.content-scroll {
+    overflow-y: auto;        /* Habilita desplazamiento vertical */
+    height: 100vh;           /* Asegura que ocupe toda la altura de la pantalla */
+    padding-top: 0;          /* Sin padding superior, porque el nav ya ocupa el espacio */
+    position: relative;       /* Permite que el contenido se posicione correctamente */
   }

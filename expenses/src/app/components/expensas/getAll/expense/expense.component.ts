@@ -1,37 +1,40 @@
 import { Component, inject, input, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ExpenseServiceService } from '../../../../services/expense.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import Expense from '../../../../models/expense';
+import Expense, { ExpenseFilters } from '../../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../../selects/period-select/period-select.component';
-import { forkJoin } from 'rxjs';
 import Period from '../../../../models/period';
 import { Pipe, PipeTransform } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PeriodService } from '../../../../services/period.service';
 import { LotsService } from '../../../../services/lots.service';
 import Lot from '../../../../models/lot';
-import Category from '../../../../models/category';
-import { CategoryService } from '../../../../services/category.service';
 import { BillService } from '../../../../services/bill.service';
 import BillType from '../../../../models/billType';
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-
+import { TableComponent } from 'ngx-dabd-grupo01';
+import {NgPipesModule} from "ngx-pipes";
 @Component({
   selector: 'app-expense',
   standalone: true,
-  imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent],
+  imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent, TableComponent,NgPipesModule],
   templateUrl: './expense.component.html',
   styleUrl: './expense.component.css'
 })
 export class ExpenseComponent implements OnInit{
-applyFilters() {
+
+
+
+
+
+onFilterTextBoxChanged($event: Event) {
 throw new Error('Method not implemented.');
 }
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute); 
+  private readonly route = inject(ActivatedRoute);
 
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
@@ -43,6 +46,7 @@ throw new Error('Method not implemented.');
   selectedPeriodId: number = 0;
 
 
+  searchTerm = '';
   sortField: string = 'lotId';
   sortOrder: string = 'asc';
 
@@ -62,26 +66,53 @@ throw new Error('Method not implemented.');
   periodId : number | null = null
   lotId : number | null = null
   typeId : number | null = null
-  
+  text : string = ""
 
   fileName : string = "Expensas.xlsx"
 
+
+  applyFilterWithNumber: boolean = false;
+  applyFilterWithCombo: boolean = false;
+  contentForFilterCombo : string[] = []
+  actualFilter : string | undefined = ExpenseFilters.NOTHING;
+  filterTypes = ExpenseFilters;
+  filterInput : string = "";
+
+
   ngOnInit(): void {
     this.currentPage = 0
-    this.loadExpenses();
     this.loadSelect()
-    this.updateVisiblePages();
+    this.loadExpenses()
   }
 
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
-      this.expenses = data.content;
+      this.expenses = data.content.map(expense => {
+        return {
+          ...expense,
+          month: this.getMonthName(expense.period.month), // Suponiendo que cada expense tenga un campo `month`
+        };
+      });
       this.totalPages = data.totalPages;  // Número total de páginas
       this.totalItems = data.totalElements;  // Total de registros
-      this.currentPage = data.number; 
+      this.currentPage = data.number;
+      this.updateVisiblePages();
+
     });
-    this.updateVisiblePages();
   }
+
+  onPageSizeChange() {
+    this.currentPage = 0; // Reinicia a la primera página
+    console.log(this.pageSize)
+    this.loadExpenses(0,this.pageSize);
+  }
+  applyFilters() {
+    this.currentPage = 0
+    this.loadExpenses();
+    this.updateVisiblePages();
+    }
+
+
   updateVisiblePages(): void {
     const half = Math.floor(this.maxPagesToShow / 2);
     let start = Math.max(0, this.currentPage - half);
@@ -95,23 +126,20 @@ throw new Error('Method not implemented.');
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
     }
+
   }
 
   onPageChange(page: number): void {
     console.log(this.totalPages)
     if (page >= 0 && page < this.totalPages) {
-    
+
       console.log('Cargando página ' + page);
       this.loadExpenses(page, this.pageSize);
       this.updateVisiblePages();
-      this.currentPage = page; // Asegúrate de actualizar currentPage aquí
+      this.currentPage = page;
   }
 }
-  onOptionChange() {
-    this.currentPage = 0
-    this.loadExpenses();
-    this.updateVisiblePages();
-  }
+
 
   clearFilters() {
     this.selectedLotId = 0;
@@ -119,6 +147,8 @@ throw new Error('Method not implemented.');
     this.selectedPeriodId = 0;
     this.currentPage = 0
     this.loadExpenses();
+    this.searchTerm = ''
+    this.pageSize = 10
   }
   //carga el select de periodo y lote
   loadSelect() {
@@ -132,10 +162,17 @@ throw new Error('Method not implemented.');
       this.tipos = data
     })
   }
+  getMonthName(month: number): string {
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return monthNames[month - 1];
+  }
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();
-    
+
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
@@ -162,7 +199,7 @@ throw new Error('Method not implemented.');
       console.log('Impreso')
     });
   }
-     
+
   downloadTable() {
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
@@ -176,11 +213,13 @@ throw new Error('Method not implemented.');
         'Porcentaje': expense.percentage,
         'Tipo de expensa': expense.billType
       }));
-  
+
       // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
       XLSX.writeFile(wb, this.fileName);
     })}
+
 }
+
