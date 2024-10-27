@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PORT } from '../const';
 
-interface Page<T> {
+export interface Page<T> {
   content: T[];
   totalPages: number;
   totalElements: number;
@@ -31,31 +31,21 @@ export class ExpenseServiceService {
     }
     if (plotId) {
       params = params.set('plotId', plotId.toString());
-     
+
     }
     if (typeId) {
       params = params.set('typeId', typeId.toString());
     }
-  
+
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(this.apiUrl, { params });
+    return this.http.get<Page<Expense>>(this.apiUrl + 'all', { params });
   }
 
-   get(): Observable<Expense[]>{
-    console.log('cargando todas')
-    return this.http.get<Expense[]>(`${this.apiUrl}all`)
-  }
+ 
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
     return this.http.post<Expense[]>(`${this.apiUrl}create/${periodId}`,null)
-  }
-  getByPeriodAndPlot(periodId:number, plotId:Number):Observable<Expense[]>{
-    console.log(periodId)
-    return this.http.get<Expense[]>(`${this.apiUrl}periodAndPlot?periodId=${periodId}&idPlot=${plotId}`)
-  }
-  getExpenseCurrentPeriod():Observable<Expense[]> {
-    return this.http.get<Expense[]>(`${this.apiUrl}/currentPeriod/`)
   }
 }

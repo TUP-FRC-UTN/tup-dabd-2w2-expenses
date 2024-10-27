@@ -13,12 +13,13 @@ import {AsyncPipe, NgClass} from "@angular/common";
 import BillType from "../../../models/billType";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
+import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 
 
 @Component({
   selector: 'app-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent],
   templateUrl: './add-bill.component.html',
   styleUrl: './add-bill.component.css'
 })
@@ -57,7 +58,6 @@ export class AddBillComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-
   }
 
   ngOnInit() {
@@ -120,6 +120,7 @@ export class AddBillComponent implements OnInit {
       let newCategory: Category = this.newCategoryForm.value;
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
+      newCategory.is_delete = false;
       console.log(newCategory);
 
       this.categoryService.addCategory(newCategory).subscribe({
@@ -141,8 +142,6 @@ export class AddBillComponent implements OnInit {
       console.log('Formulario inválido');
       this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
-    // console.log('Nueva categoría:', this.newCategoryForm.value);
-    //cerrar el modal y actualiza la lista de categorías
     this.modalService.dismissAll();
     this.newCategoryForm.reset();
   }

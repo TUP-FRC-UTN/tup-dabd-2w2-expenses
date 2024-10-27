@@ -96,7 +96,21 @@ export class BillService {
   getBillTypes(): Observable<BillType[]>{
     return this.http.get<BillType[]>(`${this.url}/billType`)
   }
-  
+
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<Page<Bill>>{
+    let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
+
+    if (category != null) { request = request + `&category=${category}`}
+    if (period != null) request = request + `&period=${period}`
+
+    try{
+      return this.http.get<Page<Bill>>(request);
+     }catch( e) {
+       console.log(e)
+       throw  e
+     }
+  }
+
   addBill(bill: BillPostRequest): Observable<Bill> {
     return this.http.post<Bill>(`${this.url}/bills`, bill);
   }

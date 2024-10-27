@@ -8,7 +8,9 @@ import { LiquidationExpenseDetailsComponent } from './components/liquidacion/liq
 import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
-import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
+
+import {CategoryBillComponent} from "./components/bills/category-bill/category-bill.component";
+
 import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
 
 
@@ -33,6 +35,7 @@ export const routes: Routes = [
   { path: 'gastos', component: ListBillsComponent },
   { path: 'gastos/nuevo', component: AddBillComponent },
   { path: 'gastos/modificar/:id', component: AddBillComponent },
+  { path: 'gastos/categorias', component: CategoryBillComponent },
 
   // Ruta por defecto o de redirección (opcional)
   // { path: '', redirectTo: '', pathMatch: 'full' },

@@ -3,9 +3,15 @@ import Period from "./period";
 import Category from "./category";
 import BillType from "./billType";
 
+<<<<<<< HEAD
 
 export class Bill {
   expenditureId: number;
+=======
+export interface Bill {
+  expenditureId: number;
+  expenditure_id: number;
+>>>>>>> main
   date: Date;
   amount: number;
   description: string;
