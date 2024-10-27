@@ -110,7 +110,7 @@
         </tr>        
       </thead>
       <tbody>
-        @for (charge of charges | filterBy: ['lotId', 'amount','description','categoryCharge,name','plotNumber','date']: searchTerm; track $index) {<tr>                    
+        @for (charge of charges | filterBy: ['lotId', 'amount','description','categoryCharge.name','plotNumber','date']: searchTerm; track $index) {<tr>                    
           <td>{{charge.date | date:'MMM d, yyyy'}}</td>
           <td>{{getPlotNumber(charge.lotId)}}</td>
           <td>{{charge.categoryCharge.name}}</td>
@@ -185,8 +185,8 @@
 
     </table>
   </div>
-  <div class="row d-flex align-items-between">
-    <div class="col-1">
+  <div class="">
+    <!-- <div class="col-1">
       <select
         name="tipoExpensa"
         id="tipoExpensa"
@@ -198,7 +198,7 @@
         <option value="25">25</option>
         <option value="50">50</option>
       </select>
-    </div>
+    </div> -
     <div
       class="col-11"
       style="display: flex; flex-direction: row; justify-content: end"
@@ -210,10 +210,45 @@
         (pageChange)="changeIndex($event)"
         [maxSize]="5"
         [boundaryLinks]="false"
-      ></ngb-pagination>
+      ></ngb-pagination> -->
     </div>
 
+    <div class="row d-flex align-items-between">
+      <div class="col-md-6">
+        <label for="rowsPerPageSelect">Mostrar </label>
+        <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="changesPageSize($event)">            
+          <option value=10>10</option>
+          <option value=25>25</option>
+          <option value=50>50</option>
+        </select>
+        <span> registros por página de {{this.totalItems}}</span>
+      </div>
+      <div class="col-md-6">
+        <nav aria-label="Page navigation example" style="cursor: pointer;">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+      
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                [class.active]="i === currentPage">
+              <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+            </li>
+      
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>        
+    </div>  
+
 </div>
+
 
 <ng-template #modalTemplate let-modal>
   <app-expenses-modal

@@ -29,6 +29,7 @@ import Period from '../../../models/period';
 import {NgPipesModule} from "ngx-pipes";
 import { TableComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 export interface ViewCharge {
   amount: number;
@@ -153,9 +154,15 @@ export class ListChargesComponent implements OnInit {
 
   }
 
-  changeIndex(cant: number) {
-    this.indexActive = cant;
+  changeIndex(page: number) {
+    //this.indexActive = page;
     //this.loadPaged(cant);
+    // if (page >= 0 && page < this.totalPages) {
+    
+    //   console.log('Cargando página ' + page);
+    //   this.loadCharges(page,this.pageSize);
+    //   this.currentPage = page; // Asegúrate de actualizar currentPage aquí
+    // }
   }
 
   onSelectChange(event: Event): void {
@@ -166,13 +173,14 @@ export class ListChargesComponent implements OnInit {
   }
 
   addCharge(){
-    
+    this.router.navigate([`cargos/nuevo`])
   }
 
   //COMPONENTES VIEJOS FIJARSE QUE VOY  A SEGUIR UTILIZANDO
   //charges: Charge[] = [];
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
+  private readonly router = inject(Router);
 
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
@@ -201,10 +209,14 @@ export class ListChargesComponent implements OnInit {
   // }
 
   ngOnInit(): void {
+    console.log(this.currentPage);
     //$.noConflict();
     this.loadSelect();
-    this.loadCategoryCharge();    
+    console.log(this.currentPage);
+    this.loadCategoryCharge();  
+    console.log(this.currentPage);  
     this.cargarPaginado()
+    console.log(this.currentPage);
     //this.loadCharges(0,10);
     //this.configDataTable();
   }
@@ -218,6 +230,7 @@ export class ListChargesComponent implements OnInit {
     this.chargeService.getCharges(page,pageSize,undefined,undefined,undefined).subscribe((charges) => {
       this.charges = charges.content;
       console.log(charges);
+      console.log(this.currentPage);
       //this.configDataTable();
     });
     
@@ -239,13 +252,15 @@ export class ListChargesComponent implements OnInit {
     this.cargarPaginado();
   }
   cargarPaginado() {
+    console.log(this.currentPage);
     // Llamar al servicio con la paginación desde el backend.
     this.chargeService.getCharges(this.currentPage, this.pageSize, undefined, undefined, undefined).subscribe(response => {
       
       this.charges = response.content;  // Datos de la página actual
       this.totalPages = response.totalPages;  // Número total de páginas
       this.totalItems = response.totalElements;  // Total de registros
-      this.currentPage = response.number; 
+      this.currentPage = response.number;
+      console.log(this.currentPage); 
     });
   }
   getPlotNumber(lotId : number){

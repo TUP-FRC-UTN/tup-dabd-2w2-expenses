@@ -1,13 +1,12 @@
-<app-expenses-charges-nav />
 <div class="container" style="padding-top: 16px">
   <h3 class="card-title mb-4">Registrar cargo a lote</h3>
 
   <div class="card-body">
     <form [formGroup]="chargeForm" (ngSubmit)="onSubmit()">
       <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="fechaEmision" class="form-label">Fecha de emisión</label>
+        <div class="col-md-6 d-flex align-items-center">
           
+          <label for="fechaEmision" class="form-label col-md-3"><span style="color: red;">*</span>Fecha de emisión</label>          
           <input 
             type="date"
             class="form-control"
@@ -20,8 +19,8 @@
           <div class="text-danger">La fecha de cargo es obligatorio.</div>
           }
         </div>
-        <div class="col-md-6">
-          <label for="lote" class="form-label">Lote</label>
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="lote" class="form-label col-md-3"><span style="color: red;">*</span>Lote</label>
           <input
             type="text"
             class="form-control"
@@ -37,9 +36,9 @@
         </div>
       </div>
 
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="tipo" class="form-label">Tipo</label>
+      <div class="row mb-3 ">
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="tipo" class="form-label col-md-3"><span style="color: red;">*</span>Categoría</label>
           <div class="input-group">
             <select
               id="tipo"
@@ -58,8 +57,8 @@
           <div class="text-danger">El tipo de cargo es obligatorio.</div>
           }
         </div>
-        <div class="col-md-6">
-          <label for="periodo" class="form-label">Período</label>
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="periodo" class="form-label col-md-3"><span style="color: red;">*</span>Período</label>
           <select
             class="form-select"
             aria-label="Default select example"
@@ -80,13 +79,12 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="monto" class="form-label">Monto</label>
+        <div class="col-md-6 d-flex align-items-center">
+          <label for="monto" class="form-label col-md-3"><span style="color: red;">*</span>Monto</label>
           <input
             type="number"
             class="form-control"
             id="monto"
-            placeholder="Monto"
             formControlName="amount"
             [ngClass]="{ 'is-invalid': chargeForm.controls['amount'].touched && chargeForm.controls['amount'].hasError('required') }"      
           />
@@ -97,13 +95,12 @@
         </div>
       </div>
 
-      <div class="mb-3">
-        <label for="descripcion" class="form-label">Descripción</label>
+      <div class="col-md-6 d-flex align-items-start">
+        <label for="descripcion" class="form-label col-md-3">Descripción</label>
         <textarea
           id="descripcion"
           class="form-control"
           rows="3"
-          placeholder="Descripción"
           formControlName="description"
         ></textarea>
       </div>
@@ -111,7 +108,7 @@
       <div class="form-row justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">
         <button
           type="button"
-          class="btn btn-secondary mr-2 "
+          class="btn btn-danger mr-2 "
           
           (click)="onCancel()"
         >
