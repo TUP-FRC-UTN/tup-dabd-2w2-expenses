@@ -44,4 +44,6 @@ export class PeriodSelectComponent implements OnInit {
       this.router.navigate([`liquidation-expense/${this.periodList[0]?.id}`]);
     }
   }
+
+ 
 }
