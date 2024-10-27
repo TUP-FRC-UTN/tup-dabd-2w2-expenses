@@ -73,12 +73,12 @@
 </div>
 <div class="modal-footer">
   @if (!isEditing) {
-  <button type="button" class="btn btn-primary" (click)="enableEdit()">Modificar</button>
-  }
-  <button type="button" class="btn btn-secondary" (click)="cancelEdit()">{{ isEditing ? 'Cancelar' : 'Cerrar'
-    }}</button>
+  <!-- <button type="button" class="btn btn-warning" (click)="enableEdit()">Modificar</button>
+  } -->
+  <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cerrar</button> }
   @if (isEditing) {
-  <button type="button" class="btn btn-warning" (click)="saveChanges()">Guardar</button>
+    <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancelar</button>
+  <button type="button" class="btn btn-primary" (click)="saveChanges()">Guardar</button>
   }
 </div>
 

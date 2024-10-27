@@ -3,7 +3,7 @@ import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryCharge, Charge } from '../../../models/charge';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-//import moment from 'moment';
+import moment from 'moment';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Lot from '../../../models/lot';
@@ -49,6 +49,9 @@ export class UpdateChargeComponent implements OnInit {
     this.loadSelect();
     this.loadCategoryCharge();  
     this.loadData();
+    if(this.isEditing){
+      this.enableEdit();
+    }
   }
 
   loadData() {
@@ -66,9 +69,8 @@ export class UpdateChargeComponent implements OnInit {
   
     this.selectedCategoryId = this.charge?.categoryCharge?.categoryChargeId!;
     this.selectedPeriodId = this.charge?.period?.id!;
-  
     this.chargeForm.setValue({
-      fechaEmision: this.charge?.date,
+      fechaEmision: moment(this.charge?.date).format("YYYY-MM-DD") ,
       lote: this.getPlotNumber(lotId),
       tipo: this.selectedCategoryId,
       periodo: this.selectedPeriodId,
@@ -98,15 +100,6 @@ export class UpdateChargeComponent implements OnInit {
     return lot ? lot.plot_number : undefined;
   }
 
-  // loadSelect() {
-  //   this.periodService.get().subscribe((data: Period[]) => {
-  //     this.periodos = data;
-  //   })
-  //   this.lotsService.get().subscribe((data: Lot[]) => {
-  //     this.lots = data;      
-  //     console.log(data)
-  //   })
-  // }
   loadCategoryCharge(){
     this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
       this.categoryCharges = data;
@@ -146,6 +139,7 @@ export class UpdateChargeComponent implements OnInit {
       this.loadData();
       this.isEditing = false;
       this.chargeForm.disable();
+      this.activeModal.dismiss();
     } else {
       this.activeModal.dismiss();
     }

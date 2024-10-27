@@ -184,6 +184,7 @@ export class ListChargesComponent implements OnInit {
 
   //COMPONENTES VIEJOS FIJARSE QUE VOY  A SEGUIR UTILIZANDO
   //charges: Charge[] = [];
+  //INYECCION DE SERVICIOS
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
   private readonly router = inject(Router);
@@ -304,6 +305,7 @@ export class ListChargesComponent implements OnInit {
   }
 
   openViewModal(charge: Charge) {
+    
     const modalRef = this.modalService.open(UpdateChargeComponent);
     modalRef.componentInstance.charge = charge;
 
@@ -328,7 +330,7 @@ export class ListChargesComponent implements OnInit {
         if (result) {
           debugger
           this.deleteCharge(result);
-          this.toastService.sendSuccess("Se ha elimado el cargo correctamente");
+          
           this.cargarPaginado();
         }
       },
@@ -339,34 +341,31 @@ export class ListChargesComponent implements OnInit {
   deleteCharge(chargeId: number) {
     this.chargeService.deleteCharge(chargeId).subscribe({
         next: () => {
-            //alert("éxito");
             this.currentPage = 0;
             this.clearFilters();
             this.cargarPaginado();
+            this.toastService.sendSuccess("Se ha elimado el cargo correctamente");
         },
         error: (err: Error) => {
-            this.openErrorModal(err);
+          this.toastService.sendError("Ha ocurrido un error al eliminar el cargo");
         }
     });
     this.chargeId = 0;
 }
 
-  openErrorModal(err:any) {
-    console.log(err)
-    const modalRef = this.modalService.open(NgModalComponent);
-    modalRef.componentInstance.title = 'Error';
-    modalRef.componentInstance.message = err?.error.message;
-  }
+  
 
   openUpdateModal(charge: Charge) {
     const modalRef = this.modalService.open(UpdateChargeComponent);
     modalRef.componentInstance.charge = charge;
+    modalRef.componentInstance.isEditing = true;
 
     modalRef.result.then(
       (result) => {
         if (result) {
           this.currentPage = 0;
           this.cargarPaginado();
+          this.toastService.sendSuccess("Se ha actualizado el cargo correctamente");
         }
       },
       () => {}

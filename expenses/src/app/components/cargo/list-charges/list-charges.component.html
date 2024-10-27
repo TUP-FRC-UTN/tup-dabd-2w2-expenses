@@ -26,8 +26,7 @@
             <!-- Selectores dentro del modal -->
             <div class="col-auto">
               <label for="periodo">Período</label>
-              <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId">
-                <option [value]="0">Todos</option>
+              <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId">                
                 @for (period of periodos; track $index) {
                   <option [value]="period.id">{{period.month}} / {{period.year}}</option>
                 }

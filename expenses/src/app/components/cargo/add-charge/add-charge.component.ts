@@ -18,6 +18,7 @@ import { ModalService } from 'ngx-dabd-2w1-core';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
+import { ToastService } from 'ngx-dabd-grupo01';
 @Component({
   selector: 'app-add-charge',
   standalone: true,
@@ -31,6 +32,7 @@ export class AddChargeComponent implements OnInit{
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
   private router = inject(Router);
+  toastService:ToastService = inject(ToastService)
   lots : Lot[] = []
 
   private readonly periodService = inject(PeriodService)
@@ -87,32 +89,18 @@ export class AddChargeComponent implements OnInit{
       console.log(charge);
       this.chargeService.createCharge(charge).subscribe(
         (response) => {
+          this.toastService.sendSuccess("El cargo se ha registrado correctamente");          
           
-          const modalRef = this.modalService.open(NgModalComponent);
-          modalRef.componentInstance.charge = charge;
-          modalRef.componentInstance.message = "El cargo se ha registrado correctamente";
-
-          modalRef.result.then(
-            (result) => {
-              if (result) {
-                //this.loadCharges();
-              }
-            },
-            () => {}
-          );
           console.log('Cargo registrado exitosamente:', response);
           //('Cargo registrado exitosamente');
           this.chargeForm.reset();
         },
         (error) => {
+          this.toastService.sendError("Error al registrar el cargo");
           console.error('Error al registrar el cargo:', error);
-          alert('Hubo un error al registrar el cargo');
         }
       );
-    } else {
-      alert('Por favor, complete todos los campos requeridos.');
-        this.chargeForm.markAllAsTouched(); 
-    }
+    } 
   }
 
   
