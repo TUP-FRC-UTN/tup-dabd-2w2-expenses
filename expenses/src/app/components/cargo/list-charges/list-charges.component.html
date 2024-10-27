@@ -67,12 +67,12 @@
       </div>
       <div class="vertical-line mx-3"></div>
       <div class="col-auto">
-        <button class="btn" (click)="downloadTable()" style="background-color: #239b56  ; color: white;" data-toggle="tooltip" data-placement="bottom" title="Descargar expensas como excel">
+        <button class="btn me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="downloadTable()" style="background-color: #239b56  ; color: white;" data-toggle="tooltip" data-placement="bottom" title="Descargar cargos en excel">
             <i class="bi bi-file-earmark-excel"></i><!-- Icono de excel -->
         </button>
       </div>
       <div class="col-auto">
-        <button class="btn" (click)="imprimir()" style="background-color: red; color: white;" data-toggle="tooltip" data-placement="top" title="Descargar expensas como pdf">
+        <button class="btn me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="imprimir()" style="background-color: red; color: white;" data-toggle="tooltip" data-placement="top" title="Descargar cargos en pdf">
           <i class="bi bi-file-pdf"></i> <!-- Icono de pdf -->
         </button>
       </div>
@@ -121,14 +121,14 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           }) }}</td>
-          <td
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 2px;
-              justify-content: center;
-              ">
+          <td  style="display: flex; flex-direction: row; gap: 2px; justify-content: center;" >
+            @if(charge.categoryCharge.name == "Multa" ||charge.period == 1) {
               
+              <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
+                <i class="bi bi-eye"></i>
+              </button>
+            
+            } @else {
               <div class="btn-group" role="group">
                 <button
                   type="button"
@@ -166,7 +166,11 @@
                   }
                 </ul>
               </div>
-            </td>
+
+            }
+          </td>
+          
+
       </tr> 
       }@empty {
           <td colspan="7" class="text-center">
