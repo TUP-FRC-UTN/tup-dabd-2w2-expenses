@@ -29,7 +29,11 @@
 <div class="row">
   <div class="col-6 d-flex">
     <div class="btn-group me-2">
-      <button type="button" class="btn btn-outline-danger">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        (click)="selectFilter(null)"
+      >
         <i class="bi bi-trash-fill"></i> Limpiar
       </button>
 
@@ -52,12 +56,18 @@
         type="number"
         class="form-control me-2"
         id="filter-number"
-        placeholder="Número de Lote"
+        (input)="updateYear($event)"
+        name="year"
       />
     </div>
     } @else if (typeFilter === "mes") {
     <div>
-      <select class="form-select me-2" id="month-select">
+      <select
+        class="form-select me-2"
+        id="month-select"
+        (change)="updateMonth($event)"
+        name="month"
+      >
         <option value="" disabled selected>Seleccione un mes</option>
         <option value="1">Enero</option>
         <option value="2">Febrero</option>
@@ -74,6 +84,11 @@
       </select>
     </div>
     } @if (typeFilter) { }
+    <div class="ms-auto">
+      <button class="btn btn-secondary" type="button" (click)="search()">
+        Buscar
+      </button>
+    </div>
   </div>
 
   <div
@@ -152,8 +167,17 @@
     } @else { @for (period of listPeriod; track $index) {
     <tr>
       <td>{{ period.month }} / {{ period.year }}</td>
-      <td style="text-align: end">${{ period.ordinary?.amount }}</td>
-      <td style="text-align: end">${{ period.extraordinary?.amount }}</td>
+      <td style="text-align: end">{{ period.ordinary?.amount }}</td>
+      <td style="text-align: end">
+        {{
+          period.extraordinary?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        }}
+      </td>
       <td>
         <app-expenses-state-period-style
           [estado]="period.state"

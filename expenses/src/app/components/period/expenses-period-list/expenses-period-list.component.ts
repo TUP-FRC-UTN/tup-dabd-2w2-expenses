@@ -10,6 +10,7 @@ import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { Page } from '../../../services/expense.service';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { ExpensesStatePeriodStyleComponent } from '../../expenses-state-period-style/expenses-state-period-style.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -30,6 +31,8 @@ export class ExpensesPeriodListComponent implements OnInit {
   private modalService = inject(NgbModal);
   currentPage:number =1
   typeFilter:string|null=null
+  year:number|null = null
+  month:number|null=null
   ngOnInit(): void {
     this.loadPaged(1);
   }
@@ -38,7 +41,7 @@ export class ExpensesPeriodListComponent implements OnInit {
 
   loadPaged(page: number) {
     page =page -1
-    this.periodService.getPage(this.size, page,this.state).subscribe((data) => {
+    this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
       this.listPeriod = data.content;
       this.cantPages = generateNumberArray(data.totalPages)
     
@@ -105,8 +108,26 @@ export class ExpensesPeriodListComponent implements OnInit {
     }
   }
 
-  selectFilter(text:string){
-  
+  selectFilter(text:string|null){
     this.typeFilter=text
+    this.year=null
+    this.month=null
+    if(!text){
+      this.loadPaged(1)
+    }
+  }
+  search(): void {
+    console.log(this.month,this.year)
+      this.loadPaged(1)
+
+  }
+  updateYear(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.year = target && target.value ? parseInt(target.value, 10) : null;
+  }
+
+  updateMonth(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.month = target && target.value ? parseInt(target.value, 10) : null;
   }
 }
