@@ -1,0 +1,88 @@
+<div class="modal-header">
+  <h4 class="modal-title">Información del Formulario de Gastos</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div class="container">
+    <!-- Introducción -->
+    <div class="alert alert-info mb-4">
+      <h5 class="alert-heading">¿Qué es este formulario?</h5>
+      <p class="mb-0">Este formulario te permite registrar los gastos. Cada campo
+        ha sido diseñado para mantener un registro detallado y organizado de tus transacciones.</p>
+    </div>
+
+    <!-- Campos Principales -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h5 class="mb-0">Campos Principales</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <strong>Proveedor:</strong> Selecciona la empresa que proporciona el servicio o producto.
+          </li>
+          <li class="list-group-item">
+            <strong>Categoría:</strong> Clasifica el gasto para un mejor análisis (puedes crear nuevas categorías con el
+            botón +).
+          </li>
+          <li class="list-group-item">
+            <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+          </li>
+          <li class="list-group-item">
+            <strong>Tipo:</strong> Clasificación adicional del gasto según su naturaleza.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Datos del Gasto -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h5 class="mb-0">Datos del Gasto</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <strong>Descripción:</strong> Espacio para detallar información adicional sobre el gasto.
+          </li>
+          <li class="list-group-item">
+            <strong>Monto:</strong> Cantidad monetaria del gasto.
+          </li>
+          <li class="list-group-item">
+            <strong>Fecha:</strong> Día en que se realizó el gasto.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="card mb-3">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Acciones Disponibles</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <strong>Volver:</strong> Regresa a la página anterior.
+          </li>
+          <li class="list-group-item">
+            <strong>Cancelar:</strong> Limpia todos los campos del formulario.
+          </li>
+          <li class="list-group-item">
+            <strong>Guardar:</strong> Registra el gasto (disponible cuando todos los campos requeridos están completos).
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Nota -->
+    <div class="alert alert-warning">
+      <h5 class="alert-heading">Nota:</h5>
+      <p class="mb-0">Los campos marcados con un asterisco (*) son obligatorios y deben ser completados para poder
+        guardar el gasto.</p>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>

@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 import {NgPipesModule} from "ngx-pipes";
 import {CategoryService} from "../../../services/category.service";
+import {delay} from "rxjs";
 
 @Component({
   selector: 'app-category-bill',
@@ -42,19 +43,20 @@ export class CategoryBillComponent {
 
   private loadCategories(): void {
     this.isLoading = true;
-    this.categoryService.getAllCategories()
-      .subscribe({
-        next: (data) => {
-          this.categories = data;
-        },
-        error: (error) => {
-          console.error('Error al cargar categorías:', error);
-          // Aquí podrías agregar un manejo de errores más sofisticado
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
+    setTimeout(() => {
+      this.categoryService.getAllCategories()
+        .subscribe({
+          next: (data) => {
+            this.categories = data;
+          },
+          error: (error) => {
+            console.error('Error al cargar categorías:', error);
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+    }, 500);
   }
 
   onSubmit(): void {
