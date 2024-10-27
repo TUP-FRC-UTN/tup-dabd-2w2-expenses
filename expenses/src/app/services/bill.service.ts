@@ -59,6 +59,39 @@ export class BillService {
     return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params }));
   }
 
+  getAllBillsAndPagination(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
+    let params = new HttpParams();
+
+    // Agrega solo los parámetros que tengan valores válidos
+    if (size !== undefined) {
+      params = params.set('size', size.toString());
+    }
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    if (period !== undefined) {
+      params = params.set('period', period.toString());
+    }
+    if (category !== undefined) {
+      params = params.set('category', category.toString());
+    }
+    if (supplier !== undefined) {
+      params = params.set('supplier', supplier.toString());
+    }
+    if (type !== undefined) {
+      params = params.set('type', type.toString());
+    }
+    if (provider) {
+      params = params.set('provider', provider);
+    }
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    // Realiza la solicitud HTTP con los parámetros construidos
+    return this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params });
+  }
+
   
   getBillTypes(): Observable<BillType[]>{
     return this.http.get<BillType[]>(`${this.url}/billType`)

@@ -6,37 +6,61 @@ import { Provider } from '../../../models/provider';
 import Category from '../../../models/category';
 import { CategoryService } from '../../../services/category.service';
 import { ProviderService } from '../../../services/provider.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { AsyncPipe, NgClass } from '@angular/common';
 import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
+import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import { PaginatedResponse } from '../../../models/paginatedResponse';
+import { BillDto } from '../../../models/billDto';
+import { map, Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-list-expenses_bills',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgClass, AsyncPipe, ExpensesBillsNavComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesBillsNavComponent],
   templateUrl: './list-bills.component.html',
   styleUrl: './list-bills.component.css'
 })
 export class ListBillsComponent implements OnInit {
-
+loadSelect() {
+throw new Error('Method not implemented.');
+}
+  
+  //Lista de todos los bills
   bills: Bill[] = [];
+
+  //Respuesta de la api
+  billsWithPages? : PaginatedResponse<BillDto>;
+  //Lista de bills filtradas
   filteredBills: Bill[] = [];
+  //Categorias inyectadas
   billservice = inject(BillService);
   categoryService = inject(CategoryService);
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
+
+  //Atributos
+    //Lista de categorias
+
   categoryList: Category[] = [];
-  selectedCategory: Category = new Category();
+    //Filtros para buscar el objeto
+  filters = new FormGroup({
+    
+    selectedCategory: new FormControl(0),
+    selectedPeriod: new FormControl(0),
+    selectedSupplier: new FormControl(0),
+  })
+  //
   providersList: Provider[] = [];
-  selectedProvider: Provider = new Provider();
   periodsList: Period[] = [];
-  selectedPeriod: Period = new Period();
   typesList:BillType[] = [];
+
   viewList: boolean= true;
   categoryEnable:boolean = true;
   enabelingUpdate : boolean = false;
@@ -45,10 +69,6 @@ export class ListBillsComponent implements OnInit {
   private modalService = inject(NgbModal);
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
-  filtersForm:FormGroup;
-
-
-
 
   constructor(){
     this.billForm = this.fb.group({
@@ -56,9 +76,9 @@ export class ListBillsComponent implements OnInit {
       description: [''],
       amount: ['', [Validators.required, Validators.min(0.0001)]],
       date: ['', Validators.required],
-      supplier_id: ['', [Validators.required]],
-      type_id: ['', [Validators.required]],
-      period_id: ['', [Validators.required]],
+      supplierId: ['', [Validators.required]],
+      typeId: ['', [Validators.required]],
+      periodId: ['', [Validators.required]],
       status: ['ACTIVE', Validators.required]
     });
     this.newCategoryForm = this.fb.group({
@@ -69,14 +89,12 @@ export class ListBillsComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-    this.filtersForm = this.fb.group({
-      period: [''],
-      supplier: [''],
-      category:['']
-    });
+    
+    this.billservice.getAllBillsAndPagination().subscribe(response=>{
+      this.billsWithPages= response
+    })
 
   }
-
 
   ngOnInit(): void {
     this.loadBills();
@@ -122,94 +140,99 @@ export class ListBillsComponent implements OnInit {
     this.selectedBill = undefined; // Limpiamos la factura seleccionada
   }
 
-
+  // Busca las bills de acuerdo a los filtros establecidos
   filterBills() {
-    console.log(JSON.stringify(this.selectedPeriod.month))
-    console.log(JSON.stringify(this.selectedProvider))
-    console.log(JSON.stringify(this.selectedCategory))
-    this.filteredBills = this.filteredBills.filter((bill) => {
-      const matchesPeriod = this.selectedPeriod && this.selectedPeriod.id ? (bill.period?.month === this.selectedPeriod.month && bill.period.year === this.selectedPeriod.year) : true;
-      const matchesProvider = this.selectedProvider && this.selectedProvider.id ? (bill.supplier?.id === this.selectedProvider.id) : true;
-      const matchesCategory = this.selectedCategory && this.selectedCategory.category_id ? (bill.category?.category_id === this.selectedCategory.category_id) : true;
-
-      return matchesPeriod && matchesProvider && matchesCategory
+    const filters = this.filters.value;
+    this.billservice.getAllBills().subscribe((bill)=>{
+      this.bills= bill
     })
-  }
 
+    
+  }
+  //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills(){
-    this.filteredBills=[...this.bills]
-    this.selectedCategory = new Category();
-    this.selectedPeriod= new Period();
-    this.selectedProvider= new Provider();
+    this.loadBills()
   }
 
-  openUpdateModal(bill: Bill) {
+  openUpdateModal(bill?: Bill) {
     return null
   }
-
+  //Primer llamado, trae todos los bills que hay
   loadBills() {
     this.billservice.getAllBills().subscribe((bills) => {
       this.bills = bills;
-      this.filteredBills = bills
     })
     console.log(this.bills);
+
+    this.billservice.getAllBillsAndPagination().subscribe((response)=>{
+      response.content.forEach((billDto)=>{
+
+      })
+    })
   }
+  //Trae todas las categorias
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
       this.categoryList = categories
     })
   }
+  //Trae todas los supplier
   getProviders() {
     this.providerService.getAllProviders().subscribe((providers) => {
       this.providersList = providers
     })
   }
-
+  //Trae todas los períodos
   getPeriods() {
     this.periodService.get().subscribe((periods) => {
       this.periodsList = periods
     })
   }
-
+  //Trae todas los tipos de bill que hay
   getBillTypes(){
     this.billservice.getBillTypes().subscribe((types)=>{
       this.typesList= types
     })
   }
+  //inhabilita los campos del modal de edicion
   disableUpdate(){
     this.billForm.disable();
     this.categoryEnable = false;
   }
+  //habilita los campos del modal de edicion
   enableUpdate(){
     this.billForm.enable();
     this.categoryEnable = true;
   }
-  openDeleteModal(id: number) {
+  //Abre el modal de confirmacion de borrado
+  openDeleteModal(id?: number) {
     return null
   }
+  //abre el modal de edicion por id
   showModal(title: string, message: string) {
     const modalRef = this.modalService.open(NgbModal);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
   }
-
+  //Abre el modal para agregar una categoría
   openNewCategoryModal() {
     this.modalService.open(this.newCategoryModal, { ariaLabelledBy: 'modal-basic-title' });
   }
-
+  //Carga los valores en los filtros existentes
   loadSelectOptions() {
     this.getCategories();
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
   }
-
+  //Resetea los valores del modal de edicion
   resetForm() {
     this.billForm.reset();
     this.loadSelectOptions();
     this.disableUpdate();
     this.viewList=true;
   }
+  //Guarda la nueva categoría
   saveNewCategory() {
     if (this.newCategoryForm.valid) {
       let newCategory: Category = this.newCategoryForm.value;
@@ -240,5 +263,31 @@ export class ListBillsComponent implements OnInit {
     //cerrar el modal y actualiza la lista de categorías
     this.modalService.dismissAll();
     this.newCategoryForm.reset();
+  }
+
+  private formatBills(billsDto$: Observable<PaginatedResponse<BillDto>>): Observable<Bill[]> {
+    return billsDto$.pipe(
+
+      map((response)=>{
+        const billsDto = response.content;
+        if(!Array.isArray(billsDto)){
+          console.error('La respuesta del servidor no contiene una array')
+          return []
+        }
+        return billsDto.map((billDto)=>
+          new Bill(
+            billDto.expenditure_id,
+            billDto.date,
+            billDto.amount,
+            billDto.description,
+            billDto.supplier,
+            billDto.period,
+            billDto.category,
+            billDto.bill_type,
+            billDto.status
+          )
+        )
+      })
+    );
   }
 }
