@@ -55,6 +55,7 @@ export class ListBillsComponent implements OnInit {
   visiblePages:number[] = [];
   maxPagesToShow :number = 5;
   pageSize:number=10;
+  isLoading: boolean = true;
   //Filtros para buscar el objeto
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
@@ -104,16 +105,13 @@ export class ListBillsComponent implements OnInit {
     
 
   }
-
+  //Metodo que se ejecuta cuando se inicia el componente
   ngOnInit(): void {
+    this.isLoading = true;
     this.loadBills();
     this.loadSelect();
 
   }
-
-  
-
-
   // Método para cancelar la edición
   cancelEdit() {
     this.viewList = true; // Volvemos a mostrar la lista
@@ -122,6 +120,7 @@ export class ListBillsComponent implements OnInit {
 
   // Busca las bills de acuerdo a los filtros establecidos
   filterBills() {
+    this.bills=[];
     const filters = this.filters.value;
     console.log(`Filtros:${filters}`)
     this.billservice.getAllBills(
@@ -132,14 +131,24 @@ export class ListBillsComponent implements OnInit {
         filters.selectedSupplier?.valueOf(),
         filters.selectedType?.valueOf(),
         filters.selectedProvider?.valueOf(),
-        filters.selectedStatus?.valueOf()).subscribe((bill)=>{
-        this.bills= bill
-    })
+        filters.selectedStatus?.valueOf()).subscribe({
+          next: (bills) => {
+            this.bills = bills;
+          },
+          error: (error) => {
+            console.error('Error al cargar las facturas:', error);
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+
+        })
 
     
   }
   //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills(){
+    //this.filters.reset();
     this.loadBills()
   }
 
@@ -148,25 +157,28 @@ export class ListBillsComponent implements OnInit {
   }
   //Primer llamado, trae todos los bills que hay
   loadBills() {
-    this.billservice.getAllBillsAndPagination(this.pageSize,this.currentPage).subscribe((response)=>{
-
-      this.totalPages = response.totalPages;
-      response.content.map((bill)=>{
-        this.bills.push(new Bill(
-          bill.expenditure_id,
-          bill.date,
-          bill.amount,
-          bill.description,
-          bill.supplier,
-          bill.period,
-          bill.category,
-          bill.bill_type,
-          bill.status
-        ))
-      })
-      
+    this.bills=[];
+    this.isLoading = true;
+    this.billservice.getAllBillsAndPagination(this.pageSize,this.currentPage).subscribe({
+      next: (response) => {this.totalPages = response.totalPages;
+        console.log(`Total pages:${this.totalPages}`)
+        response.content.map((bill)=>{
+          this.bills.push(new Bill(
+            bill.expenditure_id,
+            bill.date,
+            bill.amount,
+            bill.description,
+            bill.supplier,
+            bill.period,
+            bill.category,
+            bill.bill_type,
+            bill.status
+          ))
+        })},
+      error: (error) => {console.error('Error al cargar las facturas:', error)},
+      complete: () => {this.isLoading = false}
     })
-    console.log(this.bills);
+    
   }
   updateVisiblePages(): void {
     const half = Math.floor(this.maxPagesToShow / 2);
@@ -213,15 +225,13 @@ export class ListBillsComponent implements OnInit {
     })
     console.log(`Tipos:${this.typesList}`)
   }
-  //inhabilita los campos del modal de edicion
-  disableUpdate(){
-    this.billForm.disable();
-    this.categoryEnable = false;
+  //Abre el modal y muestra los campos del gasto seleccionado
+  viewBill(bill: Bill){
+
   }
-  //habilita los campos del modal de edicion
-  enableUpdate(){
-    this.billForm.enable();
-    this.categoryEnable = true;
+  //Abre el modal de edicion y carga los campos del gasto seleccionado
+  editBill(bill: Bill){
+    
   }
   //Abre el modal de confirmacion de borrado
   openDeleteModal(id?: number) {

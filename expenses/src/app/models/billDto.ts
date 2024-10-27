@@ -8,10 +8,10 @@ export class BillDto {
   date: Date = new Date();
   amount: number = 0;
   description: string = '';
-  supplier?: Provider;
-  period?: Period;
-  category?: Category;
-  bill_type?: BillType;
+  supplier: Provider = new Provider();
+  period: Period= new Period();
+  category: Category = new Category();
+  bill_type: BillType = new BillType();
   status: string = '';
 }
 

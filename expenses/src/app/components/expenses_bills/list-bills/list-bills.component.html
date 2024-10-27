@@ -5,18 +5,9 @@
       <h2>Listado de gastos</h2>
     </div>
     
-    <!-- Buscador no funcional
-      <div class="input-group w-25">
-        <input
-        type="text"
-        class="form-control"
-        placeholder="Buscar gasto..."
-        [(ngModel)]="searchTerm">
-        <span class="input-group-text">
-          <i class="bi bi-search"></i>
-        </span>
-      </div>
-    -->
+    
+      
+   
       
   
 
@@ -105,7 +96,7 @@
     </div>
   </div>
   <br>
-  <div class="row">
+  <div class="row align-items-center">
     <div class="col-auto">
       <div class="btn-group me-2">
         <button type="button" class="btn btn-outline-danger" (click)="unFilterBills()">
@@ -117,51 +108,80 @@
         </button>
       </div>
     </div>
+    <div class="col d-flex justify-content-end">
+      <div class="input-group w-25 text-end" id="buscadorDeGrilla">
+        <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar gasto..."
+        [(ngModel)]="searchTerm">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+    </div>
   </div>
 
 
 
  <br>
   <div class="card">
-    
-    <table class="table table-striped" id="table-data">
-      <thead>
-        <tr>
-          <th scope="col">Tipo</th>
-          <th scope="col">Proveedor</th>
-          <th scope="col">Monto</th>
-          <th scope="col">Periodo</th>
-          <th scope="col">Categoria</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-       <!--| filterBy: ['billType.name', 'supplier.name','amount','period.month','status','category.name']: searchTerm  -->
-        @for (bill of bills ; track $index) {
+    @if(isLoading){
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    }
+    @else {
+
+      <table class="table table-striped" id="table-data">
+        <thead>
           <tr>
-              <td>{{bill.billType?.name}} </td>
-              <td>{{bill.supplier?.name}}</td>
-              <td>{{bill.amount.toLocaleString("es-AR", {
-                style: "currency",
-                currency: "ARS",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              }) }}</td>
-              <td>{{bill.period?.month }}/{{ bill.period?.year }} </td>
-              <td>{{bill.category?.name}}</td>
-              <td>{{bill.date | date:'MMM d, yyyy'}}</td>
+            <th scope="col">Tipo</th>
+            <th scope="col">Proveedor</th>
+            <th scope="col">Monto</th>
+            <th scope="col">Periodo</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
           </tr>
-        }@empty {
-          <td colspan="7" class="text-center">
-            <div class="text-center p-3">
-              <div class="alert alert-secondary">
-                No hay gastos para mostrar
+        </thead>
+        <tbody>
+          <!-- | filterBy: ['amount']: searchTerm -->
+          @for (bill of bills | filterBy: ['amount', 'supplier.name']: searchTerm; track $index ) {
+            <tr>
+                <td>{{bill.billType.name}} </td>
+                <td>{{bill.supplier.name}}</td>
+                <td>{{bill.amount.toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                }) }}</td>
+                <td>{{bill.period.month }}/{{ bill.period.year }} </td>
+                <td>{{bill.category.name}}</td>
+                <td>{{bill.date | date:'MMM d, yyyy'}}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning me-2" (click)="editBill(bill)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-primary" (click)="viewBill(bill)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+            </tr>
+          }@empty {
+            <td colspan="7" class="text-center">
+              <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                  No hay gastos para mostrar
+                </div>
               </div>
-            </div>
-          </td>}
-              
-      </tbody>
-    </table>
+            </td>}
+                
+        </tbody>
+      </table>
+    }
   </div>
   <br>
   <div class="row d-flex align-items-end">
