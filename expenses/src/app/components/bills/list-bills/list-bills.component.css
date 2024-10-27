@@ -1,0 +1,52 @@
+/* Contenedor principal */
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  background-color: white;
+}
+
+/* Contenedor del scroll */
+.table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100px; /* Altura mínima para evitar que colapse */
+}
+
+/* Footer con el botón */
+.table-footer {
+  padding: 1rem;
+  background-color: white;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Asegurar que el header se mantenga fijo */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Quitar el borde de la tabla para evitar doble borde */
+.table {
+  margin-bottom: 0;
+  border: none;
+}
+
+/* Estilizar el scrollbar */
+.table-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

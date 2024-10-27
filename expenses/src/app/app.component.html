@@ -31,6 +31,10 @@
             <a class="nav-link text-white" [routerLink]="'/gastos'">
               <span class="fs-5 ms-3 d-none d-lg-inline">Gastos</span></a
             >
+            <a class="nav-link text-secondary" [routerLink]="'/gastos/categorias'">
+              <span class="fs-6 ms-3 d-none d-lg-inline">Categorias</span></a
+            >
+
           </li>
           <li class="nav-item">
             <a class="nav-link text-white" routerLink="/expenses"
@@ -45,14 +49,14 @@
         </ul>
       </div>
     </div>
-    <div class="col-10 content-scroll" style="height: 95vh; margin-top: 5vh; ">
+    <div class="col-10 content-scroll" style="height: 95vh; margin-top: 5vh; padding-left: 5%; padding-right: 5%;">
         <router-outlet></router-outlet>
     </div>
   </div>
 </div>
 <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
 
-<!-- 
+<!--
 <div class="row" style="height: 100vh; width: 100%; padding-top: 8px">
     <div class="col-2" style="height: 100%">
       <nav class="bg-dark" style="height: 100%; padding-top: 15px">
