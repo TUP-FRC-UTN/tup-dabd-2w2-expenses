@@ -14,8 +14,8 @@ import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expense
 //import $ from "jquery";
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 //import * as XLSX from 'xlsx'
-//import * as XLSX from 'xlsx';   // Para exportar a Excel
-//import jsPDF from 'jspdf';      // Para exportar a PDF
+import * as XLSX from 'xlsx';   // Para exportar a Excel
+import jsPDF from 'jspdf';      // Para exportar a PDF
 //import 'jspdf-autotable';       // Para generar tablas en PDF
 //import moment from 'moment';
 //import { Subject } from 'rxjs';
@@ -31,6 +31,7 @@ import { TableComponent } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
+import autoTable from 'jspdf-autotable';
 
 
 @Component({
@@ -74,7 +75,6 @@ export class ListChargesComponent implements OnInit {
   applyFilters() {
     this.currentPage = 0;
     this.cargarPaginado();
-    //this.updateVisiblePages();
   }
   clearFilters(){
     this.selectedCategoryId = 0;
@@ -87,55 +87,61 @@ export class ListChargesComponent implements OnInit {
 
   imprimir() {
     console.log('Imprimiendo')
-    // const doc = new jsPDF();
+    const doc = new jsPDF();
     
-    // // Título del PDF
-    // doc.setFontSize(18);
-    // doc.text('Expenses Report', 14, 20);
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Reporte de Cargos ', 14, 20);
+    
 
-    // // Llamada al servicio para obtener las expensas
-    // this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
-    //   // Usando autoTable para agregar la tabla
-    //   autoTable(doc, {
-    //     startY: 30,
-    //     head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
-    //     body: expenses.content.map(expense => [
-    //       expense.period.month,
-    //       expense.period.year,
-    //       expense.totalAmount,
-    //       expense.state,
-    //       expense.plotNumber,
-    //       expense.percentage,
-    //       expense.billType
-    //     ]),
-    //   });
+    // Llamada al servicio para obtener las expensas
+    this.chargeService.getCharges(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedCategoryId).subscribe(charges => {
+      // Usando autoTable para agregar la tabla
+      console.log(charges.content);
+      autoTable(doc, {
+        startY: 30,
+        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Amount']],
+        body: charges.content.map(charge => [
+          charge.date.toString(),
+          charge.period.month + '/' + charge.period.year,          
+          this.getPlotNumber(charge.lotId) || 'N/A', // Manejo de undefined
+          charge.categoryCharge.name,
+          charge.description,
+          charge.amount
+          
+        ]),
+      });
 
-    //   // Guardar el PDF después de agregar la tabla
-    //   doc.save('expenses_report.pdf');
-    //   console.log('Impreso')
-    // });
+      // Guardar el PDF después de agregar la tabla
+      const fecha = new Date();
+      console.log(fecha);
+      this.fileName += "-"+ fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
+      doc.save(this.fileName);
+      console.log('Impreso')
+    }); 
   }
     
   downloadTable() {
-    // this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
-    //   // Mapear los datos a un formato tabular adecuado
-    //   const data = expenses.content.map(expense => ({
-    //     'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
-    //     'Monto Total': expense.totalAmount,
-    //     'Fecha de liquidación': expense.liquidationDate,
-    //     'Estado': expense.state,
-    //     'Número de lote': expense.plotNumber,
-    //     'Typo de lote': expense.typePlot,
-    //     'Porcentaje': expense.percentage,
-    //     'Tipo de expensa': expense.billType
-    //   }));
+    this.chargeService.getCharges(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedCategoryId).subscribe(charges => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = charges.content.map(charge => ({
+        'Fecha de Carga': charge.date,
+        'Periodo':  `${charge?.period?.month} / ${charge?.period?.year}`,
+        'Número de lote': this.getPlotNumber(charge.lotId),
+        'Categoría': charge.categoryCharge.name,
+        'Descripción': charge.description,
+        'Monto': charge.amount,
+        'Estado': charge.status,
+      }));
   
-    //   // Convertir los datos tabulares a una hoja de cálculo
-    //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    //   XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-    //   XLSX.writeFile(wb, this.fileName);
-    // })}
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Cargos');
+      var fecha = new Date();
+      this.fileName += "-"+fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
+      XLSX.writeFile(wb, this.fileName);
+    });
   }
   open(content: TemplateRef<any>, id: number | null) {
     //this.idClosePeriod = id;    
@@ -198,7 +204,7 @@ export class ListChargesComponent implements OnInit {
 
   datatable : any;
   //private dateChangeSubject = new Subject<{ from: string, to: string }>();
-  fileName : string = "Charges";
+  fileName : string = "Cargos";
 
 
 
@@ -206,8 +212,7 @@ export class ListChargesComponent implements OnInit {
 
   @ViewChild('exampleModal') exampleModal!: ElementRef;
 
-  constructor() {
-  }
+  constructor() {}
 
   // openModal() {
   //   const modal = new b.Modal(this.exampleModal.nativeElement);

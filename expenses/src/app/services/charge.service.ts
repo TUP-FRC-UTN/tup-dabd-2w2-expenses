@@ -34,17 +34,21 @@ export class ChargeService {
       .set('page', page)
       .set('size', size);
 
-    if (periodId != undefined || periodId != null) {
-      console.log('periodo = '+periodId)
-      params = params.set('period', periodId.toString());
+    if (periodId != undefined || periodId != null ) {
+      if(periodId != 0){
+        console.log('periodo = '+periodId);
+        params = params.set('period', periodId.toString());
+      }      
     }
     // if (plotId) {
     //   console.log('lote= '+plotId)
     //   params = params.set('plotId', plotId);
     // }
     if (typeId != undefined || typeId != null) {
-      console.log('tipo= '+typeId)
-      params = params.set('category_charge', typeId.toString());
+      if(typeId != 0){
+        console.log('categoria = '+typeId);
+        params = params.set('type', typeId.toString());
+      }
     }
     console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
