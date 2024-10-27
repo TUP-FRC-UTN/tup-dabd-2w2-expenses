@@ -1,30 +1,100 @@
-<nav style="height: 5vh; width: 100%; border-bottom: 1px solid white; position: fixed; top: 0; left: 0; z-index: 1000;" class="bg-dark">
-</nav>
-<div class="row" style="height: 95vh; width: 100%; padding-top: 8px;">
-    <div class="col-2 " style="height: 100%;" >
-        <nav class="bg-dark " style="height: 100%; padding-top: 15px;"  >
-                    <ul class="navbar-nav" style="padding: 5px; gap: 5px;">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" routerLink="/periodo" routerLinkActive="active">Periodo</a>
-                        </li>
-
-                        <li class="nav-item">
-
-                            <a class="nav-link text-white" routerLink="/gastos" routerLinkActive="active">Gastos</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-white" routerLink="/expenses" routerLinkActive="active">Expensas</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-white" routerLink="/cargos" routerLinkActive="active">Cargos</a>
-                        </li>
-
-                    </ul>
-        </nav>
+<nav
+  style="
+    height: 5vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  "
+  class="bg-dark"
+></nav>
+<div
+  class="container-fluid"
+  style="height: 100vh; width: 100%"
+>
+  <div class="row" >
+    <div class="bg-dark  min-vh-95 col-2" style="height: 95vh; margin-top: 5vh; ">
+      <div class="bg-dark p-2">
+        <a
+          class="d-flex text-decoration-none mt-1 justify-content-center align-items-center text-white text-center"
+        >
+          <span class="fs-4 d-none d-md-inline text-center">Menu Expensas</span>
+        </a>
+        <ul class="nav nav-pills flex-column mt-4">
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="/periodo">
+              <span class="fs-5 ms-3 d-none d-lg-inline">Periodo</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" [routerLink]="'/gastos'">
+              <span class="fs-5 ms-3 d-none d-lg-inline">Gastos</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="/expenses"
+              ><span class="fs-5 ms-3 d-none d-lg-inline">Expensas</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="/cargos">
+              <span class="fs-5 ms-3 d-none d-lg-inline">Cargos</span></a
+            >
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="col-10 sticky-content" style="padding-top: 5vh;">
+    <div class="col-10 content-scroll">
         <router-outlet></router-outlet>
     </div>
+  </div>
 </div>
+<!-- 
+<div class="row" style="height: 100vh; width: 100%; padding-top: 8px">
+    <div class="col-2" style="height: 100%">
+      <nav class="bg-dark" style="height: 100%; padding-top: 15px">
+        <ul class="navbar-nav" style="padding: 5px; gap: 5px">
+          <li class="nav-item">
+            <a
+              class="nav-link text-white"
+              routerLink="/periodo"
+              routerLinkActive="active"
+              >Periodo</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a
+              class="nav-link text-white"
+              routerLink="/gastos"
+              routerLinkActive="active"
+              >Gastos</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a
+              class="nav-link text-white"
+              routerLink="/expenses"
+              routerLinkActive="active"
+              >Expensas</a
+            >
+          </li>
+
+          <li class="nav-item">
+            <a
+              class="nav-link text-white"
+              routerLink="/cargos"
+              routerLinkActive="active"
+              >Cargos</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+  <div class="col-10 sticky-content" style="padding-top: 5vh">
+    <router-outlet></router-outlet>
+  </div>
+</div> -->

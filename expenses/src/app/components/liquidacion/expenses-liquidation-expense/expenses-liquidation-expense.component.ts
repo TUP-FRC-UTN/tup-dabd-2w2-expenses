@@ -111,7 +111,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
   closeLiquidation() {
     if (this.listLooking[0].expense_id) {
-      this.liquidationExpensesService.putCloseLiquidation(this.listLooking[0].expense_id).subscribe({
+      this.liquidationExpensesService.putCloseLiquidationExpensesPeriod(this.listLooking[0].period?.id||0).subscribe({
         next: () => {
           console.log('Liquidación cerrada exitosamente');
           this.loadList(this.id);
