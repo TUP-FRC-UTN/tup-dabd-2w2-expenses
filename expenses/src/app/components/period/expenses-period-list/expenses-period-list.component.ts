@@ -48,13 +48,13 @@ export class ExpensesPeriodListComponent implements OnInit {
 
 
   loadPaged(page: number) {
+
     page =page -1
     this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
       this.listPeriod = data.content;
       this.cantPages = generateNumberArray(data.totalPages)
 
     });
-
   }
 
   onSelectChange(event: Event): void {
@@ -125,6 +125,7 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.typeFilter=text
     this.year=null
     this.month=null
+    this.searchTerm=''
     if(!text){
       this.loadPaged(1)
     }
