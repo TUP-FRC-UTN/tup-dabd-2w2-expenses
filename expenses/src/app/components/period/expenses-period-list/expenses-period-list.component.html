@@ -135,7 +135,13 @@
     </div>
   </div>
 </div>
-
+@if (listPeriod===null) {
+  <div class="text-center " style="width: 100%;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+} @else{ 
 <table
   class="table table-striped fixed-table"
   style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
@@ -150,7 +156,7 @@
     </tr>
   </thead>
   <tbody>
-    @if (listPeriod.length ===0) {
+  @if (listPeriod?.length ===0) {
     <tr>
       <td
         class="alert alert-secondary"
@@ -269,7 +275,7 @@
     ></ngb-pagination>
   </div>
 </div>
-
+}
 <ng-template #modalTemplate let-modal>
   <app-expenses-modal
     [title]="'Cierre de Periodo'"

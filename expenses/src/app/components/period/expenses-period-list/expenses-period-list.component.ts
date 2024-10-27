@@ -13,6 +13,8 @@ import { ExpensesStatePeriodStyleComponent } from '../../expenses-state-period-s
 import { FormsModule } from '@angular/forms';
 import autoTable from 'jspdf-autotable';
 import jsPDF from 'jspdf';
+import { timeout } from 'rxjs';
+import { ToastService } from 'ngx-dabd-grupo01';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -23,8 +25,7 @@ import jsPDF from 'jspdf';
 })
 export class ExpensesPeriodListComponent implements OnInit {
   private readonly periodService: PeriodService = inject(PeriodService);
-  listOpenPeriod: Period[] = [];
-  listPeriod: Period[] = [];  
+  listPeriod: Period[]|null = null;  
   cantPages: number[] = [];
   indexActive = 1;
   size = 10;
@@ -35,6 +36,7 @@ export class ExpensesPeriodListComponent implements OnInit {
   typeFilter:string|null=null
   year:number|null = null
   month:number|null=null
+  toastService:ToastService =inject(ToastService)
   ngOnInit(): void {
     this.loadPaged(1);
   }
@@ -43,11 +45,14 @@ export class ExpensesPeriodListComponent implements OnInit {
 
   loadPaged(page: number) {
     page =page -1
-    this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
-      this.listPeriod = data.content;
-      this.cantPages = generateNumberArray(data.totalPages)
-    
-    });
+    this.listPeriod=null
+    setTimeout(()=>{
+      this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
+        this.listPeriod = data.content;
+        this.cantPages = generateNumberArray(data.totalPages)
+      });
+    },300)
+ 
 
   }
 
@@ -102,7 +107,12 @@ export class ExpensesPeriodListComponent implements OnInit {
           },
           error: (err) => {
             console.log(err)
-            this.openErrorModal(err);
+            if(err){
+              this.toastService.sendError(err.error.message)
+            } else{
+              this.toastService.sendError("Ocurrio un error")
+            }
+
           }
         });
   
