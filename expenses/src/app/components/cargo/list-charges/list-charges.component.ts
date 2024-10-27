@@ -27,7 +27,7 @@ import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
 import Period from '../../../models/period';
 import {NgPipesModule} from "ngx-pipes";
-import { TableComponent } from 'ngx-dabd-grupo01';
+import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
@@ -189,6 +189,7 @@ export class ListChargesComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly periodService = inject(PeriodService);
   private readonly lotsService = inject(LotsService);
+  toastService:ToastService = inject(ToastService)
 
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
@@ -309,6 +310,7 @@ export class ListChargesComponent implements OnInit {
     modalRef.result.then(
       (result) => {
         if (result) {
+          this.toastService.sendSuccess("Se actualizo el cargo correctamente")
           this.currentPage = 0;
           this.cargarPaginado();
         }
@@ -326,8 +328,7 @@ export class ListChargesComponent implements OnInit {
         if (result) {
           debugger
           this.deleteCharge(result);
-          const modalRefer = this.modalService.open(NgModalComponent);
-          modalRefer.componentInstance.message = '¡El cargo ha sido eliminado correctamente!'
+          this.toastService.sendSuccess("Se ha elimado el cargo correctamente");
           this.cargarPaginado();
         }
       },
