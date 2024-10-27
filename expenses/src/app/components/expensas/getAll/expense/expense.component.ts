@@ -29,12 +29,12 @@ export class ExpenseComponent implements OnInit{
 
 
 
-  
+
 onFilterTextBoxChanged($event: Event) {
 throw new Error('Method not implemented.');
 }
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute); 
+  private readonly route = inject(ActivatedRoute);
 
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
@@ -95,16 +95,16 @@ throw new Error('Method not implemented.');
       });
       this.totalPages = data.totalPages;  // Número total de páginas
       this.totalItems = data.totalElements;  // Total de registros
-      this.currentPage = data.number; 
+      this.currentPage = data.number;
       this.updateVisiblePages();
-      
-    });    
+
+    });
   }
 
   onPageSizeChange() {
     this.currentPage = 0; // Reinicia a la primera página
     console.log(this.pageSize)
-    this.loadExpenses(0,this.pageSize);   
+    this.loadExpenses(0,this.pageSize);
   }
   applyFilters() {
     this.currentPage = 0
@@ -126,17 +126,17 @@ throw new Error('Method not implemented.');
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
     }
-    
+
   }
 
   onPageChange(page: number): void {
     console.log(this.totalPages)
     if (page >= 0 && page < this.totalPages) {
-    
+
       console.log('Cargando página ' + page);
       this.loadExpenses(page, this.pageSize);
       this.updateVisiblePages();
-      this.currentPage = page; 
+      this.currentPage = page;
   }
 }
 
@@ -148,6 +148,7 @@ throw new Error('Method not implemented.');
     this.currentPage = 0
     this.loadExpenses();
     this.searchTerm = ''
+    this.pageSize = 10
   }
   //carga el select de periodo y lote
   loadSelect() {
@@ -166,12 +167,12 @@ throw new Error('Method not implemented.');
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
-    return monthNames[month - 1]; 
+    return monthNames[month - 1];
   }
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();
-    
+
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
@@ -198,7 +199,7 @@ throw new Error('Method not implemented.');
       console.log('Impreso')
     });
   }
-     
+
   downloadTable() {
     this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
@@ -212,13 +213,13 @@ throw new Error('Method not implemented.');
         'Porcentaje': expense.percentage,
         'Tipo de expensa': expense.billType
       }));
-  
+
       // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
       XLSX.writeFile(wb, this.fileName);
     })}
-    
+
 }
 
