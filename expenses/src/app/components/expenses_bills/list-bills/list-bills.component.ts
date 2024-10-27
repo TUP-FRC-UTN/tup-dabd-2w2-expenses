@@ -10,31 +10,31 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
-import { AsyncPipe, NgClass } from '@angular/common';
+import { AsyncPipe, NgClass, DatePipe, CommonModule } from '@angular/common';
 import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { PaginatedResponse } from '../../../models/paginatedResponse';
 import { BillDto } from '../../../models/billDto';
+import * as XLSX from 'xlsx'
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { map, Observable } from 'rxjs';
+import { NgPipesModule } from 'ngx-pipes';
 
 
 @Component({
   selector: 'app-list-expenses_bills',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesBillsNavComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesBillsNavComponent,FormsModule,NgPipesModule,CommonModule],
   templateUrl: './list-bills.component.html',
   styleUrl: './list-bills.component.css'
 })
 export class ListBillsComponent implements OnInit {
-loadSelect() {
-throw new Error('Method not implemented.');
-}
+  
   
   //Lista de todos los bills
   bills: Bill[] = [];
-
-  //Respuesta de la api
-  billsWithPages? : PaginatedResponse<BillDto>;
+  
   //Lista de bills filtradas
   filteredBills: Bill[] = [];
   //Categorias inyectadas
@@ -44,23 +44,34 @@ throw new Error('Method not implemented.');
   providerService = inject(ProviderService);
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
-
+  
+  
   //Atributos
-    //Lista de categorias
-
-  categoryList: Category[] = [];
-    //Filtros para buscar el objeto
+  //Lista de categorias
+  
+  searchTerm: string = ""
+  currentPage: number= 0;
+  totalPages: number = 10;
+  visiblePages:number[] = [];
+  maxPagesToShow :number = 5;
+  pageSize:number=10;
+  //Filtros para buscar el objeto
   filters = new FormGroup({
-    
     selectedCategory: new FormControl(0),
     selectedPeriod: new FormControl(0),
     selectedSupplier: new FormControl(0),
+    selectedProvider: new FormControl("SUPPLIER"),
+    selectedStatus: new FormControl("ACTIVE"),
+    selectedType: new FormControl(0)
   })
   //
-  providersList: Provider[] = [];
+  categoryList: Category[] = [];
+  supplierList: Provider[] = [];
   periodsList: Period[] = [];
   typesList:BillType[] = [];
-
+  today:Date= new Date();
+  fileName = `Gastos_${this.today.toLocaleDateString()}.xlsx`
+  
   viewList: boolean= true;
   categoryEnable:boolean = true;
   enabelingUpdate : boolean = false;
@@ -90,49 +101,18 @@ throw new Error('Method not implemented.');
       ]]
     });
     
-    this.billservice.getAllBillsAndPagination().subscribe(response=>{
-      this.billsWithPages= response
-    })
+    
 
   }
 
   ngOnInit(): void {
     this.loadBills();
-    this.getCategories();
-    this.getProviders();
-    this.getPeriods();
+    this.loadSelect();
 
   }
 
-  viewBill(bill:Bill){
-    this.selectedBill = bill;
-    this.billForm.patchValue({
-      categoryId: bill.category?.category_id,
-      description:bill.description,
-      amount: bill.amount,
-      date: bill.date,
-      supplier_id: bill.supplier?.id,
-      type_id: bill.billType?.bill_type_id,
-      period_id: bill.period?.id,
-      status: bill.status
-    })
-    if(bill.status === "Cancelado"){
-      this.enabelingUpdate = false;
-    }
-    this.viewList = false;
-  }
+  
 
-  saveBill() {
-    if (this.billForm.valid) {
-      const updatedBill = { ...this.selectedBill, ...this.billForm.value };
-      this.billservice.updateBill(updatedBill).subscribe(() => {
-        this.loadBills();
-        this.disableUpdate();
-        this.viewList = true;
-        this.selectedBill = undefined;
-      });
-    }
-  }
 
   // Método para cancelar la edición
   cancelEdit() {
@@ -143,8 +123,17 @@ throw new Error('Method not implemented.');
   // Busca las bills de acuerdo a los filtros establecidos
   filterBills() {
     const filters = this.filters.value;
-    this.billservice.getAllBills().subscribe((bill)=>{
-      this.bills= bill
+    console.log(`Filtros:${filters}`)
+    this.billservice.getAllBills(
+        this.pageSize,
+        this.currentPage,
+        filters.selectedPeriod?.valueOf(),
+        filters.selectedCategory?.valueOf(),
+        filters.selectedSupplier?.valueOf(),
+        filters.selectedType?.valueOf(),
+        filters.selectedProvider?.valueOf(),
+        filters.selectedStatus?.valueOf()).subscribe((bill)=>{
+        this.bills= bill
     })
 
     
@@ -159,17 +148,46 @@ throw new Error('Method not implemented.');
   }
   //Primer llamado, trae todos los bills que hay
   loadBills() {
-    this.billservice.getAllBills().subscribe((bills) => {
-      this.bills = bills;
+    this.billservice.getAllBillsAndPagination(this.pageSize,this.currentPage).subscribe((response)=>{
+
+      this.totalPages = response.totalPages;
+      response.content.map((bill)=>{
+        this.bills.push(new Bill(
+          bill.expenditure_id,
+          bill.date,
+          bill.amount,
+          bill.description,
+          bill.supplier,
+          bill.period,
+          bill.category,
+          bill.bill_type,
+          bill.status
+        ))
+      })
+      
     })
     console.log(this.bills);
-
-    this.billservice.getAllBillsAndPagination().subscribe((response)=>{
-      response.content.forEach((billDto)=>{
-
-      })
-    })
   }
+  updateVisiblePages(): void {
+    const half = Math.floor(this.maxPagesToShow / 2);
+    let start = Math.max(0, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + this.maxPagesToShow);
+
+    if (end - start < this.maxPagesToShow) {
+      start = Math.max(0, end - this.maxPagesToShow);
+    }
+
+    this.visiblePages = [];
+    for (let i = start; i < end; i++) {
+      this.visiblePages.push(i);
+    }
+    
+  }
+  updatePageSize(){
+    this.currentPage = 0; // Reinicia a la primera página
+    this.loadBills();   
+  }
+
   //Trae todas las categorias
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -179,7 +197,7 @@ throw new Error('Method not implemented.');
   //Trae todas los supplier
   getProviders() {
     this.providerService.getAllProviders().subscribe((providers) => {
-      this.providersList = providers
+      this.supplierList = providers
     })
   }
   //Trae todas los períodos
@@ -188,11 +206,12 @@ throw new Error('Method not implemented.');
       this.periodsList = periods
     })
   }
-  //Trae todas los tipos de bill que hay
+  //Trae todas los tipos de bill disponibles
   getBillTypes(){
     this.billservice.getBillTypes().subscribe((types)=>{
       this.typesList= types
     })
+    console.log(`Tipos:${this.typesList}`)
   }
   //inhabilita los campos del modal de edicion
   disableUpdate(){
@@ -219,55 +238,25 @@ throw new Error('Method not implemented.');
     this.modalService.open(this.newCategoryModal, { ariaLabelledBy: 'modal-basic-title' });
   }
   //Carga los valores en los filtros existentes
-  loadSelectOptions() {
+  loadSelect() {    
     this.getCategories();
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
-  }
-  //Resetea los valores del modal de edicion
-  resetForm() {
-    this.billForm.reset();
-    this.loadSelectOptions();
-    this.disableUpdate();
-    this.viewList=true;
-  }
-  //Guarda la nueva categoría
-  saveNewCategory() {
-    if (this.newCategoryForm.valid) {
-      let newCategory: Category = this.newCategoryForm.value;
-      newCategory.name = newCategory.name?.trim();
-      newCategory.description = newCategory.description?.trim();
-      console.log(newCategory);
-
-      this.categoryService.addCategory(newCategory).subscribe({
-        next: (response: any) => {
-          console.log('Añadido correctamente', response);
-          this.showModal('Éxito', 'La categoria se ha añadido correctamente.');
-          this.getCategories();
-        },
-        error: (error: any) => {
-          console.error('Error en el post', error);
-          if (error.status === 409) {
-            this.showModal('Error', 'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.');
-          } else {
-            this.showModal('Error', 'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.');
-          }
-        }
-      });
-    } else {
-      console.log('Formulario inválido');
-      this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
+    
     }
-    // console.log('Nueva categoría:', this.newCategoryForm.value);
-    //cerrar el modal y actualiza la lista de categorías
-    this.modalService.dismissAll();
-    this.newCategoryForm.reset();
-  }
+  onPageChange(number: number){
 
+  }
+  
+  
+  //Resetea los valores del modal de edicion
+  
+  //Guarda la nueva categoría
+  
+  //Método que formatea de BillDto a entidad Bill
   private formatBills(billsDto$: Observable<PaginatedResponse<BillDto>>): Observable<Bill[]> {
     return billsDto$.pipe(
-
       map((response)=>{
         const billsDto = response.content;
         if(!Array.isArray(billsDto)){
@@ -290,4 +279,60 @@ throw new Error('Method not implemented.');
       })
     );
   }
+  //Generación de documentos
+  //Generación de pdf
+  imprimir() {
+    console.log('Imprimiendo')
+    const doc = new jsPDF();
+    
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Bills Report', 14, 20);
+
+    // Llamada al servicio para obtener las expensas
+    this.billservice.getAllBills(100000, 0).subscribe(bills => {
+      // Usando autoTable para agregar la tabla
+      autoTable(doc, {
+        startY: 30,
+        head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
+        body: bills.map(bill => [
+          bill.period? bill.period.year:null,
+          bill.period? bill.period.month:null,
+          bill.amount,
+          bill.date.toLocaleDateString(),
+          bill.status? bill.status:null,
+          bill.supplier? bill.supplier.name:null,
+          bill.category? bill.category.name:null,
+          bill.billType? bill.billType.name:null,
+          bill.description
+        ]),
+      });
+
+      // Guardar el PDF después de agregar la tabla
+      doc.save('bills_report.pdf');
+      console.log('Impreso')
+    });
+  }
+  //Generar excel con todos los fatos
+  //Crear excel con datos de los gastos que se muestran
+  downloadTable() {
+    this.billservice.getAllBillsAndPagination(500000).subscribe(bills => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = bills.content.map(bill => ({
+        'Periodo':  `${bill?.period?.month} / ${bill?.period?.year}`,
+        'Monto Total': bill.amount,
+        'Fecha': bill.date,
+        'Proveedor': bill.supplier?.name,
+        'Estado': bill.status,
+        'Categoría': bill.category,
+        'Tipo de gasto': bill.bill_type?.name,
+        'Descripción': bill.description
+      }));
+  
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+      XLSX.writeFile(wb, this.fileName);
+    })}
 }

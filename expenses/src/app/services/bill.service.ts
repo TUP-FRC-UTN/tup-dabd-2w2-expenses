@@ -30,22 +30,22 @@ export class BillService {
     let params = new HttpParams();
 
     // Agrega solo los parámetros que tengan valores válidos
-    if (size !== undefined) {
+    if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
-    if (page !== undefined) {
+    if (page !== undefined && page > 0) {
       params = params.set('page', page.toString());
     }
-    if (period !== undefined) {
+    if (period !== undefined && period > 0) {
       params = params.set('period', period.toString());
     }
-    if (category !== undefined) {
+    if (category !== undefined && category > 0) {
       params = params.set('category', category.toString());
     }
-    if (supplier !== undefined) {
+    if (supplier !== undefined && supplier > 0) {
       params = params.set('supplier', supplier.toString());
     }
-    if (type !== undefined) {
+    if (type !== undefined && type > 0) {
       params = params.set('type', type.toString());
     }
     if (provider) {
@@ -56,29 +56,39 @@ export class BillService {
     }
 
     // Realiza la solicitud HTTP con los parámetros construidos
-    return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params }));
+    let result= this.formatBills(this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params }));
+    result.subscribe({
+      next: (data) => {
+        console.log('Response data:',data)
+      },
+      error: (error) => {
+        console.error('Error:',error)
+      }
+    })
+    
+    return result;
   }
 
   getAllBillsAndPagination(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
     let params = new HttpParams();
 
     // Agrega solo los parámetros que tengan valores válidos
-    if (size !== undefined) {
+    if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
-    if (page !== undefined) {
+    if (page !== undefined && page > 0) {
       params = params.set('page', page.toString());
     }
-    if (period !== undefined) {
+    if (period !== undefined  && period > 0) {
       params = params.set('period', period.toString());
     }
-    if (category !== undefined) {
+    if (category !== undefined && category > 0) {
       params = params.set('category', category.toString());
     }
-    if (supplier !== undefined) {
+    if (supplier !== undefined && supplier > 0) {
       params = params.set('supplier', supplier.toString());
     }
-    if (type !== undefined) {
+    if (type !== undefined && type > 0) {
       params = params.set('type', type.toString());
     }
     if (provider) {
@@ -87,24 +97,34 @@ export class BillService {
     if (status) {
       params = params.set('status', status);
     }
-
+    console.log(`${this.url}/bills`, { params })
     // Realiza la solicitud HTTP con los parámetros construidos
-    return this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params });
+    let result= this.http.get<PaginatedResponse<BillDto>>(`${this.url}/bills`, { params });
+    result.subscribe({
+      next: (data) => {
+        console.log('Response data:',data)
+        console.log('Response Content:',data.content)
+      },
+      error: (error) => {
+        console.error('Error:',error)
+      }
+    })
+    return result;
   }
 
   
   getBillTypes(): Observable<BillType[]>{
-    return this.http.get<BillType[]>(`${this.url}/billType`)
+    return this.http.get<BillType[]>(`${this.url}/bill-type`)
   }
 
-  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<Page<Bill>>{
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<PaginatedResponse<Bill>>{
     let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
 
     if (category != null) { request = request + `&category=${category}`}
     if (period != null) request = request + `&period=${period}`
 
     try{
-      return this.http.get<Page<Bill>>(request);
+      return this.http.get<PaginatedResponse<Bill>>(request);
      }catch( e) {
        console.log(e)
        throw  e
