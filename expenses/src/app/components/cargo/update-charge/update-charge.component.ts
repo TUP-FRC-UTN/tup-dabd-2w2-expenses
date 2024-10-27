@@ -1,17 +1,20 @@
 import { ChargeService } from './../../../services/charge.service';
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryCharge, Charge } from '../../../models/charge';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 //import moment from 'moment';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Lot from '../../../models/lot';
+import { CommonModule } from '@angular/common';
+import Period from '../../../models/period';
+import { forkJoin, map, Observable, tap } from 'rxjs';
 
 @Component({
   selector: 'app-update-charge',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './update-charge.component.html',
   styleUrl: './update-charge.component.css',
 })
@@ -26,6 +29,10 @@ export class UpdateChargeComponent implements OnInit {
   lots: Lot[] = [];
   selectedCharges: number[] = [];
   categoryCharges: CategoryCharge[] = [];
+  periodos : Period[] = [];
+  selectedLotId: number = 0;
+  selectedCategoryId: number = 0;
+  selectedPeriodId: number = 0;
 
   constructor(private fb: FormBuilder) {
     this.chargeForm = this.fb.group({
@@ -34,43 +41,72 @@ export class UpdateChargeComponent implements OnInit {
       tipo: [{ value: '', disabled: true }, Validators.required],
       periodo: [{ value: '', disabled: true }, Validators.required],
       monto: [{ value: '', disabled: true }, Validators.required],
-      descripcion: [{ value: '', disabled: true }],
+      description: [{ value: '', disabled: true }],
     });
   }
 
   ngOnInit() {
-    this.loadData();
     this.loadSelect();
     this.loadCategoryCharge();  
+    this.loadData();
   }
 
   loadData() {
     if (this.charge) {
-      this.chargeForm.patchValue({
-        //fechaEmision: (moment(this.charge.date, 'YYYY-MM-DD').format('YYYY-MM-DD')),
-        lote: this.charge.lotId,
-        tipo: this.charge.categoryCharge.name,
-        periodo: this.charge.period,
-        monto: (this.charge.amount),
-        description: this.charge.description,//Esto se podria cambiar por charge.description
+      this.loadSelect().subscribe(() => {
+        if (this.lots?.length && this.periodos?.length && this.categoryCharges?.length) {
+          this.setupChargeForm();
+        }
       });
     }
   }
+  
+  setupChargeForm() {
+    const lotId = this.charge?.lotId!;
+  
+    this.selectedCategoryId = this.charge?.categoryCharge?.categoryChargeId!;
+    this.selectedPeriodId = this.charge?.period?.id!;
+  
+    this.chargeForm.setValue({
+      fechaEmision: this.charge?.date,
+      lote: this.getPlotNumber(lotId),
+      tipo: this.selectedCategoryId,
+      periodo: this.selectedPeriodId,
+      monto: this.charge?.amount ?? 0,
+      description: this.charge?.description ?? '',
+    });
+  }
+  
+  loadSelect(): Observable<void> {
+    return forkJoin([
+      this.periodService.get(),
+      this.lotsService.get(),
+      this.chargeService.getCategoryCharges()
+    ]).pipe(
+      tap(([periodos, lots, categoryCharges]) => {
+        this.periodos = periodos;
+        this.lots = lots;
+        this.categoryCharges = categoryCharges;
+      }),
+      map(() => undefined) // Para que el observable de `loadSelect` sea de tipo `Observable<void>`
+    );
+  }
 
   getPlotNumber(lotId : number){
+    console.log(this.lots)
     const lot = this.lots.find(lot => lot.id === lotId);
     return lot ? lot.plot_number : undefined;
   }
 
-  loadSelect() {
-    this.periodService.get()
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
-    })
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
-    })
-  }
+  // loadSelect() {
+  //   this.periodService.get().subscribe((data: Period[]) => {
+  //     this.periodos = data;
+  //   })
+  //   this.lotsService.get().subscribe((data: Lot[]) => {
+  //     this.lots = data;      
+  //     console.log(data)
+  //   })
+  // }
   loadCategoryCharge(){
     this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
       this.categoryCharges = data;
@@ -80,14 +116,19 @@ export class UpdateChargeComponent implements OnInit {
   enableEdit() {
     this.isEditing = true;
     this.chargeForm.enable();
+    this.chargeForm.get('fechaEmision')?.disable();
+    this.chargeForm.get('lote')?.disable();
+    
   }
 
   saveChanges() {
+    debugger
     if (this.chargeForm.valid) {
       const updatedCharge: Charge = {
         ...this.charge,
         ...this.chargeForm.value,
       };
+      console.log(updatedCharge);
       this.chargeService.updateCharge(updatedCharge).subscribe(
         (response) => {
           console.log('Cargo actualizado con éxito:', response);

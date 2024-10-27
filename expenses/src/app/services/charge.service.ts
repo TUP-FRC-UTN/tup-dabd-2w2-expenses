@@ -67,7 +67,8 @@ export class ChargeService {
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
-    return this.http.put<Charge>(`${this.url}/${charge.chargeId}`, charge);
+    debugger
+    return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge);
   }  
 
   deleteCharge(charge: number): Observable<Boolean> {

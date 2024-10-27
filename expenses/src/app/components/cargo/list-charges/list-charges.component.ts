@@ -160,19 +160,6 @@ export class ListChargesComponent implements OnInit {
     if(this.chargeId != 0){
       this.deleteCharge(this.chargeId);
     }
-
-
-  }
-
-  changeIndex(page: number) {
-    //this.indexActive = page;
-    //this.loadPaged(cant);
-    // if (page >= 0 && page < this.totalPages) {
-    
-    //   console.log('Cargando página ' + page);
-    //   this.loadCharges(page,this.pageSize);
-    //   this.currentPage = page; // Asegúrate de actualizar currentPage aquí
-    // }
   }
 
   onSelectChange(event: Event): void {
@@ -184,6 +171,15 @@ export class ListChargesComponent implements OnInit {
 
   addCharge(){
     this.router.navigate([`cargos/nuevo`])
+  }
+
+  ngOnInit(): void {
+    //$.noConflict();
+    this.loadSelect();
+    this.loadCategoryCharge();  
+    this.cargarPaginado()
+    //this.loadCharges(0,10);
+    //this.configDataTable();
   }
 
   //COMPONENTES VIEJOS FIJARSE QUE VOY  A SEGUIR UTILIZANDO
@@ -219,14 +215,7 @@ export class ListChargesComponent implements OnInit {
   //   modal.show();
   // }
 
-  ngOnInit(): void {
-    //$.noConflict();
-    this.loadSelect();
-    this.loadCategoryCharge();  
-    this.cargarPaginado()
-    //this.loadCharges(0,10);
-    //this.configDataTable();
-  }
+  
 
   loadCharges(page:number,pageSize:number): void {
     
@@ -314,16 +303,14 @@ export class ListChargesComponent implements OnInit {
   }
 
   openViewModal(charge: Charge) {
-    // const register : ViewCharge 
-
-    // register.lot = this.getPlotNumber(charge.lotId)!;
     const modalRef = this.modalService.open(UpdateChargeComponent);
     modalRef.componentInstance.charge = charge;
 
     modalRef.result.then(
       (result) => {
         if (result) {
-          //this.loadCharges(0,10);
+          this.currentPage = 0;
+          this.cargarPaginado();
         }
       },
       () => {}
@@ -377,7 +364,8 @@ export class ListChargesComponent implements OnInit {
     modalRef.result.then(
       (result) => {
         if (result) {
-          //this.loadCharges(0,10);
+          this.currentPage = 0;
+          this.cargarPaginado();
         }
       },
       () => {}
