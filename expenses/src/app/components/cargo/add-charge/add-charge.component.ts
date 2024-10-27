@@ -41,6 +41,7 @@ export class AddChargeComponent implements OnInit{
   categoriaCargos: CategoryCharge[] = [];
 
   selectedPeriodId: number | null = null;
+  selectedLotId : number = 0;
 
 
   onCancel() {
@@ -98,6 +99,7 @@ export class AddChargeComponent implements OnInit{
           console.log('Cargo registrado exitosamente:', response);
           //('Cargo registrado exitosamente');
           this.chargeForm.reset();
+          this.router.navigate([`cargos`]);
         },
         (error) => {
           this.toastService.sendError("Error al registrar el cargo");
