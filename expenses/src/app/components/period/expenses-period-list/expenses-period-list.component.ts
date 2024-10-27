@@ -13,31 +13,34 @@ import { ExpensesStatePeriodStyleComponent } from '../../expenses-state-period-s
 import { FormsModule } from '@angular/forms';
 import autoTable from 'jspdf-autotable';
 import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import { NgPipesModule } from 'ngx-pipes';
 
 @Component({
   selector: 'app-expenses-period-list',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent,ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule ],
+  imports: [ExpensesPeriodNavComponent,ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule, NgPipesModule, FormsModule ],
   templateUrl: './expenses-period-list.component.html',
   styleUrl: './expenses-period-list.component.css',
 })
 export class ExpensesPeriodListComponent implements OnInit {
   private readonly periodService: PeriodService = inject(PeriodService);
   listOpenPeriod: Period[] = [];
-  listPeriod: Period[] = [];  
+  listPeriod: Period[] = [];
   cantPages: number[] = [];
   indexActive = 1;
   size = 10;
   idClosePeriod: number | null = null;
   private state:string|null=null
   private modalService = inject(NgbModal);
-  currentPage:number =1
+  currentPage:number = 1
   typeFilter:string|null=null
   year:number|null = null
   month:number|null=null
   ngOnInit(): void {
     this.loadPaged(1);
   }
+  searchTerm = '';
 
 
 
@@ -46,7 +49,7 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.periodService.getPage(this.size, page,this.state, this.month,this.year).subscribe((data) => {
       this.listPeriod = data.content;
       this.cantPages = generateNumberArray(data.totalPages)
-    
+
     });
 
   }
@@ -64,7 +67,7 @@ export class ExpensesPeriodListComponent implements OnInit {
     });
     modalRef.componentInstance.onAccept.subscribe(() => {
       this.closePeriod();
-    });   
+    });
      this.idClosePeriod = null;
   }
 
@@ -91,7 +94,7 @@ export class ExpensesPeriodListComponent implements OnInit {
 
   closePeriod() {
     console.log(this.idClosePeriod);
-  
+
     if (this.idClosePeriod) {
       this.periodService
         .closePeriod(this.idClosePeriod)
@@ -105,7 +108,7 @@ export class ExpensesPeriodListComponent implements OnInit {
             this.openErrorModal(err);
           }
         });
-  
+
       this.idClosePeriod = null;
     }
   }
@@ -131,6 +134,34 @@ export class ExpensesPeriodListComponent implements OnInit {
   updateMonth(event: Event): void {
     const target = event.target as HTMLSelectElement | null;
     this.month = target && target.value ? parseInt(target.value, 10) : null;
+  }
+
+  downloadTable() {
+    this.periodService.getPage(10000, 0,this.state, this.month,this.year).subscribe(period => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = period.content.map(peri => ({
+        'Fecha':  `${peri.month + " / " + peri.year}`,
+        'Total Extraordinarias': `${peri.ordinary?.amount?.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })||0}`,
+        'Total Ordinarias': `${peri.extraordinary?.amount?.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })||0}`,
+        'Estado': `${peri.state}`
+      }));
+
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Periodos');
+      XLSX.writeFile(wb, `Periodos.xlsx`);
+    })
   }
 
   imprimir() {

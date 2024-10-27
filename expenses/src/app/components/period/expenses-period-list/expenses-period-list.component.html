@@ -5,7 +5,7 @@
       <span class="input-group-text" id="search-icon">
         <i class="bi bi-search"></i>
       </span>
-      <input type="text" class="form-control" id="filter-text-box" />
+      <input type="text" class="form-control" id="filter-text-box" [(ngModel)]="searchTerm"/>
     </div>
   </div>
   <div
@@ -18,7 +18,7 @@
     </div>
     <div class="vertical-line mx-3"></div>
 
-    <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+    <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="downloadTable()">
       <i class="bi bi-file-earmark-excel"></i>
     </button>
     <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0"  (click)="imprimir()">
@@ -138,7 +138,7 @@
 
 <table
   class="table table-striped fixed-table"
-  style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
+  style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse; margin-top: 10px;"
 >
   <thead>
     <tr>
@@ -146,7 +146,7 @@
       <th scope="col" style="text-align: end">Total Extraordinarias</th>
       <th scope="col" style="text-align: end">Total Ordinarias</th>
       <th scope="col">Estado</th>
-      <th scope="col">Acciones</th>
+      <th scope="col" style="text-align: center">Acciones</th>
     </tr>
   </thead>
   <tbody>
