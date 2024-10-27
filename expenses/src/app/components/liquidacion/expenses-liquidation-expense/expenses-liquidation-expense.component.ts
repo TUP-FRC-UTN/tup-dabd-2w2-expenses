@@ -212,7 +212,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     // Convertir los datos tabulares a una hoja de cálculo
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-    XLSX.writeFile(wb, 'LiquidacionDeExpensas.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'Liquidación de expensas');
+    XLSX.writeFile(wb, "LiquidacionDeExpensas.xlsx");
   }
 }
