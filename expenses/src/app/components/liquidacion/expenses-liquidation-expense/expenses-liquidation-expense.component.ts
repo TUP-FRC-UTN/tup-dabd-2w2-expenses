@@ -98,7 +98,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
         .subscribe((data: LiquidationExpense[]) => {
           this.liquidationExpensesList = data;
           this.loadLookList();
-
+          console.log(data)
         });
     }
   }
