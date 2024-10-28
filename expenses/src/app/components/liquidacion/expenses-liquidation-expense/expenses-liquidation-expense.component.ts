@@ -16,6 +16,7 @@ import { NgPipesModule } from 'ngx-pipes';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import moment from 'moment';
 
 @Component({
   selector: 'app-expenses-liquidation-expense',
@@ -58,6 +59,8 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
   private modalService = inject(NgbModal);
 
   searchTerm = '';
+
+  fileName = 'reporte-liquidaciones-expensas'
 
   listLooking: LiquidationExpense[] = [];
 
@@ -163,7 +166,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
     // Título del PDF
     doc.setFontSize(18);
-    doc.text('Expenses Report', 14, 20);
+    doc.text('Reposrte de Liquidación de Expensas', 14, 20);
 
     if (this.id) {
       this.liquidationExpensesService
@@ -173,7 +176,7 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
 
           // Título del PDF
           doc.setFontSize(18);
-          doc.text('Expenses Report', 14, 20);
+          doc.text('Reposrte de Liquidación de Expensas', 14, 20);
 
           // Usando autoTable para agregar la tabla
           autoTable(doc, {
@@ -192,8 +195,11 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
           });
 
           // Guardar el PDF después de agregar la tabla
-          doc.save('liquidation_expenses_report.pdf');
-          console.log('Impreso');
+          const fecha = new Date();
+          console.log(fecha);
+          const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
+          doc.save(finalFileName);
+          console.log('Impreso')
         });
     }
   }
@@ -209,10 +215,13 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
       })
     );
 
-    // Convertir los datos tabulares a una hoja de cálculo
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Liquidación de expensas');
-    XLSX.writeFile(wb, "LiquidacionDeExpensas.xlsx");
+    const fecha = new Date();
+      console.log(fecha);
+     const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
+
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Liquidación de Expensas');
+      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
   }
 }
