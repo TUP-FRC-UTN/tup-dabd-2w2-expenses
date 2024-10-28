@@ -71,7 +71,7 @@ export class ListChargesComponent implements OnInit {
   totalItems: number = 0;
   cantPages: number[] = [];
   indexActive = 1;
-
+  isLoading : Boolean = true;
   applyFilters() {
     this.currentPage = 0;
     this.cargarPaginado();
