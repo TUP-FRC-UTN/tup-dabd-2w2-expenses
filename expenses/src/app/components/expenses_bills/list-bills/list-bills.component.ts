@@ -22,6 +22,7 @@ import { map, Observable } from 'rxjs';
 import { NgPipesModule } from 'ngx-pipes';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
+import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 
 
 @Component({
@@ -49,6 +50,12 @@ export class ListBillsComponent implements OnInit {
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
 
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  isLoading: boolean = false;
+
+
 
   totalElements: number = 0;
   //currentPage: number = 0;
@@ -63,12 +70,8 @@ export class ListBillsComponent implements OnInit {
   //Lista de categorias
 
   searchTerm: string = ""
-  currentPage: number= 0;
-  totalPages: number = 10;
   visiblePages:number[] = [];
   maxPagesToShow :number = 5;
-  pageSize:number=10;
-  isLoading: boolean = true;
   //Filtros para buscar el objeto
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
@@ -365,6 +368,16 @@ export class ListBillsComponent implements OnInit {
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
       XLSX.writeFile(wb, this.fileName);
     })}
+
+    showInfo(): void {
+      this.modalService.open(BillInfoComponent, {
+        size: 'lg',
+        backdrop: 'static',
+        keyboard: false,
+        centered: true,
+        scrollable: true
+      });
+    }
 
   //changesPageSize(newRowsPerPage: number) {
     //console.log('Número de registros por página cambiado a:', newRowsPerPage);
