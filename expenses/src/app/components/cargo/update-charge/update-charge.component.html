@@ -8,7 +8,7 @@
   <form [formGroup]="chargeForm">
     <div class="form-row  mb-3">
       <div class="form-group col-md-12 d-flex  align-items-start justify-content-between">
-        <label for="fechaEmision" class="form-label col-md-4"><span style="color: red;">*</span>Fecha de emisión</label>     
+        <label for="fechaEmision" class="form-label col-md-4">Fecha de emisión<span style="color: red;">*</span></label>     
         <input type="date" class="form-control " id="fechaEmision" formControlName="fechaEmision"
         [ngClass]="{ 'is-invalid': chargeForm.controls['fechaEmision'].touched && chargeForm.controls['fechaEmision'].hasError('required') }"
         [attr.disabled]="!isEditing ? null : null">
@@ -17,7 +17,7 @@
 
     <div class="form-row  mb-3">
         <div class="form-group col-md-12 d-flex  align-items-center justify-content-between">
-          <label for="lote" class="form-label col-md-4"><span style="color: red;">*</span>Lote</label>
+          <label for="lote" class="form-label col-md-4"  >Lote<span style="color: red;">*</span></label>
           <input type="text" class="form-control" id="lote" formControlName="lote"
           [ngClass]="{ 'is-invalid': chargeForm.controls['lote'].touched && chargeForm.controls['lote'].hasError('required') }"
           >
@@ -26,7 +26,7 @@
     
     <div class="form-row mb-3">
       <div class="form-group col-md-12 d-flex  align-items-center justify-content-between">
-        <label for="categoryCargos" class="form-label col-md-3"><span style="color: red;">*</span>Categoría</label>
+        <label for="categoryCargos" class="form-label col-md-3">Categoría<span style="color: red;">*</span></label>
         <select name="categoryCargos" id="categoryCargos" class="form-select" aria-label="Default select example" 
         formControlName="tipo"
         [attr.disabled]="!isEditing ? '' : null">
@@ -42,7 +42,7 @@
     </div>
     <div class="form-row mb-3">
       <div class="form-group col-md-12 d-flex  align-items-center justify-content-between">
-        <label for="periodo" class="form-label col-md-3"><span style="color: red;">*</span>Período</label>
+        <label for="periodo" class="form-label col-md-3">Periodo<span style="color: red;">*</span></label>
               <select name="periodo" id="periodo" class="form-select" aria-label="Default select example"
               formControlName="periodo"
                 [attr.disabled]="!isEditing ? '' : null">
@@ -55,7 +55,7 @@
 
     <div class="form-row mb-3">
       <div class="form-group col-md-12 d-flex  align-items-center justify-content-between">
-        <label for="monto" class="form-label col-md-3"><span style="color: red;">*</span>Monto</label>
+        <label for="monto" class="form-label col-md-3">Monto<span style="color: red;">*</span></label>
         <input type="text" class="form-control" id="monto" formControlName="monto"
           [attr.disabled]="!isEditing ? '' : null">
       </div>
@@ -77,7 +77,7 @@
   } -->
   <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cerrar</button> }
   @if (isEditing) {
-    <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancelar</button>
+    <button type="button" class="btn btn-danger" (click)="cancelEdit()">Cancelar</button>
   <button type="button" class="btn btn-primary" (click)="saveChanges()">Guardar</button>
   }
 </div>
