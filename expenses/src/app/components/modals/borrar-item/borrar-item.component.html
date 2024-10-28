@@ -1,5 +1,5 @@
-<div class="modal-header">
-    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+<div class="modal-header d-flex justify-content-end">
+    <button type="button" class="close " aria-label="Close" (click)="activeModal.dismiss('Cross click')">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
@@ -9,6 +9,6 @@
     <p>No podrá revertir esta acción</p>
 </div>
 <div class="modal-footer justify-content-center">
-    <button type="button" class="btn btn-danger" (click)="activeModal.close('cancel')">No borrar</button>
-    <button type="button" class="btn btn-success" (click)="confirmDelete()">Sí, borrar</button>
+    <button type="button" class="btn btn-success" (click)="confirmDelete()">Confirmar</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.close('cancel')">Cancelar</button>
 </div>

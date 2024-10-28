@@ -1,6 +1,6 @@
-<div class="modal-header">
+<div class="modal-header d-flex justify-content-between">
   <h4 class="modal-title">{{ title }}</h4>
-  <button type="button" class="btn" aria-label="Close" (click)="cancel()">
+  <button type="button" class="btn close  d-flex justify-content-end" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -15,7 +15,7 @@
     aria-label="Close"
     (click)="accept()"
   >
-    Aceptar
+    Confirmar
   </button>
 
   <button
