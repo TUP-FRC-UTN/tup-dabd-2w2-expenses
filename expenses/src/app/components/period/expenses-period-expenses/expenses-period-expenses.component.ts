@@ -3,9 +3,11 @@ import { ExpensesPeriodNavComponent } from '../../navs/expenses-period-nav/expen
 import { ExpenseServiceService } from '../../../services/expense.service';
 import Expense from '../../../models/expense';
 import { ActivatedRoute } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from 'ngx-dabd-grupo01';
+import {switchMap} from "rxjs";
 
 @Component({
   selector: 'app-expenses-period-expenses',
@@ -19,14 +21,14 @@ export class ExpensesPeriodExpensesComponent implements OnInit {
 finde() {
   this.loadList()
 }
-
+  toastService:ToastService = inject(ToastService)
   cantPages: number = 1;
   indexActive = 1;
   size = 10;
   currentPage: number = 1;
   visiblePages: number[] = [];
   type:number|undefined=undefined
-  lote: number | null = null; 
+  lote: number | null = null;
   filter:string|null=null
 
   changeFilter(filter: string|null) {
@@ -46,10 +48,10 @@ finde() {
   selectType(arg0: string|undefined) {
     if(arg0==="Ordinarias"){
       this.type=1
-    } 
+    }
      if(arg0==="Extraordinarias"){
       this.type=2
-    } 
+    }
     if(!arg0){
       this.type=undefined
       console.log(this.type)
@@ -61,15 +63,25 @@ finde() {
     this.loadId();
     this.loadList();
   }
-  
+
   private expenseService: ExpenseServiceService = inject(ExpenseServiceService);
   private route = inject(ActivatedRoute);
   periodId: string | null = null;
   listExpenses: Expense[] = [];
 
   loadList() {
-    this.expenseService
-      .getExpenses(this.currentPage - 1, this.size, Number(this.periodId),this.lote||undefined,this.type)
+    this.expenseService.getByPeriod(Number(this.periodId))
+      .pipe(
+        switchMap(() => {
+          return this.expenseService.getExpenses(
+            this.currentPage - 1,
+            this.size,
+            Number(this.periodId),
+            this.lote||undefined,
+            this.type
+          );
+        })
+      )
       .subscribe((data) => {
         this.listExpenses = data.content;
         this.cantPages = data.totalElements;

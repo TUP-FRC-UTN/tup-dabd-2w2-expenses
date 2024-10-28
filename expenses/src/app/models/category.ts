@@ -6,4 +6,6 @@ export default class Category{
     name:string='';
 
     is_delete:boolean=false;
+
+    is_updatable:boolean=true;
 }
