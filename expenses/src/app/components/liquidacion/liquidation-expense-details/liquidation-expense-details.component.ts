@@ -135,7 +135,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
       // Mapear los datos a un formato tabular adecuado
       const data = bill.content.map(bill => ({
         'Categoría':  `${bill.category.name}`,
@@ -162,7 +162,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     doc.text('Expenses Report', 14, 20);
 
     // Llamada al servicio para obtener las expensas
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,

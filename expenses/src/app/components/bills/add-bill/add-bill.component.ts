@@ -20,6 +20,8 @@ import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/n
 import {ToastService} from "ngx-dabd-grupo01";
 import {NgArrayPipesModule} from "ngx-pipes";
 
+
+
 @Component({
   selector: 'app-add-bill',
   standalone: true,
