@@ -37,12 +37,14 @@ export class ViewBillModalComponent implements OnInit {
     status: new FormControl('')
 
   })
+
   constructor(){
     this.newCategoryForm = new FormGroup({
       name: new FormControl(''),
       description: new FormControl('')
     });
   }
+
   ngOnInit() {
       this.viewBill.patchValue({
         expenditureId: this.bill?.expenditureId,
@@ -70,6 +72,5 @@ export class ViewBillModalComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss();
   }
-
 }
 

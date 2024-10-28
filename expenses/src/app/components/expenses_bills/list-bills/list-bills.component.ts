@@ -24,6 +24,7 @@ import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal
 import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import moment from 'moment';
 import {Router} from "@angular/router";
+import { ListBillsInfoComponent } from '../../modals/info/list-bills-info/list-bills-info.component';
 
 
 
@@ -53,6 +54,12 @@ export class ListBillsComponent implements OnInit {
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
 
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  isLoading: boolean = false;
+
+
 
   totalElements: number = 0;
   //currentPage: number = 0;
@@ -67,12 +74,8 @@ export class ListBillsComponent implements OnInit {
   //Lista de categorias
 
   searchTerm: string = ""
-  currentPage: number= 0;
-  totalPages: number = 10;
   visiblePages:number[] = [];
   maxPagesToShow :number = 5;
-  pageSize:number=10;
-  isLoading: boolean = true;
   //Filtros para buscar el objeto
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
@@ -239,7 +242,6 @@ export class ListBillsComponent implements OnInit {
   //Abre el modal de edicion y carga los campos del gasto seleccionado
   editBill(bill: Bill){
     this.openEditModal(bill);
-
   }
   //Abre el modal de confirmacion de borrado
   openViewModal(bill: Bill) {
@@ -350,8 +352,13 @@ export class ListBillsComponent implements OnInit {
       XLSX.writeFile(wb, this.fileName);
     })}
 
-
-
-
-  //}
+    showInfo(): void {
+      this.modalService.open(ListBillsInfoComponent, {
+        size: 'lg',
+        backdrop: 'static',
+        keyboard: false,
+        centered: true,
+        scrollable: true
+      });
+    }
 }
