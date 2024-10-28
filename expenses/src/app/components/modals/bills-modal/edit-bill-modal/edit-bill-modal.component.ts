@@ -106,23 +106,41 @@ export class EditBillModalComponent implements OnInit {
     // Perform validation and saving logic here if necessary
     if(this.updateBill.valid){
       console.log(`Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`)
+      console.log(`Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`)
       const requestBill ={
         description: this.updateBill.value.description,
         amount: this.updateBill.value.amount,
         date: new Date(this.updateBill.value.date).toISOString(),
         status: this.updateBill.value.status,
-        category_id: this.updateBill.value.category.category_id,
-        supplier_id: this.updateBill.value.supplier.id,
-        supplier_employee_type: this.bill?.supplier.name.toUpperCase(), // Assuming this is a constant value
-        type_id: this.updateBill.value.billType.bill_type_id,
-        period_id: this.updateBill.value.period.id,
-        link_pdf:''
+        category_id: this.updateBill.value.category,
+        supplier_id: this.updateBill.value.supplier,
+        supplier_employee_type: 'SUPPLIER',
+        type_id: this.updateBill.value.billType,
+        period_id: this.updateBill.value.period,
+        link_pdf:"string"
+
+
+        /*
+          {
+          "description": "string",
+          "amount": 0,
+          "date": "2024-10-27T22:49:25.482Z",
+          "status": "ACTIVE",
+          "category_id": 0,
+          "supplier_id": 0,
+          "supplier_employee_type": "SUPPLIER",
+          "type_id": 0,
+          "period_id": 0,
+          "link_pdf": "string"
+        }
+         */
       }
 
-      this.billService.updateBill(requestBill).subscribe({
+      this.billService.updateBill(requestBill,this.bill?.expenditureId).subscribe({
         next: (response: any) => {
           console.log('Actualizado correctamente', response);
           this.showModal('Éxito', 'El gasto se ha actualizado correctamente.');
+          this.activeModal.close('updated')
         },
         error: (error: any) => {
           console.error('Error en el post', error);
@@ -130,7 +148,6 @@ export class EditBillModalComponent implements OnInit {
         }
       })
     }
-    this.activeModal.close(this.bill); // Send the updated bill back
   }
 
   dismiss() {

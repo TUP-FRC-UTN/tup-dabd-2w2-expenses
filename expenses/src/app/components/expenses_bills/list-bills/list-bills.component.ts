@@ -1,4 +1,4 @@
-import { Component, inject, NgModule, OnInit, ViewChild } from '@angular/core';
+import { Component, inject,OnInit, ViewChild } from '@angular/core';
 import { Bill } from '../../../models/bill';
 import { BillService } from '../../../services/bill.service';
 import Period from '../../../models/period'
@@ -10,7 +10,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
-import { AsyncPipe, NgClass, DatePipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { PaginatedResponse } from '../../../models/paginatedResponse';
@@ -21,6 +21,7 @@ import autoTable from 'jspdf-autotable';
 import { map, Observable } from 'rxjs';
 import { NgPipesModule } from 'ngx-pipes';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
+import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 
 
 @Component({
@@ -50,9 +51,9 @@ export class ListBillsComponent implements OnInit {
 
 
   totalElements: number = 0;
-  currentPage: number = 0;
-  pageSize: number = 10;
-  totalPages: number = 0;
+  //currentPage: number = 0;
+  //pageSize: number = 10;
+  //totalPages: number = 0;
   totalItems: number = 0;
   cantPages: number[] = [];
   indexActive = 1;
@@ -71,7 +72,7 @@ export class ListBillsComponent implements OnInit {
   //Filtros para buscar el objeto
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
-    selectedPeriod: new FormControl(0),
+    selectedPeriod: new FormControl<number>(0),
     selectedSupplier: new FormControl(0),
     selectedProvider: new FormControl("SUPPLIER"),
     selectedStatus: new FormControl("ACTIVE"),
@@ -86,13 +87,10 @@ export class ListBillsComponent implements OnInit {
   fileName = `Gastos_${this.today.toLocaleDateString()}.xlsx`
 
   viewList: boolean= true;
-  categoryEnable:boolean = true;
-  enabelingUpdate : boolean = false;
   billForm : FormGroup;
   selectedBill: Bill | undefined;
   private modalService = inject(NgbModal);
   newCategoryForm: FormGroup;
-  @ViewChild('newCategoryModal') newCategoryModal: any;
 
   constructor(){
     this.billForm = this.fb.group({
@@ -142,8 +140,8 @@ export class ListBillsComponent implements OnInit {
         filters.selectedCategory?.valueOf(),
         filters.selectedSupplier?.valueOf(),
         filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf(),
-        filters.selectedStatus?.valueOf()).subscribe({
+        filters.selectedProvider?.valueOf().toString(),
+        filters.selectedStatus?.valueOf().toString()).subscribe({
           next: (bills) => {
             this.bills = bills;
           },
@@ -163,9 +161,6 @@ export class ListBillsComponent implements OnInit {
     this.loadBills()
   }
 
-  openUpdateModal(bill?: Bill) {
-    return null
-  }
   //Primer llamado, trae todos los bills que hay
   loadBills() {
     this.bills=[];
@@ -238,7 +233,7 @@ export class ListBillsComponent implements OnInit {
   }
   //Abre el modal y muestra los campos del gasto seleccionado
   viewBill(bill: Bill){
-
+    this.openViewModal(bill);
   }
   //Abre el modal de edicion y carga los campos del gasto seleccionado
   editBill(bill: Bill){
@@ -246,12 +241,24 @@ export class ListBillsComponent implements OnInit {
 
   }
   //Abre el modal de confirmacion de borrado
-  openDeleteModal(id?: number) {
-    return null
+  openViewModal(bill: Bill) {
+    const modalRef = this.modalService.open(ViewBillModalComponent, {size: 'lg'});
+    modalRef.componentInstance.bill=bill;
   }
   openEditModal(bill: Bill) {
     const modalRef = this.modalService.open(EditBillModalComponent, { size: 'lg' });
     modalRef.componentInstance.bill = bill; // Pasas el bill al componente
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'updated') {
+          this.loadBills(); // Recargar la lista de facturas
+        }
+      },
+      (reason) => {
+        // Manejar el cierre del modal sin actualizar
+      }
+    );
   }
   //abre el modal de edicion por id
   showModal(title: string, message: string) {
@@ -259,10 +266,7 @@ export class ListBillsComponent implements OnInit {
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
   }
-  //Abre el modal para agregar una categoría
-  openNewCategoryModal() {
-    this.modalService.open(this.newCategoryModal, { ariaLabelledBy: 'modal-basic-title' });
-  }
+
   //Carga los valores en los filtros existentes
   loadSelect() {
     this.getCategories();
