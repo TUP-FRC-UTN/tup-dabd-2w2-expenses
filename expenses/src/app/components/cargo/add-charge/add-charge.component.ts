@@ -19,10 +19,12 @@ import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { ToastService } from 'ngx-dabd-grupo01';
+import {NgPipesModule} from "ngx-pipes";
 @Component({
   selector: 'app-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent,CommonModule,NgModalComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent,CommonModule,NgModalComponent
+    ,NgPipesModule ],
   templateUrl: './add-charge.component.html',
   styleUrl: './add-charge.component.css',
 })

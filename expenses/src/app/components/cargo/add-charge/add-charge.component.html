@@ -32,7 +32,7 @@
               [ngClass]="{ 'is-invalid': chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required') }"
             >
               <option [value]="">Seleccione un Lote</option>
-              @for (lot of lots; track $index) {
+              @for (lot of lots | orderBy : ['plot_number']; track $index) {
                 <option [value]="lot.id">{{lot.plot_number}}</option>
               }
             </select>            
@@ -57,7 +57,7 @@
                 [ngClass]="{ 'is-invalid': chargeForm.controls['categoryChargeId'].touched && chargeForm.controls['categoryChargeId'].hasError('required') }"
                 >
                 <option value="">Seleccione una categoría </option>
-                @for (item of categoriaCargos; track $index) {
+                @for (item of categoriaCargos | orderBy:['name']; track $index) {
                   <option value={{item.categoryChargeId}}>{{item.name}} </option>
               }
               </select>
@@ -78,7 +78,7 @@
             formControlName="periodId"
             [ngClass]="{ 'is-invalid': chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required') }"      
             >
-              @for (item of listPeriodo; track $index) {
+              @for (item of listPeriodo |orderBy:['year','-month']; track $index) {
               <option value="{{ item.id }}">
                 {{ item.month }} / {{ item.year }}
               </option>
