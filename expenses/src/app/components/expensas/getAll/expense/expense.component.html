@@ -31,7 +31,7 @@
           <label for="periodo">Período</label>
           <select name="periodo" id="periodo" class="form-select" aria-label="Default select example" [(ngModel)]="selectedPeriodId">
             <option [value]="0">Todos</option>
-            @for (period of periodos; track $index) {
+            @for (period of periodos| orderBy: ['year']; track $index) {
               <option [value]="period.id">{{period.month}} / {{period.year}}</option>
             }
           </select>
@@ -40,7 +40,7 @@
           <label for="lote">Lote</label>
           <select name="lote" id="lote" class="form-select" aria-label="Default select example" [(ngModel)]="selectedLotId">
             <option [value]="0">Todos</option>
-            @for (lot of lots; track $index) {
+            @for (lot of lots | orderBy:['plot_number']; track $index) {
               <option [value]="lot.id">{{lot.plot_number}}</option>
             }
           </select>
@@ -49,7 +49,7 @@
           <label for="tipoExpensa">Tipo de expensa</label>
           <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" [(ngModel)]="selectedTypeId">
             <option [value]="0">Todas</option>
-            @for (tipo of tipos; track $index) {
+            @for (tipo of tipos| orderBy: ['name']; track $index) {
               <option [value]="tipo.bill_type_id">{{tipo.name}}</option>
             }
           </select>
