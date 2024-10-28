@@ -4,10 +4,40 @@
     <div class="position-relative">
       <h2>Listado de gastos</h2>
     </div>
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <!-- Buscador -->
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control rounded-start"
+            placeholder="Buscar gasto..."
+            [(ngModel)]="searchTerm">
+          <span class="input-group-text bg-white rounded-end">
+          <i class="bi bi-search"></i>
+        </span>
+        </div>
+      </div>
+      <div class="col-md-8 text-end">
+        <!-- Botones Excel y PDF -->
+        <div class="d-flex gap-2 justify-content-end">
+          <button class="btn btn-outline-primary" (click)="nuevoGasto()">
+              Nuevo gasto
+          </button>
+          <button class="btn btn-success rounded-2" (click)="downloadTable()">
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+          <button class="btn btn-danger rounded-2" (click)="imprimir()">
+            <i class="bi bi-file-pdf"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
 
 
-    
+
+
 
 
 
@@ -75,7 +105,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" (click)="filterBills()" data-bs-dismiss="modal">Aplicar</button>
+          <button type="button" class="btn btn-primary" (click)="loadBills()" data-bs-dismiss="modal">Aplicar</button>
         </div>
       </div>
     </div>
@@ -83,20 +113,9 @@
 </div>
 </div>
 
-    <div class="col d-flex gap-1 justify-content-end">
-      <div class="col-auto">
-        <button class="btn" (click)="downloadTable()" style="background-color: #239b56  ; color: white;" data-toggle="tooltip" data-placement="bottom" title="Descargar expensas como excel">
-            <i class="bi bi-file-earmark-excel"></i><!-- Icono de excel -->
-        </button>
-      </div>
-      <div class="col-auto">
-        <button class="btn" (click)="imprimir()" style="background-color: red; color: white;" data-toggle="tooltip" data-placement="top" title="Descargar expensas como pdf">
-          <i class="bi bi-file-pdf"></i> <!-- Icono de pdf -->
-        </button>
-      </div>
-    </div>
+
   </div>
-  <br>
+
   <div class="row align-items-center">
     <div class="col-auto">
       <div class="btn-group me-2">
@@ -109,18 +128,7 @@
         </button>
       </div>
     </div>
-    <div class="col d-flex justify-content-end">
-      <div class="input-group w-25 text-end" id="buscadorDeGrilla">
-        <input
-        type="text"
-        class="form-control"
-        placeholder="Buscar gasto..."
-        [(ngModel)]="searchTerm">
-        <span class="input-group-text">
-          <i class="bi bi-search"></i>
-        </span>
-      </div>
-    </div>
+
   </div>
 
 
@@ -150,7 +158,7 @@
         </thead>
         <tbody>
           <!-- | filterBy: ['amount']: searchTerm -->
-          @for (bill of bills | filterBy: ['amount', 'supplier.name']: searchTerm | orderBy: ['date','category.name','supplier.name']; track $index ) {
+          @for (bill of bills | filterBy: ['amount', 'supplier.name', 'billType.name','category.name']: searchTerm | orderBy: ['date','category.name','supplier.name']; track $index ) {
             <tr>
                 <td>{{bill.billType.name}} </td>
                 <td>{{bill.supplier.name}}</td>
@@ -225,38 +233,35 @@
       </nav>
     </div>
     -->
-    
+
   </div>
 
 
-  <div class="row d-flex align-items-between">
-    <div class="col-md-5">
-      <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
-      <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize">            
+  <div class="row align-items-center">
+    <div class="col-auto">
+      <select class="form-select" style="width: auto;" [(ngModel)]="pageSize" (ngModelChange)="updatePageSize()">
         <option value=10>10</option>
         <option value=25>25</option>
         <option value=50>50</option>
       </select>
-      <!-- <span> registros por página de {{this.totalItems}}</span> -->
     </div>
-    <div class="col-md-6">
+    <div class="col">
       <ngb-pagination
-      [(page)]="currentPage"
-      [pageSize]="pageSize"
-      [collectionSize]="totalElements"
-      (pageChange)="onPageChange($event)"
-      [maxSize]="5"
-      [boundaryLinks]="false"
-    ></ngb-pagination>
-      
-      
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [collectionSize]="totalElements"
+        (pageChange)="onPageChange($event)"
+        [maxSize]="5"
+        [boundaryLinks]="false"
+        class="d-flex justify-content-end mb-0">
+      </ngb-pagination>
     </div>
-    <div class="col-md-1">
-      <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
+    <div class="col-auto d-flex justify-content-end">
+      <button class="btn btn-secondary rounded-2" (click)="showInfo()">
         <i class="bi bi-info-circle"></i>
       </button>
     </div>
-    
-            
   </div>
+
 </div>
+

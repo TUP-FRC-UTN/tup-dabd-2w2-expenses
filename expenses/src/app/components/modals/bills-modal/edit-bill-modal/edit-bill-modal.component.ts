@@ -12,6 +12,7 @@ import BillType from '../../../../models/billType';
 import { Provider } from '../../../../models/provider';
 import { CommonModule } from '@angular/common';
 import { NgModalComponent } from '../../ng-modal/ng-modal.component';
+import {ToastService} from "ngx-dabd-grupo01";
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -27,6 +28,7 @@ export class EditBillModalComponent implements OnInit {
   private periodService = inject(PeriodService);
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
 
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
@@ -139,12 +141,12 @@ export class EditBillModalComponent implements OnInit {
       this.billService.updateBill(requestBill,this.bill?.expenditureId).subscribe({
         next: (response: any) => {
           console.log('Actualizado correctamente', response);
-          this.showModal('Éxito', 'El gasto se ha actualizado correctamente.');
+          this.toastService.sendSuccess('El gasto se ha actualizado correctamente.');
           this.activeModal.close('updated')
         },
         error: (error: any) => {
           console.error('Error en el post', error);
-          this.showModal('Error', 'Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
+          this.toastService.sendError('Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
         }
       })
     }
