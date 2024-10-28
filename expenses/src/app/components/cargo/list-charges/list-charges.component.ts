@@ -11,7 +11,6 @@ import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
 import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
 import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
-import moment from 'moment';
 //import $ from "jquery";
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 //import * as XLSX from 'xlsx'
@@ -31,7 +30,7 @@ import {NgPipesModule} from "ngx-pipes";
 import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { debounceTime, forkJoin, tap } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 
 
@@ -101,9 +100,9 @@ export class ListChargesComponent implements OnInit {
       console.log(charges.content);
       autoTable(doc, {
         startY: 30,
-        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Monto']],
+        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Amount']],
         body: charges.content.map(charge => [
-          moment(charge.date).format("DD/MM/YYYY"),
+          charge.date.toString(),
           charge.period.month + '/' + charge.period.year,          
           this.getPlotNumber(charge.lotId) || 'N/A', // Manejo de undefined
           charge.categoryCharge.name,
@@ -116,7 +115,7 @@ export class ListChargesComponent implements OnInit {
       // Guardar el PDF después de agregar la tabla
       const fecha = new Date();
       console.log(fecha);
-      this.fileName += "-"+ fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
+      this.fileName += "-"+ fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
       doc.save(this.fileName);
       console.log('Impreso')
     }); 
@@ -132,7 +131,7 @@ export class ListChargesComponent implements OnInit {
         'Categoría': charge.categoryCharge.name,
         'Descripción': charge.description,
         'Monto': charge.amount,
-        'Estado': charge.status ? "Activo": "Baja",
+        'Estado': charge.status,
       }));
   
       // Convertir los datos tabulares a una hoja de cálculo
@@ -140,7 +139,7 @@ export class ListChargesComponent implements OnInit {
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Cargos');
       var fecha = new Date();
-      this.fileName += "-"+fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
+      this.fileName += "-"+fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
       XLSX.writeFile(wb, this.fileName);
     });
   }
@@ -275,10 +274,6 @@ export class ListChargesComponent implements OnInit {
       this.totalPages = response.totalPages;  // Número total de páginas
       this.totalItems = response.totalElements;  // Total de registros
       this.currentPage = response.number;
-      this.charges = this.charges.map(charge => ({
-        ...charge,
-        plotNumber: this.getPlotNumber(charge.lotId) // Agrega el resultado de `getPlotNumber` como un nuevo campo
-      }));
       console.log(this.charges);
     });
     
@@ -296,22 +291,17 @@ export class ListChargesComponent implements OnInit {
     return false;
   }
   getPlotNumber(lotId : number){
-    console.log(lotId);
     const lot = this.lots.find(lot => lot.id === lotId);
     return lot ? lot.plot_number : undefined;
   }
 
   loadSelect() {
-    return forkJoin([
-      this.periodService.get(),
-      this.lotsService.get(),
-      this.chargeService.getCategoryCharges()
-    ]).pipe(
-      tap(([periodos, lots, categoryCharges]) => {
-        this.periodos = periodos;
-        this.lots = lots;
-        this.categorias = categoryCharges;
-      }));
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periodos = data;
+    })
+    this.lotsService.get().subscribe((data: Lot[]) => {
+      this.lots = data;
+    })
   }
   loadCategoryCharge(){
     this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
