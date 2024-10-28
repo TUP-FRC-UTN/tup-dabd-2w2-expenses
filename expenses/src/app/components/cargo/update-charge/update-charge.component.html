@@ -8,11 +8,11 @@
   <form [formGroup]="chargeForm">
     <div class="form-row  mb-3">
       <div class="form-group col-md-12 d-flex  align-items-start justify-content-between">
-        <label for="fechaEmision" class="form-label col-md-4">Fecha de emisión<span style="color: red;">*</span></label>     
+        <label for="fechaEmision" class="form-label col-md-4">Fecha de emisión<span style="color: red;">*</span></label>
         <input type="date" class="form-control " id="fechaEmision" formControlName="fechaEmision"
         [ngClass]="{ 'is-invalid': chargeForm.controls['fechaEmision'].touched && chargeForm.controls['fechaEmision'].hasError('required') }"
         [attr.disabled]="!isEditing ? null : null">
-      </div>      
+      </div>
     </div>
 
     <div class="form-row  mb-3">
@@ -23,11 +23,11 @@
           >
         </div>
     </div>
-    
+
     <div class="form-row mb-3">
       <div class="form-group col-md-12 d-flex  align-items-center justify-content-between">
         <label for="categoryCargos" class="form-label col-md-3">Categoría<span style="color: red;">*</span></label>
-        <select name="categoryCargos" id="categoryCargos" class="form-select" aria-label="Default select example" 
+        <select name="categoryCargos" id="categoryCargos" class="form-select" aria-label="Default select example"
         formControlName="tipo"
         [attr.disabled]="!isEditing ? '' : null">
           <option [value]="0">Todas</option>
@@ -67,7 +67,7 @@
         <textarea id="descripcion" class="form-control" formControlName="description" rows="3"
           [attr.disabled]="!isEditing ? '' : null"></textarea>
       </div>
-      
+
     </div>
   </form>
 </div>
