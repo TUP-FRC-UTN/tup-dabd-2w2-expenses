@@ -3,7 +3,7 @@
     <h5 class="modal-title">Editar gasto</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
   </div>
-  
+
   <form [formGroup]="updateBill" (ngSubmit)="onSubmit()" class="container mt-4">
     <!-- Primera fila: Proveedor y Categoría -->
     <div class="row mb-3">
@@ -22,7 +22,7 @@
             <div class="invalid-feedback">
               Por favor, seleccione un proveedor.
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@
     <div class="modal-footer">
       <!-- Botón "Volver" alineado a la izquierda del botón "Aplicar" -->
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="dismiss()">Volver</button>
-      <button type="button" class="btn btn-primary" (click)="updateBill.invalid"
+      <button type="button" class="btn btn-primary" (click)="onSubmit()"
         data-bs-dismiss="modal">Enviar</button>
     </div>
   </form>

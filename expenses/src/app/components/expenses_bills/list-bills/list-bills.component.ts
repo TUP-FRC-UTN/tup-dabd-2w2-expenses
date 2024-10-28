@@ -31,6 +31,8 @@ import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 import { ListBillsInfoComponent } from '../../modals/info/list-bills-info/list-bills-info.component';
+import {Router} from "@angular/router";
+import moment from "moment";
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -61,6 +63,7 @@ export class ListBillsComponent implements OnInit {
   providerService = inject(ProviderService);
   modal = inject(NgbModal);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   currentPage: number = 0;
   pageSize: number = 10;
@@ -127,43 +130,14 @@ export class ListBillsComponent implements OnInit {
     this.loadBills();
     this.loadSelect();
   }
-  // Método para cancelar la edición
-  cancelEdit() {
-    this.viewList = true; // Volvemos a mostrar la lista
-    this.selectedBill = undefined; // Limpiamos la factura seleccionada
-  }
 
-  // Busca las bills de acuerdo a los filtros establecidos
-  filterBills() {
-    this.bills = [];
-    const filters = this.filters.value;
-    console.log(`Filtros:${filters}`);
-    this.billservice
-      .getAllBills(
-        this.pageSize,
-        this.currentPage,
-        filters.selectedPeriod?.valueOf(),
-        filters.selectedCategory?.valueOf(),
-        filters.selectedSupplier?.valueOf(),
-        filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString()
-      )
-      .subscribe({
-        next: (bills) => {
-          this.bills = bills;
-        },
-        error: (error) => {
-          console.error('Error al cargar las facturas:', error);
-        },
-        complete: () => {
-          this.isLoading = false;
-        },
-      });
-  }
+
+
+
   //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills() {
-    //this.filters.reset();
+    this.filters.reset();
+    this.loadSelect();
     this.loadBills();
   }
 
@@ -212,20 +186,7 @@ export class ListBillsComponent implements OnInit {
         },
       });
   }
-  updateVisiblePages(): void {
-    const half = Math.floor(this.maxPagesToShow / 2);
-    let start = Math.max(0, this.currentPage - half);
-    let end = Math.min(this.totalPages, start + this.maxPagesToShow);
 
-    if (end - start < this.maxPagesToShow) {
-      start = Math.max(0, end - this.maxPagesToShow);
-    }
-
-    this.visiblePages = [];
-    for (let i = start; i < end; i++) {
-      this.visiblePages.push(i);
-    }
-  }
   updatePageSize() {
     this.currentPage = 0; // Reinicia a la primera página
     this.loadBills();
@@ -283,17 +244,10 @@ export class ListBillsComponent implements OnInit {
           this.loadBills(); // Recargar la lista de facturas
         }
       },
-      (reason) => {
-        // Manejar el cierre del modal sin actualizar
-      }
+
     );
   }
-  //abre el modal de edicion por id
-  showModal(title: string, message: string) {
-    const modalRef = this.modalService.open(NgbModal);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = message;
-  }
+
 
   //Carga los valores en los filtros existentes
   loadSelect() {
@@ -306,107 +260,86 @@ export class ListBillsComponent implements OnInit {
     this.currentPage = number
     this.loadBills()
   }
-
+  nuevoGasto(){
+    this.router.navigate(['/gastos/nuevo'])
+  }
   //Resetea los valores del modal de edicion
 
   //Guarda la nueva categoría
 
   //Método que formatea de BillDto a entidad Bill
-  private formatBills(
-    billsDto$: Observable<PaginatedResponse<BillDto>>
-  ): Observable<Bill[]> {
-    return billsDto$.pipe(
-      map((response) => {
-        const billsDto = response.content;
-        if (!Array.isArray(billsDto)) {
-          console.error('La respuesta del servidor no contiene una array');
-          return [];
-        }
-        return billsDto.map(
-          (billDto) =>
-            new Bill(
-              billDto.expenditure_id,
-              billDto.date,
-              billDto.amount,
-              billDto.description,
-              billDto.supplier,
-              billDto.period,
-              billDto.category,
-              billDto.bill_type,
-              billDto.status
-            )
-        );
-      })
-    );
-  }
+
+  //Generación de documentos
+  //Generación de pdf
+
   //Generación de documentos
   //Generación de pdf
   imprimir() {
-    console.log('Imprimiendo');
+    console.log('Imprimiendo')
     const doc = new jsPDF();
 
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Bills Report', 14, 20);
-
+    const filters = this.filters.value;
     // Llamada al servicio para obtener las expensas
-    this.billservice.getAllBills(100000, 0).subscribe((bills) => {
+    this.billservice.getAllBills(100000, 0,
+      filters.selectedPeriod?.valueOf(),
+      filters.selectedCategory?.valueOf(),
+      filters.selectedSupplier?.valueOf(),
+      filters.selectedType?.valueOf(),
+      filters.selectedProvider?.valueOf().toString(),
+      filters.selectedStatus?.valueOf().toString()).subscribe(bills => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
-        head: [
-          [
-            'Mes',
-            'Año',
-            'Total Amount',
-            'State',
-            'Plot Number',
-            'Percentage',
-            'Bill Type',
-          ],
-        ],
-        body: bills.map((bill) => [
-          bill.period ? bill.period.year : null,
-          bill.period ? bill.period.month : null,
-          bill.amount,
-          bill.date.toLocaleDateString(),
-          bill.status ? bill.status : null,
-          bill.supplier ? bill.supplier.name : null,
-          bill.category ? bill.category.name : null,
-          bill.billType ? bill.billType.name : null,
-          bill.description,
-        ]),
-      });
+        head: [['Periodo', 'Monto total', 'Fecha', 'Estado', 'Proveedor', 'Categoría', 'Tipo', 'Descripción']],
+        body: bills.map(bill => [
+          bill.period? `${bill.period.month}/${bill.period.year}`:null,
+          bill.amount? `$ ${bill.amount}`:null,
+        moment(bill.date).format("DD/MM/YYYY"),
+        bill.status? bill.status:null,
+        bill.supplier? bill.supplier.name:null,
+        bill.category? bill.category.name:null,
+        bill.billType? bill.billType.name:null,
+        bill.description
+    ]),
+    });
 
       // Guardar el PDF después de agregar la tabla
-      doc.save('bills_report.pdf');
-      console.log('Impreso');
+      doc.save(`Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`);
+      console.log('Impreso')
     });
   }
-
-  //Generar excel con todos los fatos
+  //Generar excel con todos los datos
   //Crear excel con datos de los gastos que se muestran
   downloadTable() {
-    this.billservice.getAllBillsAndPagination(500000).subscribe((bills) => {
+    const filters = this.filters.value;
+    this.billservice.getAllBillsAndPagination(500000,0,
+      filters.selectedPeriod?.valueOf(),
+      filters.selectedCategory?.valueOf(),
+      filters.selectedSupplier?.valueOf(),
+      filters.selectedType?.valueOf(),
+      filters.selectedProvider?.valueOf().toString(),
+      filters.selectedStatus?.valueOf().toString()).subscribe(bills => {
       // Mapear los datos a un formato tabular adecuado
       const data = bills.content.map((bill) => ({
-        Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
-        'Monto Total': bill.amount,
-        Fecha: bill.date,
-        Proveedor: bill.supplier?.name,
-        Estado: bill.status,
-        Categoría: bill.category,
+        'Periodo':  `${bill?.period?.month} / ${bill?.period?.year}`,
+        'Monto Total': `$ ${bill.amount}`,
+        'Fecha': bill.date,
+        'Proveedor': bill.supplier?.name,
+        'Estado': bill.status,
+        'Categoría': bill.category.name,
         'Tipo de gasto': bill.bill_type?.name,
-        Descripción: bill.description,
-      }));
+        'Descripción': bill.description
+    }));
 
       // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
       XLSX.writeFile(wb, this.fileName);
-    });
-  }
+    })}
 
   showInfo(): void {
     this.modalService.open(ListBillsInfoComponent, {
@@ -414,7 +347,7 @@ export class ListBillsComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
       centered: true,
-      scrollable: true,
+      scrollable: true
     });
   }
 }
