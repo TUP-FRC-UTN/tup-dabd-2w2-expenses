@@ -15,7 +15,6 @@ interface Page<T> {
   providedIn: 'root',
 })
 export class ChargeService {
-  private url = 'http://localhost:3001/cargosLote';
   private http = inject(HttpClient);
   private categoryChargeUrl = `${PORT}category-charges`;
   private apiUrl = `${PORT}charges`

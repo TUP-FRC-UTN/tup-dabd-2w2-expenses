@@ -115,7 +115,6 @@ export class UpdateChargeComponent implements OnInit {
   }
 
   saveChanges() {
-    debugger
     if (this.chargeForm.valid) {
       const updatedCharge: Charge = {
         ...this.charge,
