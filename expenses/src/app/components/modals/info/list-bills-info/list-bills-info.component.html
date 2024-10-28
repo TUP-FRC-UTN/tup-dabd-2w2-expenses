@@ -1,0 +1,101 @@
+<div class="modal-header fs-6 py-1">
+    <h4 class="modal-title">Información del Listado de Gastos</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+    <div class="container-fluid">
+        <!-- Introducción -->
+        <div class="alert alert-info mb-2 py-2">
+            <h5 class="alert-heading">¿Qué es este listado?</h5>
+            <p class="mb-0 small">Esta pantalla muestra un registro detallado de todos los gastos ingresados,
+                permitiéndote visualizar, filtrar y gestionar las transacciones de manera eficiente.</p>
+        </div>
+
+        <!-- Funciones Principales -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Funciones Principales</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Buscar:</strong> Utiliza el campo de búsqueda para encontrar gastos específicos.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Filtros:</strong> Aplica diferentes filtros para refinar la visualización de los gastos.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Limpiar:</strong> Elimina todos los filtros aplicados y muestra el listado completo.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Columnas del Listado -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Información Mostrada</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Tipo:</strong> Clasificación del gasto (Ordinarias o Extraordinarias).
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Proveedor:</strong> Empresa que proporciona el servicio (ej: Aguas Cordobesas, Gas
+                        Natural Fenosa).
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Monto:</strong> Cantidad monetaria del gasto en pesos.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Periodo:</strong> Mes y año al que corresponde el gasto.
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Categoría:</strong> Clasificación del gasto (ej: Servicios Públicos, Suministros).
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Fecha:</strong> Día en que se registró el gasto.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Acciones Disponibles</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Editar:</strong> Permite modificar la información de un gasto (ícono de lápiz).
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>Ver Detalles:</strong> Muestra información adicional del gasto (ícono de ojo).
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Botones Superiores -->
+        <div class="card mb-2">
+            <div class="card-header py-1">
+                <h5 class="mb-0">Opciones Adicionales</h5>
+            </div>
+            <div class="card-body py-2">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item py-1">
+                        <strong>Descargar:</strong> Exporta el listado de gastos (botón verde).
+                    </li>
+                    <li class="list-group-item py-1">
+                        <strong>PDF:</strong> Genera un documento PDF del listado (botón rojo).
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer py-2">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.close()">Cerrar</button>
+</div>

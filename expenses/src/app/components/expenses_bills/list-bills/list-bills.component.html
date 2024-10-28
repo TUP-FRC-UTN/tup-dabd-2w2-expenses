@@ -1,0 +1,288 @@
+<div class="container" style="margin-top: 18px;">
+  <div class="row" style="align-items:end" >
+
+    <div class="position-relative">
+      <h2>Listado de gastos</h2>
+    </div>
+      <div class="row">
+          <div class="col d-flex justify-content-start">
+              <div class="input-group w-25 text-end" id="buscadorDeGrilla">
+                  <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Buscar gasto..."
+                          [(ngModel)]="searchTerm">
+                  <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+              </div>
+          </div>
+
+      </div>
+
+<!-- Modal con los filtros -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+<div class="modal-dialog" style=" z-index: 1040;">
+  <form [formGroup]="filters">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filterModalLabel">Filtrar por:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Periodo -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="periodo" class="col-md-3 col-form-label">Periodo</label>
+              <div class="col-md-9">
+                <select name="periodo" id="" class="form-select" aria-label="Default select example" formControlName="selectedPeriod">
+                  <option [value]="0">Todos</option>
+                  @for (period of periodsList | orderBy: ['-year','-month']; track $index) {
+                    <option [value]="period.id">{{period.month}}/{{period.year}}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="lote" class="col-md-3 col-form-label">Categoría</label>
+              <div class="col-md-9">
+                <select name="lote" id="lote" class="form-select" aria-label="Default select example" formControlName="selectedCategory">
+                  <option [value]="0">Todos</option>
+                  @for (category of categoryList | orderBy: 'name' ; track $index) {
+                    <option [value]="category?.category_id">{{category.name}}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proveedor -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="tipoExpensa" class="col-md-3 col-form-label">Proveedor</label>
+              <div class="col-md-9">
+                <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" formControlName="selectedSupplier">
+                  <option [value]="0">Todas</option>
+                  @for ( supplier of supplierList | orderBy: 'name'; track $index) {
+                    <option [value]="supplier.id">{{supplier.name}}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="tipo" class="col-md-3 col-form-label">Tipo</label>
+              <div class="col-md-9">
+                <select name="tipo" id="periodo" class="form-select" aria-label="Default select example" formControlName="selectedType">
+                  <option [value]="0">Todos</option>
+                  @for (type of typesList | orderBy: 'name'; track $index) {
+                    <option [value]="type.bill_type_id">{{type.name}}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo de proveedor -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="tipoProveedor" class="col-md-3 col-form-label">Tipo de proveedor</label>
+              <div class="col-md-9">
+                <select name="tipoProveedor" id="tipoProveedor" class="form-select" aria-label="Default select example" formControlName="selectedProvider">
+                  <option [value]="'EMPLOYEE'">Empleados</option>
+                  <option [value]="'SUPPLIER'">Proveedores varios</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <label for="estado" class="col-md-3 col-form-label">Estado</label>
+              <div class="col-md-9">
+                <select name="estado" id="estado" class="form-select" aria-label="Default select example" formControlName="selectedStatus">
+                  <option [value]="'ACTIVE'">Activo</option>
+                  <option [value]="'CANCELLED'">Cancelado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </form>
+</div>
+</div>
+  </div>
+  <br>
+    <div class="row align-items-center">
+        <!-- Grupo de botones de filtrado a la izquierda -->
+        <div class="col-auto">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-danger" (click)="unFilterBills()">
+                    <i class="bi bi-trash-fill"></i> Limpiar
+                </button>
+                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <i class="bi bi-funnel-fill"></i> Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Grupo de botones a la derecha -->
+        <div class="col d-flex justify-content-end gap-2">
+            <!-- Botón nuevo -->
+            <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-1" (click)="nuevoGasto()">
+               Nuevo gasto
+            </button>
+
+            <!-- Botón Excel -->
+            <button
+                    class="btn"
+                    (click)="downloadTable()"
+                    style="background-color: #239b56; color: white;"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Descargar expensas como excel">
+                <i class="bi bi-file-earmark-excel"></i>
+            </button>
+
+            <!-- Botón PDF -->
+            <button
+                    class="btn"
+                    (click)="imprimir()"
+                    style="background-color: red; color: white;"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Descargar expensas como pdf">
+                <i class="bi bi-file-pdf"></i>
+            </button>
+        </div>
+    </div>
+
+
+
+ <br>
+  <div class="card">
+    @if(isLoading){
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    }
+    @else {
+
+      <table class="table table-striped" id="table-data">
+        <thead>
+          <tr>
+            <th scope="col">Tipo</th>
+            <th scope="col">Proveedor</th>
+            <th scope="col">Monto</th>
+            <th scope="col">Periodo</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- | filterBy: ['amount']: searchTerm -->
+          @for (bill of bills | filterBy: ['amount', 'supplier.name']: searchTerm | orderBy: ['date','category.name','supplier.name']; track $index ) {
+            <tr>
+                <td>{{bill.billType.name}} </td>
+                <td>{{bill.supplier.name}}</td>
+                <td>{{bill.amount.toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                }) }}</td>
+                <td>{{bill.period.month }}/{{ bill.period.year }} </td>
+                <td>{{bill.category.name}}</td>
+                <td>{{bill.date | date:'MMM d, yyyy'}}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-2" (click)="viewBill(bill)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-warning" (click)="editBill(bill)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+
+            </tr>
+          }@empty {
+            <td colspan="7" class="text-center">
+              <div class="text-center p-3">
+                <div class="alert alert-secondary">
+                  No hay gastos para mostrar
+                </div>
+              </div>
+            </td>}
+
+        </tbody>
+      </table>
+    }
+  </div>
+  <br>
+  <div class="row d-flex align-items-end">
+
+    <div class="row d-flex align-items-between">
+      <div class="col">
+
+        <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize" (ngModelChange)="updatePageSize()">
+          <option value=10>10</option>
+          <option value=25>25</option>
+          <option value=50>50</option>
+        </select>
+
+      </div>
+      <div class="col-md-6">
+        <nav aria-label="Page navigation example" style="cursor: pointer;">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                [class.active]="i === currentPage">
+              <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-secondary ms-3 mb-3">
+          <i class="bi bi-info-circle" (click)="showInfo()"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
