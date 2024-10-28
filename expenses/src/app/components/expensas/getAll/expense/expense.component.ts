@@ -63,9 +63,7 @@ throw new Error('Method not implemented.');
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-  periodId : number | null = null
-  lotId : number | null = null
-  typeId : number | null = null
+
   text : string = ""
 
   fileName : string = "Expensas.xlsx"
