@@ -18,11 +18,12 @@ import { ToastService } from 'ngx-dabd-grupo01';
 import * as XLSX from 'xlsx';
 import { NgPipesModule } from 'ngx-pipes';
 import moment from 'moment';
+import { InfoModalComponent } from "../../modals/info-modal/info-modal.component";
 
 @Component({
   selector: 'app-expenses-period-list',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent,ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule, NgPipesModule, FormsModule ],
+  imports: [ExpensesPeriodNavComponent, ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule, NgPipesModule, FormsModule, InfoModalComponent],
   templateUrl: './expenses-period-list.component.html',
   styleUrl: './expenses-period-list.component.css',
 })
@@ -47,6 +48,14 @@ export class ExpensesPeriodListComponent implements OnInit {
   searchTerm = '';
 
   fileName = 'reporte-periodos-liquidaciones'
+
+
+  showModal(content: TemplateRef<any>) {
+    const modalRef = this.modalService.open(content, {
+      ariaLabelledBy: 'modal-basic-title',
+    });
+  }
+
 
   loadPaged(page: number) {
 
