@@ -142,7 +142,7 @@
         </tr>
         </thead>
         <tbody>
-          @for (category of categories | filterBy: ['name', 'description']: searchTerm; track category.category_id) {
+          @for (category of categories | filterBy: ['name', 'description']: searchTerm | orderBy: 'name'; track category.category_id) {
             @if (!category.is_delete){
               <tr>
                 <td>{{ category.name }}</td>
