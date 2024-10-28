@@ -40,8 +40,21 @@ export class BillService {
     }
   }
 
-  addBill(bill: BillPostRequest): Observable<Bill> {
-    return this.http.post<Bill>(this.url + 'bill', bill);
+  addBill(bill: BillPostRequest): Observable<BillPostRequest> {
+    const snakeCaseBill = {
+      description: bill.description,
+      amount: Number(bill.amount),
+      date: bill.date,
+      status: 'ACTIVE',
+      category_id: Number(bill.categoryId),
+      supplier_id: Number(bill.supplierId),
+      supplier_employee_type: 'SUPPLIER',
+      type_id: Number(bill.typeId),
+      period_id: Number(bill.periodId),
+      link_pdf: ''
+    };
+
+    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill);
   }
 
   getBillTypes(): Observable<BillType[]> {

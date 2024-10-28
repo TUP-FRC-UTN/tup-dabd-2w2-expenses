@@ -14,5 +14,4 @@ export interface Bill {
   category: Category;
   bill_type: BillType;
   status: string;
-  //TODO PASAR TODO EN SNAKE CASE
 }
