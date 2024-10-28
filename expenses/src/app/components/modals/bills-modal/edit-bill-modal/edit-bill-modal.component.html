@@ -1,7 +1,7 @@
 <div class="container">
   <div class="modal-header">
     <h5 class="modal-title">Editar gasto</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
   </div>
   
   <form [formGroup]="updateBill" (ngSubmit)="onSubmit()" class="container mt-4">
@@ -140,7 +140,7 @@
     <!-- Botón de envío -->
     <div class="modal-footer">
       <!-- Botón "Volver" alineado a la izquierda del botón "Aplicar" -->
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="dismiss()">Volver</button>
       <button type="button" class="btn btn-primary" (click)="updateBill.invalid"
         data-bs-dismiss="modal">Enviar</button>
     </div>
