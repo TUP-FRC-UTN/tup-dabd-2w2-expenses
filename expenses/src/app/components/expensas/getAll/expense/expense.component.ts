@@ -25,6 +25,9 @@ import {NgPipesModule} from "ngx-pipes";
   styleUrl: './expense.component.css'
 })
 export class ExpenseComponent implements OnInit{
+showInfo() {
+throw new Error('Method not implemented.');
+}
 
 
 
