@@ -91,6 +91,11 @@
                   >Categoria</a
                 >
               </li>
+              <li>
+                <a class="dropdown-item" (click)="selectFilter('proveedor')"
+                  >Proveedores</a
+                >
+              </li>
             </ul>
           </div>
         </div>
@@ -115,6 +120,27 @@
           </select>
         </div>
         }
+        @if (typeFilter==="proveedor") {
+          <div>
+            <select
+              class="form-select"
+              aria-label="Seleccione una categoría"
+              style="margin-left: 5px"
+            >
+              <option disabled selected [value]="">
+                Seleccione un proveedor
+              </option>
+              @for (provider of providers; track $index) {
+              <option
+                [value]="provider.id"
+                (click)="handleProviderChange(provider.id)"
+              >
+                {{ provider.name }}
+              </option>
+              }
+            </select>
+          </div>
+          }
       </div>
     </div>
   </div>
