@@ -10,7 +10,7 @@
           <div class="col-sm-10">
             <select id="supplierId" formControlName="supplierId" class="form-select" [ngClass]="{'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)}">
               <option value="">Seleccione un proveedor</option>
-              @for (provider of providers | async; track provider.id) {
+              @for (provider of providers | async | orderBy: 'name'; track provider.id) {
                 <option [value]="provider.id">{{ provider.name }}</option>
               }
             </select>
@@ -28,7 +28,7 @@
             <div class="input-group">
               <select id="categoryId" formControlName="categoryId" class="form-select" [ngClass]="{'is-invalid': billForm.get('categoryId')?.invalid && (billForm.get('categoryId')?.dirty || billForm.get('categoryId')?.touched)}">
                 <option value="">Seleccione una categoría</option>
-                @for (category of categories | async; track category.category_id) {
+                @for (category of categories | async | orderBy: 'name'; track category.category_id) {
                   <option [value]="category.category_id">{{ category.name }}</option>
                 }
               </select>
@@ -50,7 +50,7 @@
           <div class="col-sm-10">
             <select id="periodId" formControlName="periodId" class="form-select" [ngClass]="{'is-invalid': billForm.get('periodId')?.invalid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched)}">
               <option value="">Seleccione un periodo</option>
-              @for (period of periods | async; track period.id) {
+              @for (period of periods | async | orderBy: [ '-year','-month']; track period.id) {
                 <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
               }
             </select>
@@ -67,7 +67,7 @@
           <div class="col-sm-10">
             <select id="typeId" formControlName="typeId" class="form-select" [ngClass]="{'is-invalid': billForm.get('typeId')?.invalid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched)}">
               <option value="">Seleccione un tipo</option>
-              @for (type of types | async; track type.bill_type_id) {
+              @for (type of types | async | orderBy: 'name'; track type.bill_type_id) {
                 <option [value]="type.bill_type_id">{{ type.name }}</option>
               }
             </select>
