@@ -30,7 +30,7 @@ import {NgPipesModule} from "ngx-pipes";
 import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { debounceTime } from 'rxjs';
+import { debounceTime, forkJoin, tap } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 
 
@@ -100,7 +100,7 @@ export class ListChargesComponent implements OnInit {
       console.log(charges.content);
       autoTable(doc, {
         startY: 30,
-        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Amount']],
+        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Monto']],
         body: charges.content.map(charge => [
           charge.date.toString(),
           charge.period.month + '/' + charge.period.year,          
@@ -131,7 +131,7 @@ export class ListChargesComponent implements OnInit {
         'Categoría': charge.categoryCharge.name,
         'Descripción': charge.description,
         'Monto': charge.amount,
-        'Estado': charge.status,
+        'Estado': charge.status ? "Activo": "Baja",
       }));
   
       // Convertir los datos tabulares a una hoja de cálculo
@@ -274,6 +274,10 @@ export class ListChargesComponent implements OnInit {
       this.totalPages = response.totalPages;  // Número total de páginas
       this.totalItems = response.totalElements;  // Total de registros
       this.currentPage = response.number;
+      this.charges = this.charges.map(charge => ({
+        ...charge,
+        plotNumber: this.getPlotNumber(charge.lotId) // Agrega el resultado de `getPlotNumber` como un nuevo campo
+      }));
       console.log(this.charges);
     });
     
@@ -291,17 +295,22 @@ export class ListChargesComponent implements OnInit {
     return false;
   }
   getPlotNumber(lotId : number){
+    console.log(lotId);
     const lot = this.lots.find(lot => lot.id === lotId);
     return lot ? lot.plot_number : undefined;
   }
 
   loadSelect() {
-    this.periodService.get().subscribe((data: Period[]) => {
-      this.periodos = data;
-    })
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
-    })
+    return forkJoin([
+      this.periodService.get(),
+      this.lotsService.get(),
+      this.chargeService.getCategoryCharges()
+    ]).pipe(
+      tap(([periodos, lots, categoryCharges]) => {
+        this.periodos = periodos;
+        this.lots = lots;
+        this.categorias = categoryCharges;
+      }));
   }
   loadCategoryCharge(){
     this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
