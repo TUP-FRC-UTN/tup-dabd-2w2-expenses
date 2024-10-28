@@ -22,6 +22,9 @@ import { map, Observable } from 'rxjs';
 import { NgPipesModule } from 'ngx-pipes';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
+import moment from 'moment';
+import {Router} from "@angular/router";
+
 
 
 @Component({
@@ -46,6 +49,7 @@ export class ListBillsComponent implements OnInit {
   categoryService = inject(CategoryService);
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
+  private router = inject(Router);
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
 
@@ -84,7 +88,7 @@ export class ListBillsComponent implements OnInit {
   periodsList: Period[] = [];
   typesList:BillType[] = [];
   today:Date= new Date();
-  fileName = `Gastos_${this.today.toLocaleDateString()}.xlsx`
+  fileName = `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}:${this.today.getMinutes()}.xlsx`
 
   viewList: boolean= true;
   billForm : FormGroup;
@@ -129,6 +133,7 @@ export class ListBillsComponent implements OnInit {
   }
 
   // Busca las bills de acuerdo a los filtros establecidos
+  /*
   filterBills() {
     this.bills=[];
     const filters = this.filters.value;
@@ -154,10 +159,10 @@ export class ListBillsComponent implements OnInit {
 
         })
 
-  }
+  }*/
   //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills(){
-    //this.filters.reset();
+    this.filters.reset();
     this.loadBills()
   }
 
@@ -165,9 +170,17 @@ export class ListBillsComponent implements OnInit {
   loadBills() {
     this.bills=[];
     this.isLoading = true;
-    this.billservice.getAllBillsAndPagination(this.pageSize,this.currentPage).subscribe({
+    const filters = this.filters.value;
+
+    this.billservice.getAllBillsAndPagination(this.pageSize,this.currentPage,
+      filters.selectedPeriod?.valueOf(),
+      filters.selectedCategory?.valueOf(),
+      filters.selectedSupplier?.valueOf(),
+      filters.selectedType?.valueOf(),
+      filters.selectedProvider?.valueOf().toString(),
+      filters.selectedStatus?.valueOf().toString()
+    ).subscribe({
       next: (response) => {this.totalPages = response.totalPages;
-        console.log(`Total pages:${this.totalPages}`)
         response.content.map((bill)=>{
           this.bills.push(new Bill(
             bill.expenditure_id,
@@ -184,23 +197,11 @@ export class ListBillsComponent implements OnInit {
       error: (error) => {console.error('Error al cargar las facturas:', error)},
       complete: () => {this.isLoading = false}
     })
-
   }
-  updateVisiblePages(): void {
-    const half = Math.floor(this.maxPagesToShow / 2);
-    let start = Math.max(0, this.currentPage - half);
-    let end = Math.min(this.totalPages, start + this.maxPagesToShow);
-
-    if (end - start < this.maxPagesToShow) {
-      start = Math.max(0, end - this.maxPagesToShow);
-    }
-
-    this.visiblePages = [];
-    for (let i = start; i < end; i++) {
-      this.visiblePages.push(i);
-    }
-
+  nuevoGasto(){
+    this.router.navigate(['/gastos/nuevo'])
   }
+
   updatePageSize(){
     this.currentPage = 0; // Reinicia a la primera página
     this.loadBills();
@@ -260,12 +261,6 @@ export class ListBillsComponent implements OnInit {
       }
     );
   }
-  //abre el modal de edicion por id
-  showModal(title: string, message: string) {
-    const modalRef = this.modalService.open(NgbModal);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = message;
-  }
 
   //Carga los valores en los filtros existentes
   loadSelect() {
@@ -276,7 +271,8 @@ export class ListBillsComponent implements OnInit {
 
     }
   onPageChange(number: number){
-
+    this.currentPage = number;
+    this.loadBills();
   }
 
 
@@ -284,31 +280,7 @@ export class ListBillsComponent implements OnInit {
 
   //Guarda la nueva categoría
 
-  //Método que formatea de BillDto a entidad Bill
-  private formatBills(billsDto$: Observable<PaginatedResponse<BillDto>>): Observable<Bill[]> {
-    return billsDto$.pipe(
-      map((response)=>{
-        const billsDto = response.content;
-        if(!Array.isArray(billsDto)){
-          console.error('La respuesta del servidor no contiene una array')
-          return []
-        }
-        return billsDto.map((billDto)=>
-          new Bill(
-            billDto.expenditure_id,
-            billDto.date,
-            billDto.amount,
-            billDto.description,
-            billDto.supplier,
-            billDto.period,
-            billDto.category,
-            billDto.bill_type,
-            billDto.status
-          )
-        )
-      })
-    );
-  }
+
   //Generación de documentos
   //Generación de pdf
   imprimir() {
@@ -318,18 +290,23 @@ export class ListBillsComponent implements OnInit {
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Bills Report', 14, 20);
-
+    const filters = this.filters.value;
     // Llamada al servicio para obtener las expensas
-    this.billservice.getAllBills(100000, 0).subscribe(bills => {
+    this.billservice.getAllBills(100000, 0,
+      filters.selectedPeriod?.valueOf(),
+      filters.selectedCategory?.valueOf(),
+      filters.selectedSupplier?.valueOf(),
+      filters.selectedType?.valueOf(),
+      filters.selectedProvider?.valueOf().toString(),
+      filters.selectedStatus?.valueOf().toString()).subscribe(bills => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
-        head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
+        head: [['Periodo', 'Monto total', 'Fecha', 'Estado', 'Proveedor', 'Categoría', 'Tipo', 'Descripción']],
         body: bills.map(bill => [
-          bill.period? bill.period.year:null,
-          bill.period? bill.period.month:null,
-          bill.amount,
-          bill.date.toLocaleDateString(),
+          bill.period? `${bill.period.month}/${bill.period.year}`:null,
+          bill.amount? `$ ${bill.amount}`:null,
+          moment(bill.date).format("DD/MM/YYYY"),
           bill.status? bill.status:null,
           bill.supplier? bill.supplier.name:null,
           bill.category? bill.category.name:null,
@@ -339,22 +316,29 @@ export class ListBillsComponent implements OnInit {
       });
 
       // Guardar el PDF después de agregar la tabla
-      doc.save('bills_report.pdf');
+      doc.save(`Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}:${this.today.getMinutes()}.pdf`);
       console.log('Impreso')
     });
   }
-  //Generar excel con todos los fatos
+  //Generar excel con todos los datos
   //Crear excel con datos de los gastos que se muestran
   downloadTable() {
-    this.billservice.getAllBillsAndPagination(500000).subscribe(bills => {
+    const filters = this.filters.value;
+    this.billservice.getAllBillsAndPagination(500000,0,
+      filters.selectedPeriod?.valueOf(),
+      filters.selectedCategory?.valueOf(),
+      filters.selectedSupplier?.valueOf(),
+      filters.selectedType?.valueOf(),
+      filters.selectedProvider?.valueOf().toString(),
+      filters.selectedStatus?.valueOf().toString()).subscribe(bills => {
       // Mapear los datos a un formato tabular adecuado
       const data = bills.content.map(bill => ({
         'Periodo':  `${bill?.period?.month} / ${bill?.period?.year}`,
-        'Monto Total': bill.amount,
+        'Monto Total': `$ ${bill.amount}`,
         'Fecha': bill.date,
         'Proveedor': bill.supplier?.name,
         'Estado': bill.status,
-        'Categoría': bill.category,
+        'Categoría': bill.category.name,
         'Tipo de gasto': bill.bill_type?.name,
         'Descripción': bill.description
       }));
@@ -366,36 +350,8 @@ export class ListBillsComponent implements OnInit {
       XLSX.writeFile(wb, this.fileName);
     })}
 
-  //changesPageSize(newRowsPerPage: number) {
-    //console.log('Número de registros por página cambiado a:', newRowsPerPage);
-    //this.currentPage = 0;  // Reinicia la paginación a la primera página
-    //this.pageSize = newRowsPerPage;  // Actualiza el número de registros por página
-    //this.cargarPaginado();
-  //}
 
-  //cargarPaginado() {
-    //var period = undefined;
-    //var category = undefined;
-    //var lot = undefined;
-    //if(this.selectedBill != 0){
-      //period = this.selectedBill
-    //}
-    //if(this.selectedBill != 0){
-      //category = this.selectedBill
-    //}
-    //if(this.selectedBill != 0){
-      //lot = this.selectedBill
-    //}
 
-    // Llamar al servicio con la paginación desde el backend.
-    //this.billservice.getAllBillsAndPagination(this.currentPage, this.pageSize, period, lot, category).subscribe(response => {
 
-      //console.log("Bills :" + JSON.stringify(response.content));
-      //this.bills = response.content;  // Datos de la página actual
-      //this.totalPages = response.totalPages;  // Número total de páginas
-      //this.totalItems = response.totalElements;  // Total de registros
-      //this.currentPage = response.number;
-      //console.log(this.bills);
-    //});
   //}
 }
