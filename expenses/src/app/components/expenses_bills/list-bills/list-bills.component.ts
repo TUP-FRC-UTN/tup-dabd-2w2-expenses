@@ -25,6 +25,7 @@ import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/v
 import moment from 'moment';
 import {Router} from "@angular/router";
 import { ListBillsInfoComponent } from '../../modals/info/list-bills-info/list-bills-info.component';
+import {ToastService} from "ngx-dabd-grupo01";
 
 
 
@@ -51,6 +52,7 @@ export class ListBillsComponent implements OnInit {
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
   private router = inject(Router);
+  toastService:ToastService = inject(ToastService)
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
 
@@ -74,6 +76,7 @@ export class ListBillsComponent implements OnInit {
   //Lista de categorias
 
   searchTerm: string = ""
+
   visiblePages:number[] = [];
   maxPagesToShow :number = 5;
   //Filtros para buscar el objeto
@@ -91,7 +94,7 @@ export class ListBillsComponent implements OnInit {
   periodsList: Period[] = [];
   typesList:BillType[] = [];
   today:Date= new Date();
-  fileName = `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}:${this.today.getMinutes()}.xlsx`
+  fileName = `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.xlsx`
 
   viewList: boolean= true;
   billForm : FormGroup;
@@ -318,7 +321,7 @@ export class ListBillsComponent implements OnInit {
       });
 
       // Guardar el PDF después de agregar la tabla
-      doc.save(`Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}:${this.today.getMinutes()}.pdf`);
+      doc.save(`Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`);
       console.log('Impreso')
     });
   }

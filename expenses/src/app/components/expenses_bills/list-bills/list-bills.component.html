@@ -244,45 +244,7 @@
   </div>
   <br>
   <div class="row d-flex align-items-end">
-    <!--
-    <div class="col-2">
-      <label for="">Cantidad de registros</label>
-      <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="updatePageSize()">
-        <option value="10" selected>10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-      </select>
-    </div>
-    -->
-    <!--
-    <div class="col">
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end" style="margin-bottom: 0;">
 
-          <li class="page-item" [class.disabled]="currentPage === 0">
-            <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-
-
-          <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
-            @for(page of visiblePages;track $index){
-              <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
-            }
-
-          </li>
-
-
-          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-            <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    -->
     <div class="row d-flex align-items-between">
       <div class="col">
 
@@ -318,54 +280,9 @@
       </div>
       <div class="col-md-1">
         <button class="btn btn-secondary ms-3 mb-3">
-          <i class="bi bi-info-circle"></i>
+          <i class="bi bi-info-circle" (click)="showInfo()"></i>
         </button>
       </div>
-
-
     </div>
-  </div>
-
-
-  <div class="row d-flex align-items-between">
-    <div class="col-md-5">
-      <!-- <label for="rowsPerPageSelect">Mostrar </label> -->
-      <select class="form-select m-lg-1 w-auto d-inline" [(ngModel)]="pageSize">            
-        <option value=10>10</option>
-        <option value=25>25</option>
-        <option value=50>50</option>
-      </select>
-      <!-- <span> registros por página de {{this.totalItems}}</span> -->
-    </div>
-    <div class="col-md-6">
-      <nav aria-label="Page navigation example" style="cursor: pointer;">
-        <ul class="pagination justify-content-end">
-          <li class="page-item" [class.disabled]="currentPage === 0">
-            <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-    
-          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
-              [class.active]="i === currentPage">
-            <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
-          </li>
-    
-          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-            <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      
-    </div>
-    <div class="col-md-1">
-      <button class="btn btn-secondary ms-3 mb-3" (click)="showInfo()">
-        <i class="bi bi-info-circle"></i>
-      </button>
-    </div>
-    
-            
   </div>
 </div>

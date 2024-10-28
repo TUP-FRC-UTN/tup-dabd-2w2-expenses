@@ -12,6 +12,7 @@ import BillType from '../../../../models/billType';
 import { Provider } from '../../../../models/provider';
 import { CommonModule } from '@angular/common';
 import { NgModalComponent } from '../../ng-modal/ng-modal.component';
+import {ToastService} from "ngx-dabd-grupo01";
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -27,6 +28,7 @@ export class EditBillModalComponent implements OnInit {
   private periodService = inject(PeriodService);
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
 
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
@@ -118,33 +120,18 @@ export class EditBillModalComponent implements OnInit {
         type_id: this.updateBill.value.billType,
         period_id: this.updateBill.value.period,
         link_pdf:"string"
-
-
-        /*
-          {
-          "description": "string",
-          "amount": 0,
-          "date": "2024-10-27T22:49:25.482Z",
-          "status": "ACTIVE",
-          "category_id": 0,
-          "supplier_id": 0,
-          "supplier_employee_type": "SUPPLIER",
-          "type_id": 0,
-          "period_id": 0,
-          "link_pdf": "string"
-        }
-         */
       }
 
       this.billService.updateBill(requestBill,this.bill?.expenditureId).subscribe({
         next: (response: any) => {
           console.log('Actualizado correctamente', response);
-          this.showModal('Éxito', 'El gasto se ha actualizado correctamente.');
-          this.activeModal.close('updated')
+          this.toastService.sendSuccess('Gasto actualizado correctamente')
+          this.activeModal.close();
+
         },
         error: (error: any) => {
           console.error('Error en el post', error);
-          this.showModal('Error', 'Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
+          this.toastService.sendError('Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
         }
       })
     }
@@ -176,15 +163,15 @@ export class EditBillModalComponent implements OnInit {
       this.categoryService.addCategory(newCategory).subscribe({
         next: (response: any) => {
           console.log('Añadido correctamente', response);
-          this.showModal('Éxito', 'La categoria se ha añadido correctamente.');
+          this.toastService.sendSuccess('La categoria se ha añadido correctamente.');
           this.resetForm();
         },
         error: (error: any) => {
           console.error('Error en el post', error);
           if (error.status === 409) {
-            this.showModal('Error', 'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.');
+            this.toastService.sendSuccess('Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.');
           } else {
-            this.showModal('Error', 'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.');
+            this.toastService.sendError('Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.');
           }
         }
       });
