@@ -39,7 +39,7 @@
             type="text"
             class="form-control"
             id="filter-text-box"
-            placeholder="Buscar"
+            [(ngModel)]="searchTerm"
           />
         </div>
       </div>
@@ -48,10 +48,10 @@
     <div class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end">
       <div  class="col align-items-center mb-3 d-flex justify-content-end">
         <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" >
-          <i class="bi bi-file-earmark-excel"></i>
+          <i class="bi bi-file-earmark-excel" (click)="downloadTable()"></i>
         </button>
         <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
-          <i class="bi bi-file-earmark-pdf"></i>
+          <i class="bi bi-file-earmark-pdf" (click)="imprimir()"></i>
         </button>
       </div>
     </div>
@@ -93,16 +93,18 @@
       <tr>
         <th scope="col" class="text-start"><b>Categoría</b></th>
         <th scope="col" class="text-start"><b>Fecha</b></th>
+        <th scope="col" class="text-start"><b>Proveedor</b></th>
         <th scope="col" class="text-end"><b>Monto</b></th>
         <th scope="col" class="text-start"><b>Descripción</b></th>
         <th scope="col" class="text-start"><b>Pagado</b></th>
       </tr>
     </thead>
     <tbody>
-      @for(bill of bills; track $index) {
+      @for(bill of bills | filterBy : ['category.name', 'description', 'supplier.name']: searchTerm; track $index) {
       <tr>
         <td class="text-start">{{ bill.category.name }}</td>
         <td class="text-start">{{ bill.date | date : "dd/MM/yyyy" }}</td>
+        <td class="text-start">{{ bill.supplier.name }}</td>
         <td class="text-end">{{ bill.amount?.toLocaleString("es-AR", {
           style: "currency",
           currency: "ARS",
@@ -149,14 +151,14 @@
             </li>
           </ul>
         </nav>
-        <button class="btn btn-outline-secondary" (click)="showmodal(modalTemplate)">
+        <button class="btn btn-outline-secondary" (click)="showModal(modalTemplate)">
           <i class="bi bi-info-circle"></i>
         </button>
       </div>
     </div>
   </div>
 
-  <div style="display: flex; flex-direction: row; justify-content: end; margin-top: 10px;">
+  <div style="display: flex; flex-direction: row; justify-content: start; margin-top: 10px;">
     <button class="btn btn-secondary" (click)="goBack()">Volver</button>
   </div>
 </div>

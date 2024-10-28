@@ -5,7 +5,7 @@
       <span class="input-group-text" id="search-icon">
         <i class="bi bi-search"></i>
       </span>
-      <input type="text" class="form-control" id="filter-text-box" />
+      <input type="text" class="form-control" id="filter-text-box" [(ngModel)]="searchTerm"/>
     </div>
   </div>
   <div
@@ -18,10 +18,10 @@
     </div>
     <div class="vertical-line mx-3"></div>
 
-    <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+    <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0" (click)="downloadTable()">
       <i class="bi bi-file-earmark-excel"></i>
     </button>
-    <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
+    <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0"  (click)="imprimir()">
       <i class="bi bi-file-earmark-pdf"></i>
     </button>
   </div>
@@ -29,7 +29,11 @@
 <div class="row">
   <div class="col-6 d-flex">
     <div class="btn-group me-2">
-      <button type="button" class="btn btn-outline-danger">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        (click)="selectFilter(null)"
+      >
         <i class="bi bi-trash-fill"></i> Limpiar
       </button>
 
@@ -52,12 +56,18 @@
         type="number"
         class="form-control me-2"
         id="filter-number"
-        placeholder="Número de Lote"
+        (input)="updateYear($event)"
+        name="year"
       />
     </div>
     } @else if (typeFilter === "mes") {
     <div>
-      <select class="form-select me-2" id="month-select">
+      <select
+        class="form-select me-2"
+        id="month-select"
+        (change)="updateMonth($event)"
+        name="month"
+      >
         <option value="" disabled selected>Seleccione un mes</option>
         <option value="1">Enero</option>
         <option value="2">Febrero</option>
@@ -74,6 +84,13 @@
       </select>
     </div>
     } @if (typeFilter) { }
+    <div>
+      @if (typeFilter) {
+      <button class="btn btn-secondary" type="button" (click)="search()">
+        Buscar
+      </button>
+      }
+    </div>
   </div>
 
   <div
@@ -93,9 +110,7 @@
         autocomplete="off"
         (change)="changeStateQuery('OPEN')"
       />
-      <label class="btn btn-outline-primary" for="btnradio1"
-        >Periodo Activos</label
-      >
+      <label class="btn btn-outline-primary" for="btnradio1">Activos</label>
 
       <input
         type="radio"
@@ -105,9 +120,7 @@
         autocomplete="off"
         (change)="changeStateQuery('CLOSE')"
       />
-      <label class="btn btn-outline-primary" for="btnradio2"
-        >Periodo Inactivo</label
-      >
+      <label class="btn btn-outline-primary" for="btnradio2">Cerrados</label>
 
       <input
         type="radio"
@@ -122,22 +135,28 @@
     </div>
   </div>
 </div>
-
+@if (listPeriod===null) {
+  <div class="text-center " style="width: 100%;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+} @else{
 <table
   class="table table-striped fixed-table"
-  style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse"
+  style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse; margin-top: 10px;"
 >
   <thead>
     <tr>
       <th scope="col">Fecha</th>
-      <th scope="col">Total Extraordinarias</th>
-      <th scope="col">Total Ordinarias</th>
+      <th scope="col" style="text-align: end">Total Extraordinarias</th>
+      <th scope="col" style="text-align: end">Total Ordinarias</th>
       <th scope="col">Estado</th>
-      <th scope="col">Acciones</th>
+      <th scope="col" style="text-align: center">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    @if (listPeriod.length ===0) {
+  @if (listPeriod?.length ===0) {
     <tr>
       <td
         class="alert alert-secondary"
@@ -149,11 +168,29 @@
       </td>
     </tr>
 
-    } @else { @for (period of listPeriod; track $index) {
+    } @else { @for (period of listPeriod | filterBy : ['month', 'year', 'ordinary.amount', 'extraordinary.amount', 'state'] : searchTerm; track $index) {
     <tr>
       <td>{{ period.month }} / {{ period.year }}</td>
-      <td style="text-align: end">${{ period.ordinary?.amount }}</td>
-      <td style="text-align: end">${{ period.extraordinary?.amount }}</td>
+      <td style="text-align: end">
+        {{
+          period.extraordinary?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        }}
+      </td>
+      <td style="text-align: end">
+        {{
+          period.ordinary?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        }}
+      </td>
       <td>
         <app-expenses-state-period-style
           [estado]="period.state"
@@ -238,7 +275,7 @@
     ></ngb-pagination>
   </div>
 </div>
-
+}
 <ng-template #modalTemplate let-modal>
   <app-expenses-modal
     [title]="'Cierre de Periodo'"

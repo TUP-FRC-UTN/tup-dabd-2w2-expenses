@@ -6,11 +6,17 @@ import {map} from 'rxjs/operators'
 import Period from '../models/period';
 import { Provider } from '../models/provider';
 import Category from '../models/category';
+import {inject, Injectable} from '@angular/core';
+import {Bill} from '../models/bill';
+import {HttpClient} from '@angular/common/http';
+import {map, Observable} from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
 import {BillDto} from "../models/billDto";
 import { PaginatedResponse } from '../models/paginatedResponse';
 import { environment } from '../../environments/environment';
+import {PORT} from '../const';
+import {Page} from './expense.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +24,7 @@ import { environment } from '../../environments/environment';
 export class BillService {
 
   private http = inject(HttpClient);
-  private url = environment.url
-
-
+  private url = PORT
 
   constructor() { }
 
@@ -120,7 +124,9 @@ export class BillService {
   getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<PaginatedResponse<Bill>>{
     let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
 
-    if (category != null) { request = request + `&category=${category}`}
+    if (category != null) {
+      request = request + `&category=${category}`
+    }
     if (period != null) request = request + `&period=${period}`
 
     try{
@@ -168,6 +174,3 @@ export class BillService {
   }
 
 }
-
-
-

@@ -13,6 +13,10 @@ import { BillService } from '../../../services/bill.service';
 import { Bill } from '../../../models/bill';
 import { CategoryService } from '../../../services/category.service';
 import Category from '../../../models/category';
+import { NgPipesModule } from 'ngx-pipes';
+import * as XLSX from 'xlsx'
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-liquidation-expense-details',
@@ -23,7 +27,8 @@ import Category from '../../../models/category';
     CommonModule,
     FormsModule,
     InfoModalComponent,
-    NgModalComponent
+    NgModalComponent,
+    NgPipesModule
 ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
@@ -53,6 +58,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   type: number | undefined = undefined;
 
   typeFilter: string = '';
+
+  searchTerm: string = '';
 
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
@@ -125,11 +132,58 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+      // Mapear los datos a un formato tabular adecuado
+      const data = bill.content.map(bill => ({
+        'Categoría':  `${bill.category.name}`,
+        'Fecha': `${bill.date}`,
+        'Proveedor': `${bill.supplier.name}`,
+        'Monto': `${bill.amount}`,
+        'Descripción': `${bill.description}`,
+      }));
 
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Facturas de Liquidación');
+      XLSX.writeFile(wb, `FacturasDeLiquidacion${this.liquidationExpense.expense_id}.xlsx`);
+    })
   }
 
   imprimir() {
+    console.log('Imprimiendo')
+    const doc = new jsPDF();
 
+    // Título del PDF
+    doc.setFontSize(18);
+    doc.text('Expenses Report', 14, 20);
+
+    // Llamada al servicio para obtener las expensas
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+      // Usando autoTable para agregar la tabla
+      autoTable(doc, {
+        startY: 30,
+        head: [['Categoría', 'Fecha', 'Proveedor', 'Monto', 'Descripcion']],
+        body: bill.content.map(bill => [
+          bill.category?.name || 'N/A',
+          bill.date instanceof Date
+            ? bill.date.toLocaleDateString()
+            : new Date(bill.date).toLocaleDateString() || 'N/A',
+          bill.supplier?.name || 'N/A',
+          bill?.amount?.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) || "N/A",
+          bill?.description || 'N/A',
+        ]),
+      });
+
+      // Guardar el PDF después de agregar la tabla
+      doc.save(`reporte_facturas_liquidacion_${this.liquidationExpense.expense_id}.pdf`);
+      console.log('Impreso')
+    });
   }
 
 
@@ -141,7 +195,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
   }
 
-  showmodal(content: TemplateRef<any>) {
+  showModal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {
       ariaLabelledBy: 'modal-basic-title',
     });
@@ -168,6 +222,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   clean() {
     this.category = null;
     this.typeFilter = '';
+    this.searchTerm = '';
     this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
   }
 }

@@ -41,7 +41,6 @@ export class Bill {
 
 }
 
-
 /*
 * {
     "expenditure_id": 1,
