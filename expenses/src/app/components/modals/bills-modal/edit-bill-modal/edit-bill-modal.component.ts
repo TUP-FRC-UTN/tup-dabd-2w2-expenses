@@ -20,6 +20,7 @@ import { NgModalComponent } from '../../ng-modal/ng-modal.component';
   templateUrl: './edit-bill-modal.component.html',
   styleUrl: './edit-bill-modal.component.css'
 })
+
 export class EditBillModalComponent implements OnInit {
   private activeModal = inject(NgbActiveModal);
   private supplierService = inject(ProviderService);

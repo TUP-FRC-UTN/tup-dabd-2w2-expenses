@@ -82,6 +82,7 @@ export class ListBillsComponent implements OnInit {
     selectedStatus: new FormControl("ACTIVE"),
     selectedType: new FormControl(0)
   })
+  
   //
   categoryList: Category[] = [];
   supplierList: Provider[] = [];

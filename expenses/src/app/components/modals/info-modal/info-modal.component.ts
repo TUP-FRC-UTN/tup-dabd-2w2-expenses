@@ -16,3 +16,4 @@ export class InfoModalComponent {
     this.onAccept.emit();
   }
 }
+

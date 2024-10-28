@@ -67,6 +67,7 @@ export class BillService {
   getAllBillsAndPagination(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
     let params = new HttpParams();
 
+    
     // Agrega solo los parámetros que tengan valores válidos
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());

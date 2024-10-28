@@ -4,4 +4,3 @@ export class Provider {
   cuit: string = '';
   type: string = '';
 }
-
