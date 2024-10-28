@@ -20,6 +20,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { map, Observable } from 'rxjs';
 import { NgPipesModule } from 'ngx-pipes';
+import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 
 
 @Component({
@@ -30,11 +31,13 @@ import { NgPipesModule } from 'ngx-pipes';
   styleUrl: './list-bills.component.css'
 })
 export class ListBillsComponent implements OnInit {
-  
-  
+
+
   //Lista de todos los bills
   bills: Bill[] = [];
-  
+
+  updatedBill: Bill | undefined;
+
   //Lista de bills filtradas
   filteredBills: Bill[] = [];
   //Categorias inyectadas
@@ -44,11 +47,20 @@ export class ListBillsComponent implements OnInit {
   providerService = inject(ProviderService);
   modal = inject(NgbModal)
   private fb = inject(FormBuilder);
-  
-  
+
+
+  totalElements: number = 0;
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  totalItems: number = 0;
+  cantPages: number[] = [];
+  indexActive = 1;
+
+
   //Atributos
   //Lista de categorias
-  
+
   searchTerm: string = ""
   currentPage: number= 0;
   totalPages: number = 10;
@@ -72,7 +84,7 @@ export class ListBillsComponent implements OnInit {
   typesList:BillType[] = [];
   today:Date= new Date();
   fileName = `Gastos_${this.today.toLocaleDateString()}.xlsx`
-  
+
   viewList: boolean= true;
   categoryEnable:boolean = true;
   enabelingUpdate : boolean = false;
@@ -101,8 +113,8 @@ export class ListBillsComponent implements OnInit {
                         Validators.minLength(2)
       ]]
     });
-    
-    
+
+
 
   }
   //Metodo que se ejecuta cuando se inicia el componente
@@ -144,7 +156,6 @@ export class ListBillsComponent implements OnInit {
 
         })
 
-    
   }
   //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills(){
@@ -178,7 +189,7 @@ export class ListBillsComponent implements OnInit {
       error: (error) => {console.error('Error al cargar las facturas:', error)},
       complete: () => {this.isLoading = false}
     })
-    
+
   }
   updateVisiblePages(): void {
     const half = Math.floor(this.maxPagesToShow / 2);
@@ -193,11 +204,11 @@ export class ListBillsComponent implements OnInit {
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
     }
-    
+
   }
   updatePageSize(){
     this.currentPage = 0; // Reinicia a la primera página
-    this.loadBills();   
+    this.loadBills();
   }
 
   //Trae todas las categorias
@@ -231,11 +242,16 @@ export class ListBillsComponent implements OnInit {
   }
   //Abre el modal de edicion y carga los campos del gasto seleccionado
   editBill(bill: Bill){
-    
+    this.openEditModal(bill);
+
   }
   //Abre el modal de confirmacion de borrado
   openDeleteModal(id?: number) {
     return null
+  }
+  openEditModal(bill: Bill) {
+    const modalRef = this.modalService.open(EditBillModalComponent, { size: 'lg' });
+    modalRef.componentInstance.bill = bill; // Pasas el bill al componente
   }
   //abre el modal de edicion por id
   showModal(title: string, message: string) {
@@ -248,22 +264,22 @@ export class ListBillsComponent implements OnInit {
     this.modalService.open(this.newCategoryModal, { ariaLabelledBy: 'modal-basic-title' });
   }
   //Carga los valores en los filtros existentes
-  loadSelect() {    
+  loadSelect() {
     this.getCategories();
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
-    
+
     }
   onPageChange(number: number){
 
   }
-  
-  
+
+
   //Resetea los valores del modal de edicion
-  
+
   //Guarda la nueva categoría
-  
+
   //Método que formatea de BillDto a entidad Bill
   private formatBills(billsDto$: Observable<PaginatedResponse<BillDto>>): Observable<Bill[]> {
     return billsDto$.pipe(
@@ -294,7 +310,7 @@ export class ListBillsComponent implements OnInit {
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();
-    
+
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Bills Report', 14, 20);
@@ -338,11 +354,44 @@ export class ListBillsComponent implements OnInit {
         'Tipo de gasto': bill.bill_type?.name,
         'Descripción': bill.description
       }));
-  
+
       // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
       XLSX.writeFile(wb, this.fileName);
     })}
+
+  //changesPageSize(newRowsPerPage: number) {
+    //console.log('Número de registros por página cambiado a:', newRowsPerPage);
+    //this.currentPage = 0;  // Reinicia la paginación a la primera página
+    //this.pageSize = newRowsPerPage;  // Actualiza el número de registros por página
+    //this.cargarPaginado();
+  //}
+
+  //cargarPaginado() {
+    //var period = undefined;
+    //var category = undefined;
+    //var lot = undefined;
+    //if(this.selectedBill != 0){
+      //period = this.selectedBill
+    //}
+    //if(this.selectedBill != 0){
+      //category = this.selectedBill
+    //}
+    //if(this.selectedBill != 0){
+      //lot = this.selectedBill
+    //}
+
+    // Llamar al servicio con la paginación desde el backend.
+    //this.billservice.getAllBillsAndPagination(this.currentPage, this.pageSize, period, lot, category).subscribe(response => {
+
+      //console.log("Bills :" + JSON.stringify(response.content));
+      //this.bills = response.content;  // Datos de la página actual
+      //this.totalPages = response.totalPages;  // Número total de páginas
+      //this.totalItems = response.totalElements;  // Total de registros
+      //this.currentPage = response.number;
+      //console.log(this.bills);
+    //});
+  //}
 }

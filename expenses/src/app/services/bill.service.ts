@@ -24,7 +24,7 @@ export class BillService {
 
   constructor() { }
 
-  
+
 
   getAllBills(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<Bill[]> {
     let params = new HttpParams();
@@ -65,7 +65,7 @@ export class BillService {
         console.error('Error:',error)
       }
     })
-    
+
     return result;
   }
 
@@ -112,7 +112,7 @@ export class BillService {
     return result;
   }
 
-  
+
   getBillTypes(): Observable<BillType[]>{
     return this.http.get<BillType[]>(`${this.url}/bill-type`)
   }
@@ -134,10 +134,10 @@ export class BillService {
   addBill(bill: BillPostRequest): Observable<Bill> {
     return this.http.post<Bill>(`${this.url}/bills`, bill);
   }
-  
-  updateBill(updatedBill: Bill): Observable<Bill> {
+
+  updateBill(updatedBill: any): Observable<Bill> {
     return this.http.put<Bill>(`${this.url}/bills/edit/${updatedBill.expenditureId}/id`, updatedBill);
-    
+
   }
 
   //Metodo para formatear de billsDto con paginacion a un observable de bills
@@ -168,6 +168,6 @@ export class BillService {
   }
 
 }
-  
+
 
 
