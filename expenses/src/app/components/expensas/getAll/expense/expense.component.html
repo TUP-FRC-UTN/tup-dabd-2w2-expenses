@@ -144,38 +144,58 @@
       </table>
     </div>
     <br>
-    <div class="row d-flex align-items-end">
-      <div class="col-2">
+    <div class="row align-items-end">
+      <div class="col-2 d-flex justify-content-start">
         <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
           <option value="10">10</option>
           <option value="25">25</option>
           <option value="50">50</option>
         </select>
       </div>
-      <div class="col">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-end" style="margin-bottom: 0;">
-            <!-- Botón de página anterior -->
-            <li class="page-item" [class.disabled]="currentPage === 0">
-              <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-
-            <!-- Páginas visibles limitadas -->
-            <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
-              <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
-            </li>
-
-            <!-- Botón de página siguiente -->
-            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-              <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+    
+        
+        <div class="col d-flex justify-content-end align-items-center">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+              <!-- Botón de página anterior -->
+              <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              
+              <!-- Páginas visibles limitadas -->
+              <li class="page-item" *ngFor="let page of visiblePages" [class.active]="page === currentPage">
+                <a class="page-link" (click)="onPageChange(page)">{{ page + 1 }}</a>
+              </li>
+              
+              <!-- Botón de página siguiente -->
+              <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <button class="btn btn-secondary ms-3" data-bs-toggle="modal" data-bs-target="#infoModal">
+            <i class="bi bi-info-circle"></i>
+          </button>
+        </div>
       </div>
-    </div>
-
+      <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="infoModalLabel">Información</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Esto es una prueba
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
   </div>

@@ -17,6 +17,7 @@ import { NgPipesModule } from 'ngx-pipes';
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import moment from 'moment';
 
 @Component({
   selector: 'app-liquidation-expense-details',
@@ -61,6 +62,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   typeFilter: string = '';
 
   searchTerm: string = '';
+
+  fileName = 'reporte-gastos-liquidación'
 
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
@@ -135,7 +138,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
       // Mapear los datos a un formato tabular adecuado
       const data = bill.content.map(bill => ({
         'Categoría':  `${bill.category.name}`,
@@ -145,11 +148,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         'Descripción': `${bill.description}`,
       }));
 
-      // Convertir los datos tabulares a una hoja de cálculo
+      const fecha = new Date();
+      console.log(fecha);
+     const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
+
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Facturas de Liquidación');
-      XLSX.writeFile(wb, `FacturasDeLiquidacion${this.liquidationExpense.expense_id}.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
+      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
     })
   }
 
@@ -159,10 +165,10 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
     // Título del PDF
     doc.setFontSize(18);
-    doc.text('Expenses Report', 14, 20);
+    doc.text('Reporte de Gastos de Liquidación', 14, 20);
 
     // Llamada al servicio para obtener las expensas
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
@@ -183,9 +189,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         ]),
       });
 
-      // Guardar el PDF después de agregar la tabla
-      doc.save(`reporte_facturas_liquidacion_${this.liquidationExpense.expense_id}.pdf`);
-      console.log('Impreso')
+       // Guardar el PDF después de agregar la tabla
+       const fecha = new Date();
+       console.log(fecha);
+       const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
+       doc.save(finalFileName);
+       console.log('Impreso')
     });
   }
 
