@@ -1,5 +1,9 @@
-<div class="container mt-4">
-  <h3 class="mb-4">Visualizar gasto</h3>
+<div class="container">
+  <div class="modal-header">
+    <h3 class="mb-4">Visualizar gasto</h3>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  
   <form [formGroup]="viewBill" class="container mt-4">
     <!-- Primera fila: Proveedor y Categoría -->
     <div class="row mb-3">
@@ -92,7 +96,10 @@
         </div>
       </div>
     </div>
+
+    <!-- Botón "Volver" -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+    </div>
   </form>
 </div>
-
-

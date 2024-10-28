@@ -242,7 +242,6 @@ export class ListBillsComponent implements OnInit {
   //Abre el modal de edicion y carga los campos del gasto seleccionado
   editBill(bill: Bill){
     this.openEditModal(bill);
-
   }
   //Abre el modal de confirmacion de borrado
   openViewModal(bill: Bill) {
@@ -347,6 +346,7 @@ export class ListBillsComponent implements OnInit {
       console.log('Impreso')
     });
   }
+
   //Generar excel con todos los fatos
   //Crear excel con datos de los gastos que se muestran
   downloadTable() {
