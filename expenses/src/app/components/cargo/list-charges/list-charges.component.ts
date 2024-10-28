@@ -17,7 +17,7 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';   // Para exportar a Excel
 import jsPDF from 'jspdf';      // Para exportar a PDF
 //import 'jspdf-autotable';       // Para generar tablas en PDF
-//import moment from 'moment';
+import moment from 'moment';
 //import { Subject } from 'rxjs';
 //import { debounceTime, distinctUntilChanged, switchMap, tap, finalize, takeUntil, max } from 'rxjs/operators';
 // import 'datatables.net';
@@ -100,9 +100,9 @@ export class ListChargesComponent implements OnInit {
       console.log(charges.content);
       autoTable(doc, {
         startY: 30,
-        head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Amount']],
+        head: [['Fecha', 'Periodo', 'Lote', 'Categoría', 'Descripción', 'Monto']],
         body: charges.content.map(charge => [
-          charge.date.toString(),
+          moment(charge.date).format("DD/MM/YYYY"),
           charge.period.month + '/' + charge.period.year,          
           this.getPlotNumber(charge.lotId) || 'N/A', // Manejo de undefined
           charge.categoryCharge.name,
@@ -115,7 +115,7 @@ export class ListChargesComponent implements OnInit {
       // Guardar el PDF después de agregar la tabla
       const fecha = new Date();
       console.log(fecha);
-      this.fileName += "-"+ fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
+      this.fileName += "-"+ fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
       doc.save(this.fileName);
       console.log('Impreso')
     }); 
@@ -125,7 +125,7 @@ export class ListChargesComponent implements OnInit {
     this.chargeService.getCharges(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedCategoryId).subscribe(charges => {
       // Mapear los datos a un formato tabular adecuado
       const data = charges.content.map(charge => ({
-        'Fecha de Carga': charge.date,
+        'Fecha de Carga': moment(charge.date).format("DD/MM/YYYY"),
         'Periodo':  `${charge?.period?.month} / ${charge?.period?.year}`,
         'Número de lote': this.getPlotNumber(charge.lotId),
         'Categoría': charge.categoryCharge.name,
@@ -139,7 +139,7 @@ export class ListChargesComponent implements OnInit {
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Cargos');
       var fecha = new Date();
-      this.fileName += "-"+fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
+      this.fileName += "-"+fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
       XLSX.writeFile(wb, this.fileName);
     });
   }

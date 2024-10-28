@@ -7,7 +7,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Buscar cargo..."
+        placeholder=""
         [(ngModel)]="searchTerm">
       <span class="input-group-text">
         <i class="bi bi-search"></i>
@@ -110,21 +110,21 @@
     style="border: 1px solid rgba(0, 0, 0, 0.15); border-collapse: collapse">
       <thead>
         <tr>
-          <th scope="col">Fecha</th>
-          <th scope="col">Número de Lote</th>
-          <th scope="col">Categoría</th>
-          <th scope="col">Descripcion</th>
-          <th scope="col">Monto</th>
-          <th scope="col">Acciones</th>
+          <th scope="col" style="text-align:center;" >Fecha</th>
+          <th scope="col" style="text-align: center;">Número de Lote</th>
+          <th scope="col" style="text-align: center;">Categoría</th>
+          <th scope="col" style="text-align: center;">Descripción</th>
+          <th scope="col" style="text-align: center;">Monto</th>
+          <th scope="col" style="text-align: center;">Acciones</th>
         </tr>        
       </thead>
       <tbody>
         @for (charge of charges | filterBy: ['lotId', 'amount','description','categoryCharge.name','plotNumber','date']: searchTerm; track $index) {<tr>                    
-          <td>{{charge.date | date:'MMM d, yyyy'}}</td>
-          <td>{{getPlotNumber(charge.lotId)}}</td>
+          <td style="text-align: center;" >{{charge.date | date:'MMM d, yyyy'}}</td>
+          <td style="text-align: center;">{{getPlotNumber(charge.lotId)}}</td>
           <td>{{charge.categoryCharge.name}}</td>
           <td>{{charge.description}}</td>
-          <td>{{charge.amount.toLocaleString("es-AR", {
+          <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
             style: "currency",
             currency: "ARS",
             minimumFractionDigits: 2,
@@ -155,7 +155,7 @@
                       >Ver</a
                     ><!--aca modal ver cargo-->
                   </li>            
-                  @if (charge.period.state == "OPEN") {
+                  @if (charge.period.state != "CLOSE") {
                   <li>
                     <a
                       class="dropdown-item btn btn-info"
