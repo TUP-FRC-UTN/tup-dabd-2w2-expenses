@@ -6,7 +6,7 @@
       <div class="row mb-3">
         <div class="col-md-6 d-flex align-items-start">
           
-          <label for="fechaEmision" class="form-label col-md-3"><span style="color: red;">*</span>Fecha de emisión</label>   
+          <label for="fechaEmision" class="form-label col-md-3" style="text-align: right; padding-right: 10px;" >Fecha de emisión<span style="color: red;">*</span></label>   
           <div class="col-md-9">
             <input 
             type="date"
@@ -17,21 +17,21 @@
             />
             @if (chargeForm.controls['date'].touched &&
             chargeForm.controls['date'].hasError('required')) {
-            <div class="text-danger">La fecha de cargo es obligatorio.</div>
+            <div class="text-danger">La fecha es obligatorio.</div>
             }
           </div>       
           
         </div>
-        <div class="col-md-6 d-flex align-items-start">
-          <label for="lote" class="form-label col-md-3"><span style="color: red;">*</span>Lote</label>
+        <div class="col-md-6 d-flex align-content-center">
+          <label for="lote" class="col-form-label col-md-3 "style="text-align: right; padding-right: 30px;" >Lote<span style="color: red;">*</span></label>
           <div class="col-md-9">
             <select 
               class="form-select"
               id="lote"
-              formControlName="lotId"
+              formControlName="lotId"              
               [ngClass]="{ 'is-invalid': chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required') }"
             >
-              <option [value]="">Seleccione un Lote</option>
+              <option value="">Seleccione un lote</option>
               @for (lot of lots | orderBy : ['plot_number']; track $index) {
                 <option [value]="lot.id">{{lot.plot_number}}</option>
               }
@@ -47,7 +47,7 @@
 
       <div class="row mb-3 ">
         <div class="col-md-6 d-flex align-items-center">
-          <label for="tipo" class="form-label col-md-3"><span style="color: red;">*</span>Categoría</label>
+          <label for="tipo" class="form-label col-md-3" style="text-align: right; padding-right: 30px;">Categoría<span style="color: red;">*</span></label>
           <div class="col-md-9">
             <div class="input-group">
               <select
@@ -64,13 +64,13 @@
             </div>            
             @if (chargeForm.controls['categoryChargeId'].touched &&
             chargeForm.controls['categoryChargeId'].hasError('required')) {
-            <div class="text-danger">El tipo de cargo es obligatorio.</div>
+            <div class="text-danger">La categoría es obligatorio.</div>
             }
           </div>         
           
         </div>
         <div class="col-md-6 d-flex align-items-center">
-          <label for="periodo" class="form-label col-md-3"><span style="color: red;">*</span>Periodo</label>
+          <label for="periodo" class="form-label col-md-3" style="text-align: right; padding-right: 30px;">Periodo<span style="color: red;">*</span></label>
           <div class="col-md-9">
             <select
             class="form-select"
@@ -78,6 +78,7 @@
             formControlName="periodId"
             [ngClass]="{ 'is-invalid': chargeForm.controls['periodId'].touched && chargeForm.controls['periodId'].hasError('required') }"      
             >
+            <option value="">Seleccione un periodo</option>
               @for (item of listPeriodo |orderBy:['year','-month']; track $index) {
               <option value="{{ item.id }}">
                 {{ item.month }} / {{ item.year }}
@@ -86,7 +87,7 @@
             </select>
             @if (chargeForm.controls['periodId'].touched &&
             chargeForm.controls['periodId'].hasError('required')) {
-            <div class="text-danger">El Periodo es obligatorio.</div>
+            <div class="text-danger">El periodo es obligatorio.</div>
             }
           </div>
         </div>
@@ -95,7 +96,7 @@
 
       <div class="row mb-3">
         <div class="col-md-6 d-flex align-items-center">
-          <label for="monto" class="form-label col-md-3"><span style="color: red;">*</span>Monto</label>
+          <label for="monto" class="form-label col-md-3" style="text-align: right; padding-right: 30px;" >Monto<span style="color: red;">*</span></label>
           <div class="col-md-9">
             <input
             type="number"
@@ -112,23 +113,43 @@
         </div>
           
       </div>
+      <div class="row">
+        <div class="col-sm-1">
+          <label for="descripcion" class="form-label" >Descripción</label>
+        </div>
+        <div class="col-sm-11 " style="margin-left: 45px;">
+          <textarea
+            id="descripcion"
+            class="form-control "
+            rows="3"
+            formControlName="description"
+          ></textarea>
+        </div>
+      </div>
 
-      <div class="col-md-6 d-flex align-items-start">
-        <label for="descripcion" class="form-label col-md-3">Descripción</label>
-        <textarea
-          id="descripcion"
-          class="form-control"
-          rows="3"
-          formControlName="description"
-        ></textarea>
+      <div class="col-md-12 ">
+        <div class="row">
+          <label for="descripcion" class="form-label col-md-1 " style="padding-right: 10px;" >Descripción</label>
+          <div class="col-md-11 ">
+            <textarea
+              id="descripcion"
+              class="form-control "
+              rows="3"
+              formControlName="description"
+            ></textarea>
+          </div>
+          
+        </div>
+        
       </div>
 
       <div class="form row mt-2">
         <button
           type="button"
-          class="btn btn-secondary col-1 mr-2 bi bi-arrow-90deg-left"   
+          class="btn btn-secondary col-1 mr-2 "   
           (click)="onBack()"      
         >
+        Volver
           
         </button>
         <div class="col justify-content-end" style="display: flex; flex-wrap: nowrap; justify-content: flex-end;">

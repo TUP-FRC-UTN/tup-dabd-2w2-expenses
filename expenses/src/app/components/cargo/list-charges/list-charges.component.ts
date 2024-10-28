@@ -11,6 +11,7 @@ import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
 import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
 import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
+import moment from 'moment';
 //import $ from "jquery";
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 //import * as XLSX from 'xlsx'
@@ -102,7 +103,7 @@ export class ListChargesComponent implements OnInit {
         startY: 30,
         head: [['Fecha', 'Periodo', 'Lote', 'Categoria', 'Descripción', 'Monto']],
         body: charges.content.map(charge => [
-          charge.date.toString(),
+          moment(charge.date).format("DD/MM/YYYY"),
           charge.period.month + '/' + charge.period.year,          
           this.getPlotNumber(charge.lotId) || 'N/A', // Manejo de undefined
           charge.categoryCharge.name,
@@ -115,7 +116,7 @@ export class ListChargesComponent implements OnInit {
       // Guardar el PDF después de agregar la tabla
       const fecha = new Date();
       console.log(fecha);
-      this.fileName += "-"+ fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
+      this.fileName += "-"+ fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".pdf";
       doc.save(this.fileName);
       console.log('Impreso')
     }); 
@@ -139,7 +140,7 @@ export class ListChargesComponent implements OnInit {
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Cargos');
       var fecha = new Date();
-      this.fileName += "-"+fecha.getDay()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
+      this.fileName += "-"+fecha.getDate()+"_"+(fecha.getMonth()+1)+"_"+fecha.getFullYear()+".xlsx"
       XLSX.writeFile(wb, this.fileName);
     });
   }
