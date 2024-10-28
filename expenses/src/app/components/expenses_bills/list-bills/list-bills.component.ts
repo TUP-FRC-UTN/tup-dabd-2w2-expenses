@@ -23,6 +23,7 @@ import { NgPipesModule } from 'ngx-pipes';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import {ViewBillModalComponent} from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
+import { ListBillsInfoComponent } from '../../modals/info/list-bills-info/list-bills-info.component';
 
 
 @Component({
@@ -370,7 +371,7 @@ export class ListBillsComponent implements OnInit {
     })}
 
     showInfo(): void {
-      this.modalService.open(BillInfoComponent, {
+      this.modalService.open(ListBillsInfoComponent, {
         size: 'lg',
         backdrop: 'static',
         keyboard: false,
@@ -378,37 +379,4 @@ export class ListBillsComponent implements OnInit {
         scrollable: true
       });
     }
-
-  //changesPageSize(newRowsPerPage: number) {
-    //console.log('Número de registros por página cambiado a:', newRowsPerPage);
-    //this.currentPage = 0;  // Reinicia la paginación a la primera página
-    //this.pageSize = newRowsPerPage;  // Actualiza el número de registros por página
-    //this.cargarPaginado();
-  //}
-
-  //cargarPaginado() {
-    //var period = undefined;
-    //var category = undefined;
-    //var lot = undefined;
-    //if(this.selectedBill != 0){
-      //period = this.selectedBill
-    //}
-    //if(this.selectedBill != 0){
-      //category = this.selectedBill
-    //}
-    //if(this.selectedBill != 0){
-      //lot = this.selectedBill
-    //}
-
-    // Llamar al servicio con la paginación desde el backend.
-    //this.billservice.getAllBillsAndPagination(this.currentPage, this.pageSize, period, lot, category).subscribe(response => {
-
-      //console.log("Bills :" + JSON.stringify(response.content));
-      //this.bills = response.content;  // Datos de la página actual
-      //this.totalPages = response.totalPages;  // Número total de páginas
-      //this.totalItems = response.totalElements;  // Total de registros
-      //this.currentPage = response.number;
-      //console.log(this.bills);
-    //});
-  //}
 }
