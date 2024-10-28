@@ -2,7 +2,7 @@ import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
@@ -28,7 +28,8 @@ import autoTable from 'jspdf-autotable';
     FormsModule,
     InfoModalComponent,
     NgModalComponent,
-    NgPipesModule
+    NgPipesModule,
+    NgbModule
 ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
@@ -42,7 +43,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   private readonly router = inject(Router);
   private modalService = inject(NgbModal);
   private readonly categoryService = inject(CategoryService);
-
+  cantPages:number=10
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
   bills: Bill[] = [];
   categories: Category[] = [];
@@ -95,6 +96,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     if (type != undefined) {
       this.billsService.getAllBillsPaged(itemsPerPage, page -1, period, category, type, status).subscribe(data => {
         this.bills = data.content;
+        this.cantPages = data.totalElements
       })
     } else console.log("No hay un tipo de expensa definido");
   }
@@ -120,6 +122,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
+    this.getBills(this.itemsPerPage,this.currentPage,this.period,this.category,this.type, "ACTIVE")
   }
 
   onItemsPerPageChange() {
