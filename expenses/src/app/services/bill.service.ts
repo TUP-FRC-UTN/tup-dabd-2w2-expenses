@@ -22,16 +22,13 @@ export class BillService {
     return this.http.get<Bill[]>(this.url + 'bill/full-list')
   }
 
-  getAllBillsPaged(size: number, page: number, period: number | null, category: number | null, provider: number | null, type: number | undefined, status: string): Observable<Page<Bill>> {
+  getAllBillsPaged(size: number, page: number, period: number | null, category: number | null, type: number | undefined, status: string): Observable<Page<Bill>> {
     if (type == undefined) type = 0;
 
     let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
 
     if (category != null) {
       request = request + `&category=${category}`
-    }
-    if (provider != null) {
-      request = request + `&supplier=${provider}`
     }
     if (period != null) request = request + `&period=${period}`
 
