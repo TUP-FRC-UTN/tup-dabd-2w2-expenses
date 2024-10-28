@@ -18,7 +18,6 @@ import { NgModalComponent } from '../../ng-modal/ng-modal.component';
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './edit-bill-modal.component.html',
-  styleUrl: './edit-bill-modal.component.css'
 })
 
 export class EditBillModalComponent implements OnInit {

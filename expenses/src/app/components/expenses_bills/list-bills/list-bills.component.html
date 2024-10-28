@@ -240,26 +240,15 @@
       <!-- <span> registros por página de {{this.totalItems}}</span> -->
     </div>
     <div class="col-md-6">
-      <nav aria-label="Page navigation example" style="cursor: pointer;">
-        <ul class="pagination justify-content-end">
-          <li class="page-item" [class.disabled]="currentPage === 0">
-            <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-    
-          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
-              [class.active]="i === currentPage">
-            <a class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</a>
-          </li>
-    
-          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-            <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <ngb-pagination
+      [(page)]="currentPage"
+      [pageSize]="pageSize"
+      [collectionSize]="totalElements"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [boundaryLinks]="false"
+    ></ngb-pagination>
+      
       
     </div>
     <div class="col-md-1">

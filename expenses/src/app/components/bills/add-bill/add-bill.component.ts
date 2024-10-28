@@ -18,13 +18,14 @@ import { RouterLink } from "@angular/router";
 import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
 import {ToastService} from "ngx-dabd-grupo01";
+import {NgArrayPipesModule} from "ngx-pipes";
 
 
 
 @Component({
   selector: 'app-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent, RouterLink],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent, RouterLink, NgArrayPipesModule],
   templateUrl: './add-bill.component.html',
   styleUrl: './add-bill.component.css'
 })
@@ -39,6 +40,7 @@ export class AddBillComponent implements OnInit {
   billForm: FormGroup;
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
+  searchTerm: any;
 
   categories: Observable<Category[]> | undefined;
   providers: Observable<Provider[]> | undefined;
@@ -104,7 +106,7 @@ export class AddBillComponent implements OnInit {
             this.toastService.sendError('Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.')
             // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
           } else {
-            this.toastService.sendError('Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.')
+            this.toastService.sendError(error.error.message)
             // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
           }
         }

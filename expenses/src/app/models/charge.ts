@@ -1,26 +1,44 @@
+import Period from "./period";
+
 export interface Charge2 {
     id: number;
     fechaEmision: string;
     lote: number;
     tipo: string;
-    periodo: string;
+    periodo: PeriodCharge;
     monto: number;
     descripcion: string;
 }
 
-export interface Charge {
-    date: Date;
+export interface Charge {    
     amount: number;
-    periodId: number;
-    category: CategoryCharge;
+    categoryCharge: CategoryCharge;
+    chargeId: number;
+    date: Date;
+    fineId: number;
+    lotId: number;
+    period: PeriodCharge;
     status: boolean;
-    charge_id: number;
-    fine_id: number;
-    lot_id: number;
+    description: string;
+    
 }
 
 export interface CategoryCharge {
     categoryChargeId: number;
-    name: string;
     description: string;
+    name: string;
+}
+
+export interface PeriodCharge {
+    month: number;
+    year: number ;
+    state:string;
+    id: number ;
+}
+
+export enum ChargeFilters {
+    NOTHING = 'NOTHING',
+    PERIOD_ID = 'PERIOD_ID',
+    LOT_NUMBER = 'LOT_NUMBER',
+    CATEGORY_CHARGE = 'CATEGORY_CHARGE'
 }

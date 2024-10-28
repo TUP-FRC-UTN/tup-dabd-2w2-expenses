@@ -134,7 +134,7 @@
     <div class="container" style="height: 500px; overflow-y: auto;">
       <table class="table table-hover table-striped border">
         <!-- Hacemos el thead sticky con una clase de Bootstrap -->
-        <thead class="table-light  bg-light">
+        <thead class="table-light sticky-top bg-light">
         <tr>
           <th scope="col">Nombre</th>
           <th scope="col">Descripción</th>
@@ -142,7 +142,7 @@
         </tr>
         </thead>
         <tbody>
-          @for (category of categories | filterBy: ['name', 'description']: searchTerm; track category.category_id) {
+          @for (category of categories | filterBy: ['name', 'description']: searchTerm | orderBy: 'name'; track category.category_id) {
             @if (!category.is_delete){
               <tr>
                 <td>{{ category.name }}</td>

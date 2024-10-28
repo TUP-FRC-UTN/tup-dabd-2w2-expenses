@@ -1,13 +1,13 @@
 import {inject, Injectable} from '@angular/core';
 import {Bill} from '../models/bill';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
 import {BillDto} from "../models/billDto";
 import { PaginatedResponse } from '../models/paginatedResponse';
 import {PORT} from '../const';
-import { HttpParams } from '@angular/common/http';
+import { Page } from './expense.service';
 
 @Injectable({
   providedIn: 'root'
@@ -113,7 +113,7 @@ export class BillService {
     return this.http.get<BillType[]>(`${this.url}bill-type`)
   }
 
-  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number, status:string):Observable<PaginatedResponse<Bill>>{
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number|null, status:string):Observable<Page<Bill>>{
     let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
 
     if (category != null) {
@@ -121,24 +121,37 @@ export class BillService {
     }
     if (period != null) request = request + `&period=${period}`
 
-    try{
-      return this.http.get<PaginatedResponse<Bill>>(request);
-     }catch( e) {
-       console.log(e)
-       throw  e
-     }
+    try {
+      return this.http.get<Page<Bill>>(request);
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   }
 
-  addBill(bill: BillPostRequest): Observable<Bill> {
-    return this.http.post<Bill>(`${this.url}bills`, bill);
+  addBill(bill: BillPostRequest): Observable<BillPostRequest> {
+    const snakeCaseBill = {
+      description: bill.description,
+      amount: Number(bill.amount),
+      date: bill.date,
+      status: 'ACTIVE',
+      category_id: Number(bill.categoryId),
+      supplier_id: Number(bill.supplierId),
+      supplier_employee_type: 'SUPPLIER',
+      type_id: Number(bill.typeId),
+      period_id: Number(bill.periodId),
+      link_pdf: ''
+    };
+
+    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill);
   }
+
 
   updateBill(updatedBill: any, id:any): Observable<Bill> {
     return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill);
 
   }
 
-  //Metodo para formatear de billsDto con paginacion a un observable de bills
   private formatBills(billsDto$: Observable<PaginatedResponse<BillDto>>): Observable<Bill[]> {
     return billsDto$.pipe(
 
@@ -164,5 +177,4 @@ export class BillService {
       })
     );
   }
-
 }

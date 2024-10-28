@@ -25,26 +25,31 @@ export class ExpenseServiceService {
       .set('page', page)
       .set('size', size);
 
-    // Parámetros adicionales
-    if (periodId) {
+    // Parámetros adicionales 
+    if (periodId !== undefined && periodId !== 0) {
       params = params.set('periodId', periodId.toString());
     }
-    if (plotId) {
+    if(periodId == 0) {
+      params = params.delete('periodId')
+    }
+    if (plotId !== null && plotId !== undefined && plotId !== 0) {
       params = params.set('plotId', plotId.toString());
-
     }
-    if (typeId) {
+    if(plotId == 0) {
+      params = params.delete('plotId')
+    }
+    if (typeId !== null && typeId !== undefined && typeId !== 0) {
       params = params.set('typeId', typeId.toString());
-      console.log(typeId)
     }
-
+    if(typeId == 0) {
+      params = params.delete('typeId')
+    }
+   
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
     return this.http.get<Page<Expense>>(this.apiUrl + 'all', { params });
   }
-
- 
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
     return this.http.post<Expense[]>(`${this.apiUrl}create/${periodId}`,null)
