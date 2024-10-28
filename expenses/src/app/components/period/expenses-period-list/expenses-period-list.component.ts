@@ -17,6 +17,7 @@ import { timeout } from 'rxjs';
 import { ToastService } from 'ngx-dabd-grupo01';
 import * as XLSX from 'xlsx';
 import { NgPipesModule } from 'ngx-pipes';
+import moment from 'moment';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -45,7 +46,7 @@ export class ExpensesPeriodListComponent implements OnInit {
   }
   searchTerm = '';
 
-
+  fileName = 'reporte-periodos-liquidaciones'
 
   loadPaged(page: number) {
 
@@ -166,10 +167,14 @@ export class ExpensesPeriodListComponent implements OnInit {
       }));
 
       // Convertir los datos tabulares a una hoja de cálculo
+      const fecha = new Date();
+      console.log(fecha);
+     const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
+
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Periodos');
-      XLSX.writeFile(wb, `Periodos.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, 'Periodos de Liquidación');
+      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
     })
   }
 
@@ -179,7 +184,7 @@ export class ExpensesPeriodListComponent implements OnInit {
 
     // Título del PDF
     doc.setFontSize(18);
-    doc.text('Expenses Report', 14, 20);
+    doc.text('Reporte de Periodos de Liquidación', 14, 20);
 
     // Llamada al servicio para obtener las expensas
     this.periodService.getPage(10000, 0,this.state, this.month,this.year).subscribe(period => {
@@ -205,7 +210,10 @@ export class ExpensesPeriodListComponent implements OnInit {
         ])
       });
       // Guardar el PDF después de agregar la tabla
-      doc.save('expenses_report.pdf');
+      const fecha = new Date();
+      console.log(fecha);
+      const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
+      doc.save(finalFileName);
       console.log('Impreso')
     });
   }

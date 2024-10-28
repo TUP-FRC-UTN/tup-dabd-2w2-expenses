@@ -2,7 +2,7 @@ import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
@@ -17,6 +17,9 @@ import { NgPipesModule } from 'ngx-pipes';
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Provider } from '../../../models/provider';
+import { ProviderService } from '../../../services/provider.service';
+import moment from 'moment';
 
 @Component({
   selector: 'app-liquidation-expense-details',
@@ -28,7 +31,8 @@ import autoTable from 'jspdf-autotable';
     FormsModule,
     InfoModalComponent,
     NgModalComponent,
-    NgPipesModule
+    NgPipesModule,
+    NgbModule
 ],
   templateUrl: './liquidation-expense-details.component.html',
   styleUrl: './liquidation-expense-details.component.css'
@@ -42,10 +46,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   private readonly router = inject(Router);
   private modalService = inject(NgbModal);
   private readonly categoryService = inject(CategoryService);
-
+  private readonly providerService = inject(ProviderService);
+  cantPages:number=10
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
   bills: Bill[] = [];
   categories: Category[] = [];
+  providers: Provider[] = []
+
+  fileName:string = 'reporte-gastos-liquidacion-expensas';
 
   currentPage = 1;
   itemsPerPage = 10;
@@ -53,6 +61,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   totalPages = 0;
   pages: number[] = [];
 
+  provider: number | null = null;
   category: number | null = null;
   period: number | null = null;
   type: number | undefined = undefined;
@@ -64,11 +73,16 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
     this.loadCategories();
+    this.loadProviders();
+  }
+
+  private loadProviders() {
+
   }
 
   private loadCategories() {
-    this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
+    this.providerService.getAllProviders().subscribe(data => {
+      this.providers = data;
     })
   }
 
@@ -85,16 +99,17 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
             this.period = parseInt(periodId);
           }
 
-          this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+          this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.provider, this.type, "ACTIVE")
         });
       }
     });
   }
 
-  private getBills(itemsPerPage: number, page: number, period: number | null, category: number | null, type: number | undefined, status: string) {
+  private getBills(itemsPerPage: number, page: number, period: number | null, category: number | null, provider: number | null, type: number | undefined, status: string) {
     if (type != undefined) {
-      this.billsService.getAllBillsPaged(itemsPerPage, page -1, period, category, type, status).subscribe(data => {
+      this.billsService.getAllBillsPaged(itemsPerPage, page -1, period, category, provider, type, status).subscribe(data => {
         this.bills = data.content;
+        this.cantPages = data.totalElements
       })
     } else console.log("No hay un tipo de expensa definido");
   }
@@ -120,6 +135,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
+    this.getBills(this.itemsPerPage,this.currentPage,this.period,this.category,this.provider, this.type, "ACTIVE")
   }
 
   onItemsPerPageChange() {
@@ -132,7 +148,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(500000, this.currentPage -1, this.period, this.category,this.provider, this.type, "ACTIVE").subscribe(bill => {
       // Mapear los datos a un formato tabular adecuado
       const data = bill.content.map(bill => ({
         'Categoría':  `${bill.category.name}`,
@@ -143,10 +159,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
       }));
 
       // Convertir los datos tabulares a una hoja de cálculo
+      const fecha = new Date();
+      console.log(fecha);
+      const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
+
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Facturas de Liquidación');
-      XLSX.writeFile(wb, `FacturasDeLiquidacion${this.liquidationExpense.expense_id}.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
+      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
     })
   }
 
@@ -156,10 +176,10 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
     // Título del PDF
     doc.setFontSize(18);
-    doc.text('Expenses Report', 14, 20);
+    doc.text('Reporte de Gastos de Liquidación', 14, 20);
 
     // Llamada al servicio para obtener las expensas
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type, "ACTIVE").subscribe(bill => {
+    this.billsService.getAllBillsPaged(500000, this.currentPage -1, this.period, this.category, this.provider, this.type, "ACTIVE").subscribe(bill => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
@@ -180,8 +200,11 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
         ]),
       });
 
-      // Guardar el PDF después de agregar la tabla
-      doc.save(`reporte_facturas_liquidacion_${this.liquidationExpense.expense_id}.pdf`);
+      const fecha = new Date();
+      console.log(fecha);
+
+      const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
+      doc.save(finalFileName);
       console.log('Impreso')
     });
   }
@@ -216,13 +239,20 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
   handleCategoryChange(id: number) {
     this.category = id;
-    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.provider, this.type, "ACTIVE")
+  }
+
+  handleProviderChange(id: number) {
+    console.log(id);
+
+    this.provider = id;
+    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.provider, this.type, "ACTIVE")
   }
 
   clean() {
     this.category = null;
     this.typeFilter = '';
     this.searchTerm = '';
-    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.provider, this.type, "ACTIVE")
   }
 }

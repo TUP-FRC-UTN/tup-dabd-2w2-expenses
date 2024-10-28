@@ -10,12 +10,12 @@
           <div class="col-sm-10">
             <select id="supplierId" formControlName="supplierId" class="form-select" [ngClass]="{'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)}">
               <option value="">Seleccione un proveedor</option>
-              @for (provider of providers | async; track provider.id) {
+              @for (provider of providers | async | orderBy: 'name'; track provider.id) {
                 <option [value]="provider.id">{{ provider.name }}</option>
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un proveedor.
+              El proveedor es obligatorio.
             </div>
           </div>
         </div>
@@ -28,15 +28,16 @@
             <div class="input-group">
               <select id="categoryId" formControlName="categoryId" class="form-select" [ngClass]="{'is-invalid': billForm.get('categoryId')?.invalid && (billForm.get('categoryId')?.dirty || billForm.get('categoryId')?.touched)}">
                 <option value="">Seleccione una categoría</option>
-                @for (category of categories | async; track category.category_id) {
+                @for (category of categories | async | orderBy: 'name'; track category.category_id) {
                   <option [value]="category.category_id">{{ category.name }}</option>
                 }
               </select>
               <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button" (click)="openNewCategoryModal()"><i class="bi bi-plus-lg"></i></button>
+              <div class="invalid-feedback">
+                La categoría es obligatoria.
+              </div>
             </div>
-            <div class="invalid-feedback">
-              Por favor, seleccione una categoría.
-            </div>
+
           </div>
         </div>
       </div>
@@ -50,12 +51,12 @@
           <div class="col-sm-10">
             <select id="periodId" formControlName="periodId" class="form-select" [ngClass]="{'is-invalid': billForm.get('periodId')?.invalid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched)}">
               <option value="">Seleccione un periodo</option>
-              @for (period of periods | async; track period.id) {
+              @for (period of periods | async | orderBy: [ '-year','-month']; track period.id) {
                 <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un periodo.
+              El periodo es obligatorio.
             </div>
           </div>
         </div>
@@ -67,27 +68,12 @@
           <div class="col-sm-10">
             <select id="typeId" formControlName="typeId" class="form-select" [ngClass]="{'is-invalid': billForm.get('typeId')?.invalid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched)}">
               <option value="">Seleccione un tipo</option>
-              @for (type of types | async; track type.bill_type_id) {
+              @for (type of types | async | orderBy: 'name'; track type.bill_type_id) {
                 <option [value]="type.bill_type_id">{{ type.name }}</option>
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un tipo.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Descripción -->
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <div class="row">
-          <label for="description" class="col-sm-1 col-form-label">Descripción</label>
-          <div class="col-sm-11">
-            <textarea id="description" formControlName="description" class="form-control" rows="3" [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
-            <div class="invalid-feedback">
-              Por favor, ingrese una descripción.
+              El tipo es obligatorio.
             </div>
           </div>
         </div>
@@ -100,9 +86,9 @@
         <div class="row">
           <label for="amount" class="col-sm-2 col-form-label">Monto <span class="text-danger">*</span></label>
           <div class="col-sm-10">
-            <input type="number" id="amount" formControlName="amount" class="form-control" [ngClass]="{'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)}">
+            <input placeholder="Ingrese un monto" type="number" id="amount" formControlName="amount" class="form-control" [ngClass]="{'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)}">
             <div class="invalid-feedback">
-              Por favor, ingrese un monto válido.
+              El monto es obligatorio.
             </div>
           </div>
         </div>
@@ -114,8 +100,23 @@
           <div class="col-sm-10">
             <input type="date" id="date" formControlName="date" class="form-control" [ngClass]="{'is-invalid': billForm.get('date')?.invalid && (billForm.get('date')?.dirty || billForm.get('date')?.touched)}">
             <div class="invalid-feedback">
-              Por favor, seleccione una fecha válida.
+              La fecha es obligatoria.
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción -->
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="row">
+          <label for="description" class="col-sm-1 col-form-label">Descripción</label>
+          <div class="col-sm-11">
+            <textarea placeholder="Ingrese una descripción" id="description" formControlName="description" class="form-control" rows="3" [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
+<!--            <div class="invalid-feedback">-->
+<!--              La descripción es obligatoria.-->
+<!--            </div>-->
           </div>
         </div>
       </div>

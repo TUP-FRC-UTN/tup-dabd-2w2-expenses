@@ -47,7 +47,7 @@ export class UpdateChargeComponent implements OnInit {
 
   ngOnInit() {
     this.loadSelect();
-    this.loadCategoryCharge();  
+    this.loadCategoryCharge();
     this.loadData();
     if(this.isEditing){
       this.enableEdit();
@@ -63,10 +63,10 @@ export class UpdateChargeComponent implements OnInit {
       });
     }
   }
-  
+
   setupChargeForm() {
     const lotId = this.charge?.lotId!;
-  
+
     this.selectedCategoryId = this.charge?.categoryCharge?.categoryChargeId!;
     this.selectedPeriodId = this.charge?.period?.id!;
     this.chargeForm.setValue({
@@ -78,7 +78,7 @@ export class UpdateChargeComponent implements OnInit {
       description: this.charge?.description ?? '',
     });
   }
-  
+
   loadSelect(): Observable<void> {
     return forkJoin([
       this.periodService.get(),
@@ -111,7 +111,7 @@ export class UpdateChargeComponent implements OnInit {
     this.chargeForm.enable();
     this.chargeForm.get('fechaEmision')?.disable();
     this.chargeForm.get('lote')?.disable();
-    
+
   }
 
   saveChanges() {

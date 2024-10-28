@@ -18,11 +18,12 @@ import { RouterLink } from "@angular/router";
 import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
 import {ToastService} from "ngx-dabd-grupo01";
+import {NgArrayPipesModule} from "ngx-pipes";
 
 @Component({
   selector: 'app-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent, RouterLink],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent, RouterLink, NgArrayPipesModule],
   templateUrl: './add-bill.component.html',
   styleUrl: './add-bill.component.css'
 })
