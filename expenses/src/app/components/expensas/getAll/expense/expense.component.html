@@ -30,7 +30,7 @@
 
         <div class="row">
           <div class="col-12 mb-3 d-flex align-items-center">
-            <label for="periodo" class="me-2" style="width: 100px;">Período</label>
+            <label for="periodo" class="me-2" style="width: 100px;">Periodo</label>
             <select name="periodo" id="periodo" class="form-select" style="flex: 1;" aria-label="Default select example" [(ngModel)]="selectedPeriodId">
               <option [value]="0">Todos</option>
               @for (period of periodos | orderBy: ['year']; track $index) {
@@ -108,7 +108,7 @@
           <tr>
             <th scope="col">Número de Lote</th>
             <th scope="col">Tipo de lote</th>
-            <th scope="col">Período</th>
+            <th scope="col">Periodo</th>
             <th scope="col">Monto Total</th>
             <th scope="col">Porcentaje</th>
             <th scope="col">Tipo de expensa</th>
