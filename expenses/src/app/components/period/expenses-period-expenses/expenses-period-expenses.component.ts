@@ -70,6 +70,7 @@ finde() {
   listExpenses: Expense[] = [];
 
   loadList() {
+    console.log(this.periodId)
     this.expenseService.getByPeriod(Number(this.periodId))
       .pipe(
         switchMap(() => {
