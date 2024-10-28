@@ -53,56 +53,74 @@
       </div>
       <div class="modal-body">
         <!-- Selectores dentro del modal -->
-        <div class="col-auto mb-1">
-          <label for="periodo">Periodo</label>
-          <select name="periodo" id="" class="form-select" aria-label="Default select example" formControlName="selectedPeriod">
-            <option [value]="0">Todos</option>
-            @for (period of periodsList | orderBy: ['-year','-month']; track $index) {
-              <option [value]="period.id">{{period.month}}/{{period.year}}</option>
-            }
-          </select>
+        <div class="row mb-2 align-items-center">
+          <label for="periodo" class="col-4 col-form-label">Periodo</label>
+          <div class="col-8">
+            <select name="periodo" id="" class="form-select" aria-label="Default select example" formControlName="selectedPeriod">
+              <option [value]="0">Todos</option>
+              @for (period of periodsList | orderBy: ['-year','-month']; track $index) {
+                <option [value]="period.id">{{period.month}}/{{period.year}}</option>
+              }
+            </select>
+          </div>
         </div>
-        <div class="col-auto mb-1">
-          <label for="lote">Categoría</label>
-          <select name="lote" id="lote" class="form-select" aria-label="Default select example" formControlName="selectedCategory">
-            <option [value]="0">Todos</option>
-            @for (category of categoryList | orderBy: 'name' ; track $index) {
-              <option [value]="category?.category_id">{{category.name}}</option>
-            }
-          </select>
+
+        <div class="row mb-2 align-items-center">
+          <label for="lote" class="col-4 col-form-label">Categoría</label>
+          <div class="col-8">
+            <select name="lote" id="lote" class="form-select" aria-label="Default select example" formControlName="selectedCategory">
+              <option [value]="0">Todos</option>
+              @for (category of categoryList | orderBy: 'name' ; track $index) {
+                <option [value]="category?.category_id">{{category.name}}</option>
+              }
+            </select>
+          </div>
         </div>
-        <div class="col-auto mb-1">
-          <label for="tipoExpensa">Proveedor</label>
-          <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" formControlName="selectedSupplier">
-            <option [value]="0">Todas</option>
-            @for ( supplier of supplierList | orderBy: 'name'; track $index) {
-              <option [value]="supplier.id">{{supplier.name}}</option>
-            }
-          </select>
+
+        <div class="row mb-2 align-items-center">
+          <label for="tipoExpensa" class="col-4 col-form-label">Proveedor</label>
+          <div class="col-8">
+            <select name="tipoExpensa" id="tipoExpensa" class="form-select" aria-label="Default select example" formControlName="selectedSupplier">
+              <option [value]="0">Todas</option>
+              @for ( supplier of supplierList | orderBy: 'name'; track $index) {
+                <option [value]="supplier.id">{{supplier.name}}</option>
+              }
+            </select>
+          </div>
         </div>
-        <div class="col-auto mb-1">
-          <label for="">Tipo</label>
-          <select name="tipo" id="periodo" class="form-select" aria-label="Default select example" formControlName = "selectedType">
-            <option [value]="0">Todos</option>
-            @for (type of typesList | orderBy: 'name'; track $index) {
-              <option [value]="type.bill_type_id">{{type.name}}</option>
-            }
-          </select>
+
+        <div class="row mb-2 align-items-center">
+          <label for="tipo" class="col-4 col-form-label">Tipo</label>
+          <div class="col-8">
+            <select name="tipo" id="periodo" class="form-select" aria-label="Default select example" formControlName="selectedType">
+              <option [value]="0">Todos</option>
+              @for (type of typesList | orderBy: 'name'; track $index) {
+                <option [value]="type.bill_type_id">{{type.name}}</option>
+              }
+            </select>
+          </div>
         </div>
-        <div class="col-auto mb-2">
-          <label for="tipoProveedor">Tipo de proveedor</label>
-          <select name="tipoProveedor" id="tipoProveedor" class="form-select" aria-label="Default select example" formControlName="selectedProvider">
-            <option [value]="'EMPLOYEE'">Empleados</option>
-            <option [value]="'SUPPLIER'">Proveedores varios</option>
-          </select>
+
+        <div class="row mb-2 align-items-center">
+          <label for="tipoProveedor" class="col-4 col-form-label">Tipo de proveedor</label>
+          <div class="col-8">
+            <select name="tipoProveedor" id="tipoProveedor" class="form-select" aria-label="Default select example" formControlName="selectedProvider">
+              <option [value]="'EMPLOYEE'">Empleados</option>
+              <option [value]="'SUPPLIER'">Proveedores varios</option>
+            </select>
+          </div>
         </div>
-        <div class="col-auto mb-2">
-          <label for="estado">Estado</label>
-          <select name="estado" id="estado" class="form-select" aria-label="Default select example" formControlName="selectedStatus">
-            <option [value]="'ACTIVE'">Activo</option>
-            <option [value]="'CANCELLED'">Cancelado</option>
-          </select>
+
+        <div class="row mb-2 align-items-center">
+          <label for="estado" class="col-4 col-form-label">Estado</label>
+          <div class="col-8">
+            <select name="estado" id="estado" class="form-select" aria-label="Default select example" formControlName="selectedStatus">
+              <option [value]="'ACTIVE'">Activo</option>
+              <option [value]="'CANCELLED'">Cancelado</option>
+            </select>
+          </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="button" class="btn btn-primary" (click)="loadBills()" data-bs-dismiss="modal">Aplicar</button>
@@ -134,7 +152,7 @@
 
 
  <br>
-  <div class="card">
+  <div class="card height:500px; overflow-y: auto;">
     @if(isLoading){
       <div class="text-center">
         <div class="spinner-border text-primary" role="status">
@@ -143,9 +161,9 @@
       </div>
     }
     @else {
-
-      <table class="table table-striped" id="table-data">
-        <thead>
+      <div class="height: 500px; overflow-y: auto;">
+        <table class="table table-striped" id="table-data">
+          <thead>
           <tr>
             <th scope="col">Tipo</th>
             <th scope="col">Proveedor</th>
@@ -155,11 +173,11 @@
             <th scope="col">Fecha</th>
             <th scope="col">Acciones</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <!-- | filterBy: ['amount']: searchTerm -->
-          @for (bill of bills | filterBy: ['amount', 'supplier.name', 'billType.name','category.name']: searchTerm | orderBy: ['date','category.name','supplier.name']; track $index ) {
-            <tr>
+            @for (bill of bills | filterBy: ['amount', 'supplier.name', 'billType.name','category.name']: searchTerm | orderBy: ['date','category.name','supplier.name']; track $index ) {
+              <tr>
                 <td>{{bill.billType.name}} </td>
                 <td>{{bill.supplier.name}}</td>
                 <td>{{bill.amount.toLocaleString("es-AR", {
@@ -175,21 +193,23 @@
                   <button class="btn btn-sm btn-warning me-2" (click)="editBill(bill)">
                     <i class="bi bi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-primary" (click)="viewBill(bill)">
+                  <button class="btn btn-sm btn-primary" >
                     <i class="bi bi-eye"></i>
                   </button>
-            </tr>
-          }@empty {
-            <td colspan="7" class="text-center">
-              <div class="text-center p-3">
-                <div class="alert alert-secondary">
-                  No hay gastos para mostrar
+              </tr>
+            }@empty {
+              <td colspan="7" class="text-center">
+                <div class="text-center p-3">
+                  <div class="alert alert-secondary">
+                    No hay gastos para mostrar
+                  </div>
                 </div>
-              </div>
-            </td>}
+              </td>}
 
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+
     }
   </div>
   <br>
