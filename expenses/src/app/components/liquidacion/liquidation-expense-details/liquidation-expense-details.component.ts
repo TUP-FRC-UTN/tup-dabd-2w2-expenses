@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, RedirectCommand, Router } from '@angular/router';
 import { CommonModule, DatePipe, Location } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +14,7 @@ import { Bill } from '../../../models/bill';
 import { CategoryService } from '../../../services/category.service';
 import Category from '../../../models/category';
 import { NgPipesModule } from 'ngx-pipes';
-import * as XLSX from 'xlsx'
+import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
@@ -30,13 +30,12 @@ import moment from 'moment';
     InfoModalComponent,
     NgModalComponent,
     NgPipesModule,
-    NgbModule
-],
+    NgbModule,
+  ],
   templateUrl: './liquidation-expense-details.component.html',
-  styleUrl: './liquidation-expense-details.component.css'
+  styleUrl: './liquidation-expense-details.component.css',
 })
-export class LiquidationExpenseDetailsComponent implements OnInit{
-
+export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly location = inject(Location);
   private readonly service = inject(LiquidationExpenseService);
   private readonly billsService = inject(BillService);
@@ -44,11 +43,11 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   private readonly router = inject(Router);
   private modalService = inject(NgbModal);
   private readonly categoryService = inject(CategoryService);
-  cantPages:number=10
+  cantPages: number = 10;
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
   bills: Bill[] = [];
   categories: Category[] = [];
-
+  id:number|null=null
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
@@ -63,7 +62,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
 
   searchTerm: string = '';
 
-  fileName = 'reporte-gastos-liquidación'
+  fileName = 'reporte-gastos-liquidación';
 
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
@@ -71,52 +70,82 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   }
 
   private loadCategories() {
-    this.categoryService.getAllCategories().subscribe(data => {
+    this.categoryService.getAllCategories().subscribe((data) => {
       this.categories = data;
-    })
+    });
   }
 
   private loadLiquidationExpenseDetails() {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const periodId = params.get('period_id');
       const id = params.get('id');
+      const category = params.get('categoria');
+      if (!category || category == '0') {
+        this.category = null;
+      } else {
+        this.category = Number(category);
+      }
+
       if (id && !isNaN(Number(id))) {
-        this.service.getById(Number(id)).subscribe((data: LiquidationExpense) => {
-          this.liquidationExpense = data;
-          this.type = data.bill_type?.bill_type_id
+        this.id = Number(params.get('id')) ;
+        this.service
+          .getById(Number(id))
+          .subscribe((data: LiquidationExpense) => {
+            this.liquidationExpense = data;
+            this.type = data.bill_type?.bill_type_id;
 
-          if (periodId && !isNaN(Number(periodId))) {
-            this.period = parseInt(periodId);
-          }
-
-          this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
-        });
+            if (periodId && !isNaN(Number(periodId))) {
+              this.period = parseInt(periodId);
+            }
+            this.getBills(
+              this.itemsPerPage,
+              this.currentPage,
+              this.period,
+              this.category,
+              this.type,
+              'ACTIVE'
+            );
+          });
       }
     });
   }
 
-  private getBills(itemsPerPage: number, page: number, period: number | null, category: number | null, type: number | undefined, status: string) {
+  private getBills(
+    itemsPerPage: number,
+    page: number,
+    period: number | null,
+    category: number | null,
+    type: number | undefined,
+    status: string
+  ) {
     if (type != undefined) {
-      this.billsService.getAllBillsPaged(itemsPerPage, page -1, period, category, type, status).subscribe(data => {
-        this.bills = data.content;
-        this.cantPages = data.totalElements
-      })
-    } else console.log("No hay un tipo de expensa definido");
+      this.billsService
+        .getAllBillsPaged(
+          itemsPerPage,
+          page - 1,
+          period,
+          category,
+          type,
+          status
+        )
+        .subscribe((data) => {
+          this.bills = data.content;
+          this.cantPages = data.totalElements;
+        });
+    } else console.log('No hay un tipo de expensa definido');
   }
-
-
 
   goBack() {
     this.location.back();
   }
-
 
   //
   // Pagination
   //
 
   initializePagination() {
-    this.totalItems = this.liquidationExpense.liquidation_expenses_details.length;
+    this.totalItems =
+      this.liquidationExpense.liquidation_expenses_details.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
@@ -125,7 +154,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
-    this.getBills(this.itemsPerPage,this.currentPage,this.period,this.category,this.type, "ACTIVE")
+    this.getBills(
+      this.itemsPerPage,
+      this.currentPage,
+      this.period,
+      this.category,
+      this.type,
+      'ACTIVE'
+    );
   }
 
   onItemsPerPageChange() {
@@ -138,29 +174,39 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
   //
 
   downloadTable() {
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
-      // Mapear los datos a un formato tabular adecuado
-      const data = bill.content.map(bill => ({
-        'Categoría':  `${bill.category.name}`,
-        'Fecha': `${bill.date}`,
-        'Proveedor': `${bill.supplier.name}`,
-        'Monto': `${bill.amount}`,
-        'Descripción': `${bill.description}`,
-      }));
+    this.billsService
+      .getAllBillsPaged(
+        this.itemsPerPage,
+        this.currentPage - 1,
+        this.period,
+        this.category,
+        this.type || null,
+        'ACTIVE'
+      )
+      .subscribe((bill) => {
+        // Mapear los datos a un formato tabular adecuado
+        const data = bill.content.map((bill) => ({
+          Categoría: `${bill.category.name}`,
+          Fecha: `${bill.date}`,
+          Proveedor: `${bill.supplier.name}`,
+          Monto: `${bill.amount}`,
+          Descripción: `${bill.description}`,
+        }));
 
-      const fecha = new Date();
-      console.log(fecha);
-     const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
+        const fecha = new Date();
+        console.log(fecha);
+        const finalFileName =
+          this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
 
-      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-      const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
-      XLSX.writeFile(wb, `${finalFileName}.xlsx`);
-    })
+        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
+        XLSX.writeFile(wb, `${finalFileName}.xlsx`);
+      });
   }
 
   imprimir() {
-    console.log('Imprimiendo')
+    console.log('Imprimiendo');
     const doc = new jsPDF();
 
     // Título del PDF
@@ -168,36 +214,48 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     doc.text('Reporte de Gastos de Liquidación', 14, 20);
 
     // Llamada al servicio para obtener las expensas
-    this.billsService.getAllBillsPaged(this.itemsPerPage, this.currentPage -1, this.period, this.category, this.type||null, "ACTIVE").subscribe(bill => {
-      // Usando autoTable para agregar la tabla
-      autoTable(doc, {
-        startY: 30,
-        head: [['Categoría', 'Fecha', 'Proveedor', 'Monto', 'Descripcion']],
-        body: bill.content.map(bill => [
-          bill.category?.name || 'N/A',
-          bill.date instanceof Date
-            ? bill.date.toLocaleDateString()
-            : new Date(bill.date).toLocaleDateString() || 'N/A',
-          bill.supplier?.name || 'N/A',
-          bill?.amount?.toLocaleString("es-AR", {
-            style: "currency",
-            currency: "ARS",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }) || "N/A",
-          bill?.description || 'N/A',
-        ]),
+    this.billsService
+      .getAllBillsPaged(
+        this.itemsPerPage,
+        this.currentPage - 1,
+        this.period,
+        this.category,
+        this.type || null,
+        'ACTIVE'
+      )
+      .subscribe((bill) => {
+        // Usando autoTable para agregar la tabla
+        autoTable(doc, {
+          startY: 30,
+          head: [['Categoría', 'Fecha', 'Proveedor', 'Monto', 'Descripcion']],
+          body: bill.content.map((bill) => [
+            bill.category?.name || 'N/A',
+            bill.date instanceof Date
+              ? bill.date.toLocaleDateString()
+              : new Date(bill.date).toLocaleDateString() || 'N/A',
+            bill.supplier?.name || 'N/A',
+            bill?.amount?.toLocaleString('es-AR', {
+              style: 'currency',
+              currency: 'ARS',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }) || 'N/A',
+            bill?.description || 'N/A',
+          ]),
+        });
+
+        // Guardar el PDF después de agregar la tabla
+        const fecha = new Date();
+        console.log(fecha);
+        const finalFileName =
+          this.fileName +
+          '-' +
+          moment(fecha).format('DD-MM-YYYY_HH-mm') +
+          '.pdf';
+        doc.save(finalFileName);
+        console.log('Impreso');
       });
-
-       // Guardar el PDF después de agregar la tabla
-       const fecha = new Date();
-       console.log(fecha);
-       const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
-       doc.save(finalFileName);
-       console.log('Impreso')
-    });
   }
-
 
   //
   // Modal
@@ -213,28 +271,35 @@ export class LiquidationExpenseDetailsComponent implements OnInit{
     });
   }
 
-
-
   edit(id: number | null) {
     console.log(id);
 
     if (id == null) return;
-    this.router.navigate([`gastos/modificar/${id}`])
+    this.router.navigate([`gastos/modificar/${id}`]);
   }
 
-  selectFilter(text:string){
-    this.typeFilter=text
+  selectFilter(text: string) {
+    this.typeFilter = text;
   }
-
-  handleCategoryChange(id: number) {
-    this.category = id;
-    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+  handleCategoryChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedId = +selectElement.value; 
+    this.category = selectedId;
+    console.log(selectedId);
+    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
   }
 
   clean() {
     this.category = null;
     this.typeFilter = '';
     this.searchTerm = '';
-    this.getBills(this.itemsPerPage, this.currentPage, this.period, this.category, this.type, "ACTIVE")
+    this.getBills(
+      this.itemsPerPage,
+      this.currentPage,
+      this.period,
+      this.category,
+      this.type,
+      'ACTIVE'
+    );
   }
 }

@@ -100,14 +100,17 @@
             class="form-select"
             aria-label="Seleccione una categoría"
             style="margin-left: 5px"
+            (change)="handleCategoryChange($event)"
           >
             <option disabled selected [value]="">
               Seleccione una categoría
             </option>
+            <option [value]="0" >
+              Todas
+            </option>
             @for (category of categories; track $index) {
             <option
               [value]="category.category_id"
-              (click)="handleCategoryChange(category.category_id)"
             >
               {{ category.name }}
             </option>
