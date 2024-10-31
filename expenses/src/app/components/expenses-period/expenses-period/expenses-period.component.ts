@@ -10,13 +10,13 @@ import { ToastService } from 'ngx-dabd-grupo01';
 import {switchMap} from "rxjs";
 
 @Component({
-  selector: 'app-expenses-period-expenses',
+  selector: 'app-expenses-period',
   standalone: true,
   imports: [ExpensesPeriodNavComponent, ExpensesPeriodNavComponent, NgbModule, FormsModule ],
-  templateUrl: './expenses-period-expenses.component.html',
-  styleUrl: './expenses-period-expenses.component.css',
+  templateUrl: './expenses-period.component.html',
+  styleUrl: './expenses-period.component.css',
 })
-export class ExpensesPeriodExpensesComponent implements OnInit {
+export class ExpensesPeriodComponent implements OnInit {
 
 finde() {
   this.loadList()

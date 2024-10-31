@@ -15,10 +15,10 @@ import { forkJoin, map, Observable, tap } from 'rxjs';
   selector: 'app-expenses-update-charge',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
-  templateUrl: './update-charge.component.html',
-  styleUrl: './update-charge.component.css',
+  templateUrl: './expenses-update-charge.component.html',
+  styleUrl: './expenses-update-charge.component.css',
 })
-export class UpdateChargeComponent implements OnInit {
+export class ExpensesUpdateChargeComponent implements OnInit {
   chargeForm: FormGroup;
   private chargeService = inject(ChargeService);
   public activeModal = inject(NgbActiveModal);

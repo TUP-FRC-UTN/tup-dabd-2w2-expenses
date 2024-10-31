@@ -33,10 +33,10 @@ import moment from 'moment';
     FormsModule,
     NgPipesModule,
   ],
-  templateUrl: './expenses-liquidation-expense.component.html',
-  styleUrl: './expenses-liquidation-expense.component.css',
+  templateUrl: './expenses-liquidation.component.html',
+  styleUrl: './expenses-liquidation.component.css',
 })
-export class ExpensesLiquidationExpenseComponent implements OnInit {
+export class ExpensesLiquidationComponent implements OnInit {
   liquidationExpensesService: LiquidationExpenseService = inject(
     LiquidationExpenseService
   );

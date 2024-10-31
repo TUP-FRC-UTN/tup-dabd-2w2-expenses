@@ -23,10 +23,10 @@ import { ToastService } from 'ngx-dabd-grupo01';
   selector: 'app-expenses-add-charge',
   standalone: true,
   imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent,CommonModule,NgModalComponent],
-  templateUrl: './add-charge.component.html',
-  styleUrl: './add-charge.component.css',
+  templateUrl: './expenses-add-charge.component.html',
+  styleUrl: './expenses-add-charge.component.css',
 })
-export class AddChargeComponent implements OnInit{
+export class ExpensesAddChargeComponent implements OnInit{
   // chargeForm: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
   private chargeService = inject(ChargeService);

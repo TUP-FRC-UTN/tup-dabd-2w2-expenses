@@ -21,10 +21,10 @@ import {NgPipesModule} from "ngx-pipes";
   selector: 'app-expenses-list',
   standalone: true,
   imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent, TableComponent,NgPipesModule],
-  templateUrl: './expense.component.html',
-  styleUrl: './expense.component.css'
+  templateUrl: './expenses-list.component.html',
+  styleUrl: './expenses-list.component.css'
 })
-export class ExpenseComponent implements OnInit{
+export class ExpensesListComponent implements OnInit{
 showInfo() {
 throw new Error('Method not implemented.');
 }

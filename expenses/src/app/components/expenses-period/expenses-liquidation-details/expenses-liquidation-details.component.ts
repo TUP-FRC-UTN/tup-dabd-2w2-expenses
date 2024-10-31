@@ -32,8 +32,8 @@ import moment from 'moment';
     NgPipesModule,
     NgbModule,
   ],
-  templateUrl: './liquidation-expense-details.component.html',
-  styleUrl: './liquidation-expense-details.component.css',
+  templateUrl: './expenses-liquidation-details.component.html',
+  styleUrl: './expenses-liquidation-details.component.css',
 })
 export class LiquidationExpenseDetailsComponent implements OnInit {
   private readonly location = inject(Location);
@@ -283,7 +283,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
   handleCategoryChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
-    const selectedId = +selectElement.value; 
+    const selectedId = +selectElement.value;
     this.category = selectedId;
     console.log(selectedId);
     this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);

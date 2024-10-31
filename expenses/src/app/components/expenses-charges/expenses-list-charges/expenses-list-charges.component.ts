@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, NgModule, OnInit, TemplateRef, ViewChild
 import { Charge, ChargeFilters, PeriodCharge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
-import { UpdateChargeComponent } from '../expenses-update-charge/update-charge.component';
+import { ExpensesUpdateChargeComponent } from '../expenses-update-charge/expenses-update-charge.component';
 import { CommonModule } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
@@ -37,14 +37,14 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-expenses-list-charges',
   standalone: true,
-  imports: [UpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent,
+  imports: [ExpensesUpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent,
     ExpensesChargesNavComponent,FormsModule,ReactiveFormsModule,NgPipesModule,TableComponent, ExpensesModalComponent,
   NgbModule],
-  templateUrl: './list-charges.component.html',
-  styleUrl: './list-charges.component.css',
+  templateUrl: './expenses-list-charges.component.html',
+  styleUrl: './expenses-list-charges.component.css',
 })
 
-export class ListChargesComponent implements OnInit {
+export class ExpensesListChargesComponent implements OnInit {
   searchTerm = '';
   selectedLotId: number = 0;
   selectedCategoryId: number = 0;
@@ -311,7 +311,7 @@ export class ListChargesComponent implements OnInit {
 
   openViewModal(charge: Charge) {
 
-    const modalRef = this.modalService.open(UpdateChargeComponent);
+    const modalRef = this.modalService.open(ExpensesUpdateChargeComponent);
     modalRef.componentInstance.charge = charge;
 
     modalRef.result.then(
@@ -361,7 +361,7 @@ export class ListChargesComponent implements OnInit {
 
 
   openUpdateModal(charge: Charge) {
-    const modalRef = this.modalService.open(UpdateChargeComponent);
+    const modalRef = this.modalService.open(ExpensesUpdateChargeComponent);
     modalRef.componentInstance.charge = charge;
     modalRef.componentInstance.isEditing = true;
 
