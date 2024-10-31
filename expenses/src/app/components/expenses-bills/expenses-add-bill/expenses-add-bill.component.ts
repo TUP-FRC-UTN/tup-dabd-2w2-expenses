@@ -26,10 +26,10 @@ import {NgArrayPipesModule} from "ngx-pipes";
   selector: 'app-expenses-add-bill',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, ExpensesBillsNavComponent, RouterLink, NgArrayPipesModule],
-  templateUrl: './add-bill.component.html',
-  styleUrl: './add-bill.component.css'
+  templateUrl: './expenses-add-bill.component.html',
+  styleUrl: './expenses-add-bill.component.css'
 })
-export class AddBillComponent implements OnInit {
+export class ExpensesAddBillComponent implements OnInit {
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private providerService = inject(ProviderService);

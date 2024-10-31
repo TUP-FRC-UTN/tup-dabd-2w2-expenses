@@ -46,9 +46,9 @@ import moment from "moment";
     NgPipesModule,
     CommonModule,
   ],
-  templateUrl: './list-bills.component.html',
+  templateUrl: './expenses-list-bills.component.html',
 })
-export class ListBillsComponent implements OnInit {
+export class ExpensesListBillsComponent implements OnInit {
   //Lista de todos los bills
   bills: Bill[] = [];
 
