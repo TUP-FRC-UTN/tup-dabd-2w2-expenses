@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ExpensesPeriodNavComponent } from '../../navs/expenses-period-nav/expenses-period-nav.component';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import Expense from '../../../models/expense';
 import { ActivatedRoute } from '@angular/router';
@@ -12,7 +11,7 @@ import {switchMap} from "rxjs";
 @Component({
   selector: 'app-expenses-period',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent, ExpensesPeriodNavComponent, NgbModule, FormsModule ],
+  imports: [ NgbModule, FormsModule ],
   templateUrl: './expenses-period.component.html',
   styleUrl: './expenses-period.component.css',
 })

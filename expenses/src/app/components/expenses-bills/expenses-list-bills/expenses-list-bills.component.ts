@@ -18,7 +18,6 @@ import { PeriodService } from '../../../services/period.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { CommonModule } from '@angular/common';
-import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { PaginatedResponse } from '../../../models/paginatedResponse';
 import { BillDto } from '../../../models/billDto';
@@ -41,7 +40,6 @@ import moment from "moment";
     ReactiveFormsModule,
     NgbModule,
     PeriodSelectComponent,
-    ExpensesBillsNavComponent,
     FormsModule,
     NgPipesModule,
     CommonModule,

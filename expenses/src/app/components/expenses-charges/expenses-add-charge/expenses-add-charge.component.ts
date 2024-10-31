@@ -12,7 +12,6 @@ import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Period from '../../../models/period';
-import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
 import { CommonModule } from '@angular/common';
 import { ModalService } from 'ngx-dabd-2w1-core';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
@@ -22,7 +21,7 @@ import { ToastService } from 'ngx-dabd-grupo01';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent, ExpensesChargesNavComponent,CommonModule,NgModalComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })

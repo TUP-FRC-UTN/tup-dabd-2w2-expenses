@@ -1,7 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import Category from "../../../models/category";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {ExpensesBillsNavComponent} from "../../navs/expenses-bills-nav/expenses-bills-nav.component";
 import {NgPipesModule} from "ngx-pipes";
 import {CategoryService} from "../../../services/category.service";
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
@@ -19,7 +18,6 @@ import {ToastService} from "ngx-dabd-grupo01";
   imports: [
     ReactiveFormsModule,
     FormsModule,
-    ExpensesBillsNavComponent,
     NgPipesModule,
     RouterLink
   ],

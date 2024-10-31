@@ -8,7 +8,6 @@ import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-mod
 import LiquidationExpense from '../../../models/liquidationExpense';
 import { TableComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ExpensesPeriodListComponent } from '../../period/expenses-period-list/expenses-period-list.component';
-import { ExpensesPeriodNavComponent } from '../../navs/expenses-period-nav/expenses-period-nav.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +26,6 @@ import moment from 'moment';
     ExpensesModalComponent,
     TableComponent,
     ExpensesPeriodListComponent,
-    ExpensesPeriodNavComponent,
     NgModalComponent,
     InfoModalComponent,
     FormsModule,
