@@ -137,10 +137,10 @@ export class ExpensesLiquidationExpenseComponent implements OnInit {
     }
   }
 
-  seeDetail() {
+  seeDetail(categoryId:number) {
     let id = this.listLooking[0].expense_id;
-
-    this.router.navigate([`periodo/${this.id}/liquidacion/${id}`]);
+    console.log(categoryId)
+    this.router.navigate([`periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
   }
 
   openErrorModal(err: any) {
