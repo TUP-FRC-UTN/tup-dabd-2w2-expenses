@@ -125,6 +125,7 @@ export class ListBillsComponent implements OnInit {
   //Metodo que se ejecuta cuando se inicia el componente
   ngOnInit(): void {
     this.isLoading = true;
+    this.unFilterBills()
     this.loadBills();
     this.loadSelect();
   }
@@ -134,7 +135,14 @@ export class ListBillsComponent implements OnInit {
 
   //Elimina los filtros y vuelve a buscar por todos los valores disponibles
   unFilterBills() {
-    this.filters.reset();
+    this.filters.setValue({
+      selectedCategory: 0,
+      selectedPeriod: 0,
+      selectedSupplier: 0,
+      selectedProvider: 'SUPPLIER',
+      selectedStatus: 'ACTIVE',
+      selectedType: 0,
+    });
     this.loadSelect();
     this.loadBills();
   }

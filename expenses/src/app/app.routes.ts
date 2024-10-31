@@ -20,7 +20,7 @@ export const routes: Routes = [
   { path: 'periodo', component: ExpensesPeriodListComponent },
   { path: 'periodo/:period_id/expensas', component: ExpensesPeriodExpensesComponent },
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationExpenseComponent },
-  { path: 'periodo/:period_id/liquidacion/:id', component: LiquidationExpenseDetailsComponent },
+  { path: 'periodo/:period_id/liquidacion/:id/:categoria', component: LiquidationExpenseDetailsComponent },
 
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpenseComponent },
