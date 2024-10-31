@@ -9,8 +9,6 @@ import Lot from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
-import { ExpensesChargesNavComponent } from '../../navs/expenses-charges-nav/expenses-charges-nav.component';
-import { ExpensesBillsNavComponent } from '../../navs/expenses-bills-nav/expenses-bills-nav.component';
 //import $ from "jquery";
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 //import * as XLSX from 'xlsx'
@@ -37,8 +35,7 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-expenses-list-charges',
   standalone: true,
-  imports: [ExpensesUpdateChargeComponent, CommonModule, PeriodSelectComponent, ExpensesBillsNavComponent,
-    ExpensesChargesNavComponent,FormsModule,ReactiveFormsModule,NgPipesModule,TableComponent, ExpensesModalComponent,
+  imports: [ExpensesUpdateChargeComponent, CommonModule, PeriodSelectComponent,FormsModule,ReactiveFormsModule,NgPipesModule,TableComponent, ExpensesModalComponent,
   NgbModule],
   templateUrl: './expenses-list-charges.component.html',
   styleUrl: './expenses-list-charges.component.css',

@@ -1,6 +1,4 @@
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { ExpensesExpensesNavComponent } from '../../navs/expenses-expenses-nav/expenses-expenses-nav.component';
-import { ExpensesPeriodNavComponent } from '../../navs/expenses-period-nav/expenses-period-nav.component';
 import { PeriodService } from '../../../services/period.service';
 import Period from '../../../models/period';
 import { NgClass } from '@angular/common';
@@ -23,7 +21,7 @@ import { InfoModalComponent } from "../../modals/info-modal/info-modal.component
 @Component({
   selector: 'app-expenses-period-list',
   standalone: true,
-  imports: [ExpensesPeriodNavComponent, ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule, NgPipesModule, FormsModule, InfoModalComponent],
+  imports: [ExpensesStatePeriodStyleComponent, NgClass, ExpensesModalComponent, NgModalComponent, NgbModule, NgPipesModule, FormsModule, InfoModalComponent],
   templateUrl: './expenses-period-list.component.html',
   styleUrl: './expenses-period-list.component.css',
 })
