@@ -8,6 +8,7 @@
 
   <div
     class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-between"
+    style="padding: 0;"
   >
     <div class="row align-items-center mb-3">
       <div class="col-sm-12 col-md-12 col-xl-12">
@@ -55,7 +56,7 @@
             Ver
           </button>
         </div>
-        <div style="margin-left: 20px">
+        <div style="margin-left: 20px;">
           <button
             class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0"
             (click)="downloadTable()"
@@ -75,6 +76,7 @@
 
   <div
     class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
+    style="padding: 0;"
   >
     <div
       class="btn-group"
@@ -138,7 +140,7 @@
       </tr>
 
       } @else { @for (bill of listLooking[0].liquidation_expenses_details |
-      filterBy: ['category.name', 'bill_type.name']: searchTerm; track $index) {
+      filterBy: ['category.name', 'bill_type.name', 'amount', 'quantity']: searchTerm; track $index) {
 
       <tr>
         <td style="width: 33%" class="text-start">{{ bill.category?.name }}</td>
@@ -166,8 +168,8 @@
     class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
   >
     <div class="row text-end">
-      <p style="margin: 0; padding: 0 10px 0 0"><b>Monto Total</b></p>
-      <p style="margin: 0; padding: 0 10px 5px 0">
+      <p style="margin: 0; padding: 0"><b>Monto Total</b></p>
+      <p style="margin: 0; padding: 0 0 5px 0">
         {{
           listLooking[0].total_amount?.toLocaleString("es-AR", {
             style: "currency",
@@ -212,7 +214,7 @@
   <app-expenses-modal
     [title]="'Liquidacion de expensas'"
     [paragraph]="
-      'La liquidación se cerrará. No se podrán asociar mas gastos a este período.'
+      'La liquidación se cerrará. No se podrán asociar mas gastos a este periodo.'
     "
     (onAccept)="closeLiquidation()"
     (onCancel)="modal.dismiss('cancel')"
@@ -230,8 +232,8 @@
 
 <ng-template #modalTemplateInfo let-modal>
   <app-info-modal
-    [title]="'Acerca de'"
-    [body]="'Información de prueba'"
+    [title]="'Acerca de Liquidación de Expensa'"
+    [body]="'En esta pantalla se despliegan los datos de las expensas del periodo seleccionado, las cuales pueden ser filtradas por expensas extraordinarias u ordinarias. Se presentan las funciones para cerrar la liquidación o abrirla dependiendo de su estado actual, y la función para ver todos los gastos de una expensa'"
     (onAccept)="modal.dismiss('cancel')"
   ></app-info-modal>
 </ng-template>

@@ -15,11 +15,12 @@
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un proveedor.
+              El proveedor es obligatorio.
             </div>
           </div>
         </div>
       </div>
+      
 
       <div class="col-md-6">
         <div class="row">
@@ -33,10 +34,11 @@
                 }
               </select>
               <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button" (click)="openNewCategoryModal()"><i class="bi bi-plus-lg"></i></button>
+              <div class="invalid-feedback">
+                La categoría es obligatoria.
+              </div>
             </div>
-            <div class="invalid-feedback">
-              Por favor, seleccione una categoría.
-            </div>
+
           </div>
         </div>
       </div>
@@ -55,7 +57,7 @@
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un periodo.
+              El periodo es obligatorio.
             </div>
           </div>
         </div>
@@ -72,22 +74,7 @@
               }
             </select>
             <div class="invalid-feedback">
-              Por favor, seleccione un tipo.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Descripción -->
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <div class="row">
-          <label for="description" class="col-sm-1 col-form-label">Descripción</label>
-          <div class="col-sm-11">
-            <textarea id="description" formControlName="description" class="form-control" rows="3" [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
-            <div class="invalid-feedback">
-              Por favor, ingrese una descripción.
+              El tipo es obligatorio.
             </div>
           </div>
         </div>
@@ -100,9 +87,9 @@
         <div class="row">
           <label for="amount" class="col-sm-2 col-form-label">Monto <span class="text-danger">*</span></label>
           <div class="col-sm-10">
-            <input type="number" id="amount" formControlName="amount" class="form-control" [ngClass]="{'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)}">
+            <input placeholder="Ingrese un monto" type="number" id="amount" formControlName="amount" class="form-control" [ngClass]="{'is-invalid': billForm.get('amount')?.invalid && (billForm.get('amount')?.dirty || billForm.get('amount')?.touched)}">
             <div class="invalid-feedback">
-              Por favor, ingrese un monto válido.
+              El monto es obligatorio.
             </div>
           </div>
         </div>
@@ -114,8 +101,23 @@
           <div class="col-sm-10">
             <input type="date" id="date" formControlName="date" class="form-control" [ngClass]="{'is-invalid': billForm.get('date')?.invalid && (billForm.get('date')?.dirty || billForm.get('date')?.touched)}">
             <div class="invalid-feedback">
-              Por favor, seleccione una fecha válida.
+              La fecha es obligatoria.
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción -->
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="row">
+          <label for="description" class="col-sm-1 col-form-label">Descripción</label>
+          <div class="col-sm-11">
+            <textarea placeholder="Ingrese una descripción" id="description" formControlName="description" class="form-control" rows="3" [ngClass]="{'is-invalid': billForm.get('description')?.invalid && (billForm.get('description')?.dirty || billForm.get('description')?.touched)}"></textarea>
+<!--            <div class="invalid-feedback">-->
+<!--              La descripción es obligatoria.-->
+<!--            </div>-->
           </div>
         </div>
       </div>
@@ -128,7 +130,7 @@
       <div class="col-6 d-flex justify-content-end">
         <button type="button" (click)="resetForm()" class="btn btn-danger me-2">Cancelar</button>
         <button type="submit" class="btn btn-primary" [disabled]="billForm.invalid">Guardar</button>
-        <button type="button" class="btn btn-outline-secondary ms-2" (click)="showInfo()"><i class="bi bi-info-circle"></i></button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="showInfo()"><i class="bi bi-info-circle"></i></button>
       </div>
     </div>
   </form>

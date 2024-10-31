@@ -274,6 +274,14 @@
       [maxSize]="5"
       [boundaryLinks]="false"
     ></ngb-pagination>
+    <div style="margin-left: 10px;">
+      <button
+      class="btn btn-secondary"
+      (click)="showModal(modalTemplateInfo)"
+    >
+      <i class="bi bi-info-circle"></i>
+    </button>
+    </div>
   </div>
 </div>
 }
@@ -286,4 +294,12 @@
     (onAccept)="closePeriod()"
     (onCancel)="modal.dismiss('cancel')"
   ></app-expenses-modal>
+</ng-template>
+
+<ng-template #modalTemplateInfo let-modal>
+  <app-info-modal
+    [title]="'Acerca de Periodos'"
+    [body]="'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. Puede filtrarse tanto por sus estados abiertos o cerrados como por su mes o año'"
+    (onAccept)="modal.dismiss('cancel')"
+  ></app-info-modal>
 </ng-template>

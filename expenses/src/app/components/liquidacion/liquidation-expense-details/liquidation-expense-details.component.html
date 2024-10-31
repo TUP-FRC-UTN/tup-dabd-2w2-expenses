@@ -32,6 +32,7 @@
 
   <div
     class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-between"
+    style="padding: 0;"
   >
     <div class="row align-items-center mb-3">
       <div class="col-sm-12 col-md-12 col-xl-12">
@@ -65,6 +66,7 @@
 
   <div
     class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-start"
+    style="padding: 0;"
   >
     <!-- Tercera fila: Filtros de estado -->
     <div class="row mb-3">
@@ -133,7 +135,7 @@
     </thead>
     <tbody>
       @for(bill of bills | filterBy : ['category.name', 'description',
-      'supplier.name']: searchTerm; track $index) {
+      'supplier.name' ,'amount', 'date']: searchTerm; track $index) {
       <tr>
         <td class="text-start">{{ bill.category.name }}</td>
         <td class="text-start">{{ bill.date | date : "dd/MM/yyyy" }}</td>
@@ -153,7 +155,7 @@
           class="text-start"
           style="display: flex; flex-direction: row; gap: 4px"
         >
-          <button type="button" class="btn btn-secondary" (click)="openModal()">
+          <button type="button" class="btn btn-primary" (click)="openModal()">
             <i class="bi bi-eye"></i>
           </button>
           <button
@@ -206,26 +208,27 @@
         <i class="bi bi-info-circle"></i>
       </button>
       </div>
- 
+
     </div>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      margin-top: 10px;
+    "
+  >
+    <button class="btn btn-secondary" (click)="goBack()">Volver</button>
   </div>
 </div>
 
-<div
-  style="
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    margin-top: 10px;
-  "
->
-  <button class="btn btn-secondary" (click)="goBack()">Volver</button>
-</div>
 
 <ng-template #modalTemplate let-modal>
   <app-info-modal
-    [title]="'Acerca de'"
-    [body]="'Información de prueba'"
+    [title]="'Acerca de Gastos de expensa'"
+    [body]="'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla'"
     (onAccept)="modal.dismiss('cancel')"
   ></app-info-modal>
 </ng-template>

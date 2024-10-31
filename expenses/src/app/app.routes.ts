@@ -3,7 +3,6 @@ import { ListChargesComponent } from './components/cargo/list-charges/list-charg
 import { AddChargeComponent } from './components/cargo/add-charge/add-charge.component';
 import { AppComponent } from './app.component';
 import {AddBillComponent} from "./components/bills/add-bill/add-bill.component";
-import { ListBillsComponent } from './components/bills/list-bills/list-bills.component';
 import { LiquidationExpenseDetailsComponent } from './components/liquidacion/liquidation-expense-details/liquidation-expense-details.component';
 import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
 import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
@@ -13,6 +12,7 @@ import {CategoryBillComponent} from "./components/bills/category-bill/category-b
 //import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
 
 import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
+import { ListBillsComponent } from './components/expenses_bills/list-bills/list-bills.component';
 
 
 export const routes: Routes = [

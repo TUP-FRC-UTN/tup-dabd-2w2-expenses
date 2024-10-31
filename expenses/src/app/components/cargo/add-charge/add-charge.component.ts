@@ -49,6 +49,9 @@ export class AddChargeComponent implements OnInit{
     this.router.navigate([`cargos`])
   }
 
+  showInfo(){
+    
+  }
   loadSelect() {
     this.periodService.get().subscribe((data=>{
       this.listPeriodo=data
