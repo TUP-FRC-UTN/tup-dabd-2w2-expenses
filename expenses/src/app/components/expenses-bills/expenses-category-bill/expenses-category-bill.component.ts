@@ -23,10 +23,10 @@ import {ToastService} from "ngx-dabd-grupo01";
     NgPipesModule,
     RouterLink
   ],
-  templateUrl: './category-bill.component.html',
-  styleUrl: './category-bill.component.css'
+  templateUrl: './expenses-category-bill.component.html',
+  styleUrl: './expenses-category-bill.component.css'
 })
-export class CategoryBillComponent implements OnInit {
+export class ExpensesCategoryBillComponent implements OnInit {
   categories: Category[] = [];
   searchTerm = '';
   isLoading = false;
