@@ -1,18 +1,18 @@
 import { Routes } from '@angular/router';
-import { ListChargesComponent } from './components/cargo/list-charges/list-charges.component';
-import { AddChargeComponent } from './components/cargo/add-charge/add-charge.component';
+import { ListChargesComponent } from './components/cargo/expenses-list-charges/list-charges.component';
+import { AddChargeComponent } from './components/cargo/expenses-add-charge/add-charge.component';
 import { AppComponent } from './app.component';
-import {AddBillComponent} from "./components/bills/add-bill/add-bill.component";
-import { LiquidationExpenseDetailsComponent } from './components/liquidacion/liquidation-expense-details/liquidation-expense-details.component';
-import { ExpensesLiquidationExpenseComponent } from './components/liquidacion/expenses-liquidation-expense/expenses-liquidation-expense.component';
-import { ExpenseComponent } from './components/expensas/getAll/expense/expense.component';
+import {AddBillComponent} from "./components/expenses_bills/expenses-add-bill/add-bill.component";
+import { LiquidationExpenseDetailsComponent } from './components/expenses-period/expenses-liquidation-details/liquidation-expense-details.component';
+import { ExpensesLiquidationExpenseComponent } from './components/expenses-period/expenses-liquidation-expense/expenses-liquidation-expense.component';
+import { ExpenseComponent } from './components/expenses-period/expenses-list/expense.component';
 import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 
-import {CategoryBillComponent} from "./components/bills/category-bill/category-bill.component";
+import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
 //import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
 
 import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period-expenses/expenses-period-expenses.component';
-import { ListBillsComponent } from './components/expenses_bills/list-bills/list-bills.component';
+import { ListBillsComponent } from './components/expenses_bills/expenses-list-bills/list-bills.component';
 
 
 export const routes: Routes = [

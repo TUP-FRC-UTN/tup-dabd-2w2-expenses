@@ -1,13 +1,14 @@
 
+/*
 .content-scroll {
-    overflow-y: auto;        /* Habilita desplazamiento vertical */
-    height: 100vh;           /* Asegura que ocupe toda la altura de la pantalla */
-    padding-top: 0;          /* Sin padding superior, porque el nav ya ocupa el espacio */
-    position: relative;       /* Permite que el contenido se posicione correctamente */
+    overflow-y: auto;        !* Habilita desplazamiento vertical *!
+    height: 100vh;           !* Asegura que ocupe toda la altura de la pantalla *!
+    padding-top: 0;          !* Sin padding superior, porque el nav ya ocupa el espacio *!
+    position: relative;       !* Permite que el contenido se posicione correctamente *!
   }
 
-  
-/* Estilo para el botón de logout */
+
+!* Estilo para el botón de logout *!
 .btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
@@ -18,7 +19,7 @@
   border-color: #b02a37;
 }
 
-/* Asegurar que los íconos están alineados verticalmente */
+!* Asegurar que los íconos están alineados verticalmente *!
 .d-flex.align-items-center i {
   font-size: 1.1rem;
 }
@@ -29,7 +30,7 @@
   width: auto;
   object-fit: contain;
   margin-left: 1rem;
-  /* Si necesitas ajustar el margen */
+  !* Si necesitas ajustar el margen *!
 }
 
 .navbar-brand {
@@ -37,3 +38,4 @@
   display: flex;
   align-items: center;
 }
+*/
