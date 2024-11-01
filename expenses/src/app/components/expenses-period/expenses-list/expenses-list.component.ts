@@ -5,7 +5,6 @@ import Expense, { ExpenseFilters } from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
-import { Pipe, PipeTransform } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
@@ -15,8 +14,10 @@ import BillType from '../../../models/billType';
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { TableComponent } from 'ngx-dabd-grupo01';
 import {NgPipesModule} from "ngx-pipes";
+import {TableColumn, TableComponent} from "ngx-dabd-grupo01";
+import {delay, Observable, of} from "rxjs";
+
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
@@ -25,6 +26,12 @@ import {NgPipesModule} from "ngx-pipes";
   styleUrl: './expenses-list.component.css'
 })
 export class ExpensesListComponent implements OnInit{
+
+
+
+
+
+
 showInfo() {
 throw new Error('Method not implemented.');
 }
@@ -89,16 +96,17 @@ throw new Error('Method not implemented.');
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
       this.expenses = data.content.map(expense => {
+        const expenses = this.keysToCamel(expense) as Expense;
         return {
-          ...expense,
+          ...expenses,
           month: this.getMonthName(expense.period.month), // Suponiendo que cada expenses-list tenga un campo `month`
         };
+
       });
       this.totalPages = data.totalPages;  // Número total de páginas
       this.totalItems = data.totalElements;  // Total de registros
       this.currentPage = data.number;
       this.updateVisiblePages();
-
     });
   }
 
@@ -141,7 +149,23 @@ throw new Error('Method not implemented.');
   }
 }
 
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
 
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
+  }
   clearFilters() {
     this.selectedLotId = 0;
     this.selectedTypeId = 0;
@@ -179,12 +203,12 @@ throw new Error('Method not implemented.');
     doc.text('Expenses Report', 14, 20);
 
     // Llamada al servicio para obtener las expensas
-    this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+    this.service.getWithoutFilters(this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Usando autoTable para agregar la tabla
       autoTable(doc, {
         startY: 30,
         head: [['Mes', 'Año', 'Total Amount', 'State', 'Plot Number', 'Percentage', 'Bill Type']],
-        body: expenses.content.map(expense => [
+        body: expenses.map(expense => [
           expense.period.month,
           expense.period.year,
           expense.totalAmount,
@@ -202,9 +226,9 @@ throw new Error('Method not implemented.');
   }
 
   downloadTable() {
-    this.service.getExpenses(0, 100000, this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
+    this.service.getWithoutFilters( this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Mapear los datos a un formato tabular adecuado
-      const data = expenses.content.map(expense => ({
+      const data = expenses.map(expense => ({
         'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
         'Fecha de liquidación': expense.liquidationDate,
