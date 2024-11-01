@@ -83,7 +83,12 @@ finde() {
         })
       )
       .subscribe((data) => {
-        this.listExpenses = data.content;
+        this.listExpenses = data.content.map(expense => {
+          const expenses = this.keysToCamel(expense) as Expense;
+          return {
+            ...expenses,
+           
+          };  });
         this.cantPages = data.totalElements;
       });
   }
