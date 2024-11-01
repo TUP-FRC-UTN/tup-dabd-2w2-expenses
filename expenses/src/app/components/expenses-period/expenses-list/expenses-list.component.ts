@@ -5,7 +5,6 @@ import Expense, { ExpenseFilters } from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
-import { Pipe, PipeTransform } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
@@ -15,8 +14,10 @@ import BillType from '../../../models/billType';
 import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { TableComponent } from 'ngx-dabd-grupo01';
 import {NgPipesModule} from "ngx-pipes";
+import {TableColumn, TableComponent} from "ngx-dabd-grupo01";
+import {delay, Observable, of} from "rxjs";
+
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
@@ -25,6 +26,30 @@ import {NgPipesModule} from "ngx-pipes";
   styleUrl: './expenses-list.component.css'
 })
 export class ExpensesListComponent implements OnInit{
+
+  items: any[] = [];
+  columns: TableColumn[] = [];
+  isLoading: boolean = true;
+  private dataService = {
+    getItems: (): Observable<any[]> => {
+      return of([
+        { id: 1, name: "Item 1", description: "Description 1" },
+        { id: 2, name: "Item 2", description: "Description 2" },
+        { id: 3, name: "Item 3", description: "Description 3" },
+      ]).pipe(delay(2000)); // Simula un retraso en la carga de los datos
+    },
+  };
+  loadData(): void {
+    this.isLoading = true;
+    this.dataService.getItems().subscribe((data) => {
+      this.items = data;
+      this.isLoading = false;
+    });
+  }
+
+
+
+
 showInfo() {
 throw new Error('Method not implemented.');
 }
@@ -81,6 +106,16 @@ throw new Error('Method not implemented.');
 
 
   ngOnInit(): void {
+    this.columns = [
+      { headerName: "ID", accessorKey: "id" },
+      { headerName: "Name", accessorKey: "name" },
+      { headerName: "Description", accessorKey: "description" },
+    ];
+    this.loadData();
+
+
+
+
     this.currentPage = 0
     this.loadSelect()
     this.loadExpenses()
