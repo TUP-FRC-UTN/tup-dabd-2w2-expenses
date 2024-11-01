@@ -27,25 +27,7 @@ import {delay, Observable, of} from "rxjs";
 })
 export class ExpensesListComponent implements OnInit{
 
-  items: any[] = [];
-  columns: TableColumn[] = [];
-  isLoading: boolean = true;
-  private dataService = {
-    getItems: (): Observable<any[]> => {
-      return of([
-        { id: 1, name: "Item 1", description: "Description 1" },
-        { id: 2, name: "Item 2", description: "Description 2" },
-        { id: 3, name: "Item 3", description: "Description 3" },
-      ]).pipe(delay(2000)); // Simula un retraso en la carga de los datos
-    },
-  };
-  loadData(): void {
-    this.isLoading = true;
-    this.dataService.getItems().subscribe((data) => {
-      this.items = data;
-      this.isLoading = false;
-    });
-  }
+
 
 
 
@@ -106,16 +88,6 @@ throw new Error('Method not implemented.');
 
 
   ngOnInit(): void {
-    this.columns = [
-      { headerName: "ID", accessorKey: "id" },
-      { headerName: "Name", accessorKey: "name" },
-      { headerName: "Description", accessorKey: "description" },
-    ];
-    this.loadData();
-
-
-
-
     this.currentPage = 0
     this.loadSelect()
     this.loadExpenses()
@@ -133,7 +105,6 @@ throw new Error('Method not implemented.');
       this.totalItems = data.totalElements;  // Total de registros
       this.currentPage = data.number;
       this.updateVisiblePages();
-
     });
   }
 
