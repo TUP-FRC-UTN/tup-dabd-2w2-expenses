@@ -8,8 +8,11 @@
 
           </div>
           <div  class="col d-flex gap-1 justify-content-end" style="align-items: end">
-            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoModal">
-              <i class="bi bi-info-circle"></i>
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#infoModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+              </svg>
             </button>
           </div>
 
@@ -32,7 +35,7 @@
             <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#filterModal">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
                 <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
-              </svg><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+              </svg><svg xmlns="http://www.w3.org/2000/svg" width="10" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
               <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
             </svg>
             </button>
@@ -116,33 +119,34 @@
     <div class="card" style="padding-top: 5px">
       <div style="height: 500px; overflow-y: auto;">
       <table class="table table-striped" id="table-data">
-        <thead>
+        <thead class="justify-content-end">
           <tr>
-            <th scope="col">Número de Lote</th>
+            <th scope="col" style="text-align: center">Número de Lote</th>
             <th scope="col">Tipo de lote</th>
             <th scope="col">Periodo</th>
-            <th scope="col">Monto Total</th>
             <th scope="col">Porcentaje</th>
             <th scope="col">Tipo de expensa</th>
             <th scope="col">Fecha de liquidación</th>
+            <th scope="col" style="text-align: right">Monto Total</th>
+
           </tr>
         </thead>
         <tbody>
 
           @for (expense of expenses | filterBy: ['lotId', 'month','totalAmount','liquidationDate','state','plotNumber','typePlot','percentage','billType']: searchTerm; track $index) {
             <tr>
-                <td>{{expense.plotNumber}} </td>
+                <td style="text-align: center">{{expense.plotNumber}} </td>
                 <td>{{expense.typePlot}}</td>
                 <td>{{expense.month }}-{{ expense.period.year }} </td>
-                <td>{{expense.totalAmount.toLocaleString("es-AR", {
-                  style: "currency",
-                  currency: "ARS",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                }) }}</td>
                 <td>{{expense.percentage  * 100 + '%'}}</td>
                 <td>{{expense.billType}}</td>
                 <td>{{expense.liquidationDate | date:'MMM d, yyyy'}}</td>
+              <td style="text-align:  right">{{expense.totalAmount.toLocaleString("es-AR", {
+                style: "currency",
+                currency: "ARS",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }) }}</td>
             </tr>
           }@empty {
             <td colspan="7" class="text-center">
