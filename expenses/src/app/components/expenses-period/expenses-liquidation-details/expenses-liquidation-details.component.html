@@ -4,7 +4,7 @@
 >
 
   <app-table
-    [items]="bills"
+    [items]="billsFiltered"
     [showSearchBar]="true"
     [showHeaderButton]="false"
     [pagination]="tablePagination"
@@ -12,6 +12,7 @@
     (pdfButtonClick)="imprimir()"
     [tableFilters]="filters"
     [columns]="columns"
+    (searchValueChange)="filterTable($event)"
   >
   <div>
     <p style="margin: 0; font-size: 14px;"  class="text-end">
