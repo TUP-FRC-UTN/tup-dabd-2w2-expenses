@@ -53,6 +53,7 @@ import {
     TableFiltersComponent,
   ],
   templateUrl: './expenses-list-bills.component.html',
+  styleUrl: './expenses-list-bills.component.css',
   providers: [DatePipe]
 })
 export class ExpensesListBillsComponent implements OnInit {
@@ -66,7 +67,6 @@ export class ExpensesListBillsComponent implements OnInit {
   supplierList: { value: string, label: string }[] = [];
   periodsList: { value: string, label: string }[] = [];
   typesList: { value: string, label: string }[] = [];
-  
 
 
   ngOnInit(): void {
@@ -136,41 +136,6 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
   
-
-
-
-
-
-
-
-
-
-  // filterConfig: Filter[] = new FilterConfigBuilder()
-  //   .selectFilter('Tipo', 'billType.name', 'Seleccione un tipo', [
-  //     { value: 'TYPE1', label: 'Tipo 1' },
-  //     { value: 'TYPE2', label: 'Tipo 2' },
-  //     { value: 'TYPE3', label: 'Tipo 3' },
-  //   ])
-  //   .selectFilter('Proveedor', 'supplier.name', 'Seleccione un proveedor', [
-  //     { value: 'PROVIDER1', label: 'Proveedor 1' },
-  //     { value: 'PROVIDER2', label: 'Proveedor 2' },
-  //     { value: 'PROVIDER3', label: 'Proveedor 3' },
-  //   ])
-  //   .numberFilter('Monto', 'amount', 'Ingrese el monto')
-  //   .dateFilter('Fecha', 'date', 'Seleccione una fecha')
-  //   .selectFilter('Categoría', 'category.name', 'Seleccione una categoría', [
-  //     { value: 'CATEGORY1', label: 'Categoría 1' },
-  //     { value: 'CATEGORY2', label: 'Categoría 2' },
-  //     { value: 'CATEGORY3', label: 'Categoría 3' },
-  //   ])
-  //   .radioFilter('Activo', 'isActive', [
-  //     { value: 'true', label: 'Activo' },
-  //     { value: 'false', label: 'Inactivo' },
-  //     { value: 'undefined', label: 'Todo' },
-  //   ])
-  //   .build();
-
-
   //Lista de bills filtradas
   filteredBills: Bill[] = [];
   //Categorias inyectadas
@@ -186,14 +151,21 @@ export class ExpensesListBillsComponent implements OnInit {
   pageSize: number = 10;
   totalPages: number = 0;
   isLoading: boolean = false;
-
   totalElements: number = 0;
-  //currentPage: number = 0;
-  //pageSize: number = 10;
-  //totalPages: number = 0;
   totalItems: number = 0;
   cantPages: number[] = [];
   indexActive = 1;
+
+
+  onItemsPerPageChange() {
+    this.currentPage = 1;
+  }
+  
+  onPageChange(number: number) {
+    this.currentPage = number;
+    this.loadBills();
+  }
+  
 
   //Atributos
   //Lista de categorias
@@ -373,10 +345,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
-  }
-  onPageChange(number: number) {
-    this.currentPage = number;
-    this.loadBills();
   }
   nuevoGasto() {
     this.router.navigate(['/gastos/nuevo']);
