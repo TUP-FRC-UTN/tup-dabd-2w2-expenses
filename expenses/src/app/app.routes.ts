@@ -20,11 +20,6 @@ import {
   ExpensesPeriodListComponent
 } from "./components/expenses-period/expenses-period-list/expenses-period-list.component";
 import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-period/expenses-period.component";
-// import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
-// import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
-//import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
-// import { ExpensesPeriodExpensesComponent } from './components/period/expenses-period/expenses-period.component';
-// import { ListBillsComponent } from './components/expenses_bills/expenses-list-bills/list-bills.component';
 
 
 export const routes: Routes = [
