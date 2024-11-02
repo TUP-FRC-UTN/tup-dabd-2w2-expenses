@@ -4,11 +4,12 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 // import { ListChargesComponent } from './components/cargo/expenses-list-charges/list-charges.component';
 import {NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {MainLayoutComponent, NavbarComponent, NavbarItem, SidebarComponent, ToastsContainer} from 'ngx-dabd-grupo01';
+import {CommonModule, DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent],
+  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent, CommonModule, DatePipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
