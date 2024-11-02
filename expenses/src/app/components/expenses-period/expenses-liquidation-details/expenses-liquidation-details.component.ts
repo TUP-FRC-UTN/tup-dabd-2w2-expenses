@@ -81,8 +81,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     ;
 
   // filters
-  isFilterTextActive: boolean = false;
-  isFilterSelectActive: boolean = false;
   categories: FilterOption[] = [];
   suppliers: FilterOption[] = [];
 
