@@ -101,7 +101,7 @@ export class ExpensesListBillsComponent implements OnInit {
   //#endregion
 
   //#region DEPENDENCY INJECTION
-  billservice = inject(BillService);
+  billService = inject(BillService);
   categoryService = inject(CategoryService);
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
@@ -116,6 +116,7 @@ export class ExpensesListBillsComponent implements OnInit {
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
+    this.loadBills();
     this.initializeFilters(); // Initialize filters after loading data
 
     // Form group initialization for bill and new category
@@ -167,7 +168,7 @@ export class ExpensesListBillsComponent implements OnInit {
   }
   
   getBillTypes() {
-    this.billservice.getBillTypes().subscribe((types) => {
+    this.billService.getBillTypes().subscribe((types) => {
       this.typesList = types.map((type: any) => ({
         value: type.id,
         label: type.name
@@ -205,7 +206,7 @@ export class ExpensesListBillsComponent implements OnInit {
     this.bills = [];
     this.isLoading = true;
     const filters = this.filters.value;
-    this.billservice
+    this.billService
       .getAllBillsAndPagination(
         this.pageSize,
         this.currentPage - 1,
@@ -218,13 +219,17 @@ export class ExpensesListBillsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          console.log('Respuesta del servicio:', response);
           this.totalElements = response.totalElements;
           response.content.map((bill) => {
             this.bills.push(new Bill(bill.expenditure_id, bill.date, bill.amount, bill.description, bill.supplier, bill.period, bill.category, bill.bill_type, bill.status));
           });
         },
         error: (error) => console.error('Error al cargar las facturas:', error),
-        complete: () => (this.isLoading = false),
+        complete: () => {
+          console.log('Facturas cargadas:', this.bills);
+          this.isLoading = false;
+        },
       });
   }
   //#endregion
@@ -312,7 +317,7 @@ export class ExpensesListBillsComponent implements OnInit {
     doc.text('Bills Report', 14, 20);
 
     const filters = this.filters.value;
-    this.billservice
+    this.billService
       .getAllBills(
         100000,
         0,
@@ -345,7 +350,7 @@ export class ExpensesListBillsComponent implements OnInit {
 
   downloadTable() {
     const filters = this.filters.value;
-    this.billservice
+    this.billService
       .getAllBillsAndPagination(
         500000,
         0,
