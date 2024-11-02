@@ -59,7 +59,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
   isLoading = false;
   categories: Category[] = []; // Inicializado como array vacío
   columns: TableColumn[] = [
-    { headerName: 'Nombre', accessorKey: 'name' },
+    { headerName: 'Nombre', accessorKey: 'name'},
     { headerName: 'Descripción', accessorKey: 'description' },
     {
       headerName: 'Estado',

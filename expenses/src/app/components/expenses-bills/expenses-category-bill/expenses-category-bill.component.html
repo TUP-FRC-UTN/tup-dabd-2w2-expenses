@@ -1,10 +1,10 @@
 <ng-template #statusTemplate let-item>
-  <span [ngClass]="{
-    'badge rounded-pill text-bg-success': !item.is_delete,
-    'badge rounded-pill text-bg-danger': item.is_delete
-  }">
-    {{ item.is_delete ? 'Inactivo' : 'Activo' }}
-  </span>
+  <div class="d-flex">
+    <i class="bi" [ngClass]="{
+      'bi-check2-circle text-success fs-3': !item.is_delete,
+      'bi-x-circle text-danger fs-4': item.is_delete
+    }"></i>
+  </div>
 </ng-template>
 
 <app-main-container
