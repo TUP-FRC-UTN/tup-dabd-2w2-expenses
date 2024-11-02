@@ -51,7 +51,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
   totalItems = 0;
   page = 0;
   size = 10;
-  sortField = ' ';
+  sortField = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   // TABLE PROPERTIES
@@ -71,7 +71,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
 
   // Handlers for pagination
   onPageChange = (page: number) => {
-    this.page = page;
+    this.page = (page-1);
     this.loadCategories();
   };
 
@@ -110,7 +110,9 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
     ).subscribe({
       next: (response) => {
         this.categories = response.content || []; // Asegurarse de que siempre sea un array
-        console.log(response.content)
+        console.log(response)
+        console.log(this.sortDirection)
+        console.log(this.sortField)
         this.totalItems = response.totalElements;
       },
       error: (error) => {

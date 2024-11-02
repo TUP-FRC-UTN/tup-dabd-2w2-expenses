@@ -15,13 +15,22 @@ export class CategoryService {
   constructor() { }
 
   getPaginatedCategories(
-    page: number = 0,
-    size: number = 10,
-    sortField: string = 'name',
-    direction: 'asc' | 'desc' = 'asc'
+    page: number,
+    size: number,
+    sortField: string,
+    direction: string
   ): Observable<PaginatedResponse<Category>> {
     try {
       // Construimos el objeto pageable según el formato esperado por el backend
+      /*const pageable = {
+        page: page,
+        size: size,
+        sort: [`${sortField},${direction}`]
+      };*/
+
+      // Construimos los parámetros
+      // let params = new HttpParams().set('pageable', JSON.stringify(pageable));
+
       const pageable = {
         page: page,
         size: size,
@@ -29,14 +38,21 @@ export class CategoryService {
       };
 
       // Construimos los parámetros
+      /*let params = new HttpParams()
+        .set('pageable', JSON.stringify(pageable));*/
+
       let params = new HttpParams()
-        .set('pageable', JSON.stringify(pageable));
+        .set('page', page.toString())
+        .set('size', size.toString())
+        .set('sort', [`${sortField},${direction}`].toString());
 
       // Si necesitas pasar el isDeleted como parámetro opcional
       // params = params.set('isDeleted', 'false');
 
       console.log('Request URL:', `${this.url}/page`);
       console.log('Request params:', params.toString());
+
+      console.log(this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params }));
 
       return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
     } catch (error) {
