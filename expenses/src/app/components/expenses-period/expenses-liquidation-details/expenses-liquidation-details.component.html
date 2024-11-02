@@ -12,7 +12,8 @@
     (pdfButtonClick)="imprimir()"
     [tableFilters]="filters"
     [columns]="columns"
-    (searchValueChange)="filterTable($event)"
+    (searchValueChange)="filterTableByText($event)"
+    (filterValueChange)="filterTableBySelects($event)"
   >
   <div>
     <p style="margin: 0; font-size: 14px;"  class="text-end">

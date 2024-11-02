@@ -68,10 +68,10 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // back data
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
-  bills: Bill[] = [];
 
   // items
-  billsFiltered: Bill[] = this.bills;
+  billsFiltered: Bill[] = [];
+  originalBillls: Bill[] = [];
   columns: TableColumn[] = [
     {headerName: 'Categoría', accessorKey: 'category.name'},
     {headerName: 'Fecha', accessorKey: 'date'},
@@ -81,6 +81,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     ;
 
   // filters
+  isFilterTextActive: boolean = false;
+  isFilterSelectActive: boolean = false;
   categories: FilterOption[] = [];
   suppliers: FilterOption[] = [];
 
@@ -135,7 +137,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe((data) => {
       data.forEach(e => {
-        this.categories.push({value: e.category_id.toString() ,label: e.name})
+        this.categories.push({value: e.name ,label: e.name})
       })
     });
   }
@@ -143,7 +145,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadSuppliers() {
     this.supplierService.getAllProviders().subscribe((data) => {
       data.forEach(e => {
-        this.suppliers.push({value: e.id.toString() ,label: e.name})
+        this.suppliers.push({value: e.name ,label: e.name})
       })
     });
   }
@@ -202,7 +204,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
           status
         )
         .subscribe((data) => {
-          this.bills = data.content;
+          this.billsFiltered = data.content;
+          this.originalBillls = this.billsFiltered;
           this.cantPages = data.totalElements;
         });
     } else console.log('No hay un tipo de expensa definido');
@@ -211,14 +214,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // Filter data
 
-  filterTable(value: string) {
+  filterTableByText(value: string) {
     const filterValue = value?.toLowerCase() || '';
-    if(filterValue == '') {
-      this.billsFiltered = this.bills;
+    if(filterValue === '') {
+      this.billsFiltered = this.originalBillls;
       return;
     }
 
-    this.billsFiltered = this.bills.filter(bill =>
+    this.billsFiltered = this.originalBillls.filter(bill =>
       bill.category.name.toLowerCase().includes(filterValue) ||
       bill.supplier.name.toLowerCase().includes(filterValue) ||
       bill.amount.toString().toLowerCase().includes(filterValue) ||
@@ -228,16 +231,38 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     );
   }
 
+  filterTableBySelects(value: Record<string, any>) {
+
+    const filter1 = value['category']?.toLowerCase() || '';
+    const filter2 = value['supplier']?.toLowerCase() || '';
+
+    if (filter1 === '' && filter2 === '') {
+      this.billsFiltered = this.originalBillls;
+      return;
+    }
+
+    this.billsFiltered = this.originalBillls.filter(bill => {
+        const matchesFilter1 = filter1
+            ? (bill.category.name.toLowerCase().includes(filter1) ||
+               bill.supplier.name.toLowerCase().includes(filter1))
+            : true;
+
+        const matchesFilter2 = filter2
+            ? (bill.category.name.toLowerCase().includes(filter2) ||
+               bill.supplier.name.toLowerCase().includes(filter2))
+            : true;
+
+        return matchesFilter1 && matchesFilter2;
+    });
+}
+
+
   handleCategoryChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedId = +selectElement.value;
     this.category = selectedId;
-    console.log(selectedId);
-    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
-  }
 
-  clean () {
-    this.billsFiltered = this.bills;
+    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
   }
 
 
@@ -245,7 +270,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   initializePagination() {
     this.totalItems =
-      this.liquidationExpense.liquidation_expenses_details.length;
+    this.liquidationExpense.liquidation_expenses_details.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
