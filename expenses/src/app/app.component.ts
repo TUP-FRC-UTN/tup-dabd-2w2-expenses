@@ -15,10 +15,15 @@ import {MainLayoutComponent, NavbarComponent, NavbarItem, SidebarComponent, Toas
 export class AppComponent {
   title = 'expenses';
 
-
   navbarMenu: NavbarItem[] = [
     {
-      label: 'Expensas',
+      label: 'Accesos'
+    },
+    {
+      label: 'Empleados'
+    },
+    {
+      label: 'Gastos',
       sidebarMenu: [
         {
           label: 'Gastos',
@@ -26,39 +31,48 @@ export class AppComponent {
           subMenu: [
             { label: 'Nuevo', routerLink: '/gastos/nuevo' },
             { label: 'Listado', routerLink: '/gastos' },
-            { label: 'Categorias', routerLink: '/gastos/categorias' },
-            // { label: 'Reclamos', routerLink: '/claim' },
-            // { label: 'Tipos de Sanciones', routerLink: '/sanctionType' },
+            { label: 'Categorias', routerLink: '/gastos/categorias' }
           ],
         },
         {
           label: 'Cargos',
           subMenu: [
             { label: 'Nuevo', routerLink: '/cargos/nuevo' },
-            { label: 'Listado', routerLink: '/cargos' },
-            // { label: 'Infracciones', routerLink: '/infraction' },
-            // { label: 'Reclamos', routerLink: '/claim' },
-            // { label: 'Tipos de Sanciones', routerLink: '/sanctionType' },
+            { label: 'Listado', routerLink: '/cargos' }
           ],
         },
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Listado', routerLink: '/periodo' },
-            // { label: 'Roles', routerLink: '/role' },
-            // { label: 'Lotes', routerLink: '/lot' },
+            { label: 'Listado', routerLink: '/periodo' }
           ]
         },
         {
           label: 'Expensas',
           subMenu: [
-            { label: 'Listado', routerLink: '/expenses' },
-            // { label: 'Roles', routerLink: '/role' },
-            // { label: 'Lotes', routerLink: '/lot' },
+            { label: 'Listado', routerLink: '/expenses' }
           ]
         }
       ],
     },
-
+    {
+      label: 'Inventario'
+    },
+    {
+      label: 'Multas y obras'
+    },
+    {
+      label: 'Notificaciones'
+    },
+    {
+      label: 'Proveedores'
+    },
+    {
+      label: 'Tickets'
+    },
+    {
+      label: 'Usuarios'
+    }
   ];
 }
+
