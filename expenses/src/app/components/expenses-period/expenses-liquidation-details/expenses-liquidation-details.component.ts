@@ -115,11 +115,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // other variables
 
   id:number|null=null
-  category: number | null = null;
   period: number | null = null;
-  type: number | undefined = undefined;
-  typeFilter: string = '';
-  searchTerm: string = '';
 
   fileName = 'reporte-gastos-liquidación';
 
@@ -164,12 +160,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       const periodId = params.get('period_id');
       const id = params.get('id');
-      const category = params.get('categoria');
-      if (!category || category == '0') {
-        this.category = null;
-      } else {
-        this.category = Number(category);
-      }
 
       if (id && !isNaN(Number(id))) {
         this.id = Number(params.get('id')) ;
@@ -177,7 +167,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
           .getById(Number(id))
           .subscribe((data: LiquidationExpense) => {
             this.liquidationExpense = data;
-            this.type = data.bill_type?.bill_type_id;
 
             if (periodId && !isNaN(Number(periodId))) {
               this.period = parseInt(periodId);
@@ -264,38 +253,30 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 }
 
 
-  handleCategoryChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedId = +selectElement.value;
-    this.category = selectedId;
-
-    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
-  }
-
 
   // Pagination
 
-  initializePagination() {
-    this.totalItems =
-    this.liquidationExpense.liquidation_expenses_details.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
+  // initializePagination() {
+  //   this.totalItems =
+  //   this.liquidationExpense.liquidation_expenses_details.length;
+  //   this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  //   this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  // }
 
-  changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-    this.getBills(
-      this.itemsPerPage,
-      this.currentPage
-    );
-  }
+  // changePage(page: number) {
+  //   if (page >= 1 && page <= this.totalPages) {
+  //     this.currentPage = page;
+  //   }
+  //   this.getBills(
+  //     this.itemsPerPage,
+  //     this.currentPage
+  //   );
+  // }
 
-  onItemsPerPageChange() {
-    this.currentPage = 1;
-    this.initializePagination();
-  }
+  // onItemsPerPageChange() {
+  //   this.currentPage = 1;
+  //   this.initializePagination();
+  // }
 
 
   // PDF Y Excel
@@ -368,9 +349,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // Modals
 
-  openModal() {
-    const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
-  }
+  // openModal() {
+  //   const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
+  // }
 
   showModal(content: TemplateRef<any>) {
     const modalRef = this.modalService.open(content, {
