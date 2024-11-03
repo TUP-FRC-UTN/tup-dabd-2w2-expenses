@@ -17,17 +17,12 @@ import Lot from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
-//import $ from "jquery";
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-//import * as XLSX from 'xlsx'
 import * as XLSX from 'xlsx'; // Para exportar a Excel
 import jsPDF from 'jspdf'; // Para exportar a PDF
-//import 'jspdf-autotable';       // Para generar tablas en PDF
 import moment from 'moment';
 //import { Subject } from 'rxjs';
 //import { debounceTime, distinctUntilChanged, switchMap, tap, finalize, takeUntil, max } from 'rxjs/operators';
-// import 'datatables.net';
-// import 'datatables.net-bs5';
 // import 'bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
@@ -58,7 +53,7 @@ import autoTable from 'jspdf-autotable';
     ExpensesModalComponent,
     NgbModule,
     MainContainerComponent,
-    TableFiltersComponent,
+    //TableFiltersComponent
   ],
   templateUrl: './expenses-list-charges.component.html',
   styleUrl: './expenses-list-charges.component.css',
@@ -368,4 +363,9 @@ throw new Error('Method not implemented.');
     return period.state === 'closed';
   }
   //#endregion
+
+  //#region METODOS FILTER BUTTONS
+  onFilterTextBoxChanged(event: Event){
+
+  }
 }

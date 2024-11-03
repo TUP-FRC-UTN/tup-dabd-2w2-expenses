@@ -39,10 +39,13 @@ export class ChargeService {
         params = params.set('period', periodId.toString());
       }      
     }
-    // if (plotId) {
-    //   console.log('lote= '+plotId)
-    //   params = params.set('plotId', plotId);
-    // }
+    if(plotId != undefined || plotId != null ){
+      if (plotId) {
+        console.log('lote= '+plotId)
+        params = params.set('plotId', plotId);
+      }
+    }
+    
     if (typeId != undefined || typeId != null) {
       if(typeId != 0){
         console.log('categoria = '+typeId);
