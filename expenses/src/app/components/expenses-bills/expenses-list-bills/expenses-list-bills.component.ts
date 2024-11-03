@@ -73,7 +73,7 @@ export class ExpensesListBillsComponent implements OnInit {
   totalItems = 0;
   page = 1;
   size = 10;
-  sizeOptions : number[] = [10, 25, 50]
+  sizeOptions: number[] = [10, 25, 50];
   sortField = 'billType.name';
   sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -359,8 +359,8 @@ export class ExpensesListBillsComponent implements OnInit {
     const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
-        this.size,
         this.page - 1,
+        this.size,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
         filters.selectedSupplier?.valueOf(),

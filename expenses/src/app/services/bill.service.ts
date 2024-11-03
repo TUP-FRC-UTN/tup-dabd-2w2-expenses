@@ -64,7 +64,7 @@ export class BillService {
     return result;
   }
 
-  getAllBillsAndPagination(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
+  getAllBillsAndPagination(page?: number, size?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
     let params = new HttpParams();
 
     
