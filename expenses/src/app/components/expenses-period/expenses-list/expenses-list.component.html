@@ -3,8 +3,8 @@
 
       <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- Sección de búsqueda y filtros -->
-        <div class="btn-group me-5" role="group">
-          <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="d-flex align-items-center mb-2" role="group">
+          <div class="col-sm-12 col-md-8 col-xl-12">
             <div class="input-group">
             <span class="input-group-text" id="search-icon">
               <i class="bi bi-search"></i>
@@ -17,10 +17,8 @@
                 placeholder="Buscar..."
               />
               <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
-
             </div>
           </div>
-
         </div>
         <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
         <div class="d-flex align-items-center">

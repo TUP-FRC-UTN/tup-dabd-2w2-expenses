@@ -57,7 +57,7 @@ export class ExpenseServiceService {
   getWithoutFilters(periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
     let params = new HttpParams()
     // Parámetros adicionales
-    if (periodId !== undefined && periodId !== 0) {
+    if (periodId !== undefined && periodId !== 0 && periodId !== null) {
       params = params.set('periodId', periodId.toString());
     }
     if(periodId == 0) {
