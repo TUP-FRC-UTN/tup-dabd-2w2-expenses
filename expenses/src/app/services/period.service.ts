@@ -1,6 +1,6 @@
 
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import Period from '../models/period';
 import { PORT } from '../const';
@@ -69,10 +69,6 @@ export class PeriodService {
   }
 
   closePeriod(id:number):Observable<void>{
-    const headers = new HttpHeaders({
-      'x-user-id': '1'
-    });
-
-    return this.http.put<void>(`${this.apiUrl}/close/${id}`, null, { headers });
+    return this.http.put<void>(`${this.apiUrl}/close/${id}`,null)
   }
 }
