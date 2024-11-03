@@ -156,11 +156,11 @@ export class ExpensesListComponent implements OnInit{
   periods: FilterOption[] = [];
   lotss: FilterOption[] = []
   types: FilterOption[]= []
-  //carga el select de periodo y lote
+
   filterConfig: Filter[] = [
-    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods),
     new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types)
+    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types),
+    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
 
 
@@ -168,7 +168,8 @@ export class ExpensesListComponent implements OnInit{
     const periodPath = this.route.snapshot.paramMap.get('period_id');
     if (periodPath != null) {
       console.log('Path: ' + periodPath);
-      this.periods.push({value: periodPath, label: 'Periodo Seleccionado'})
+      this.selectedPeriodId = Number(periodPath);
+      this.filterConfig.pop();
     } else {
     this.periodService.get().subscribe((data) => {
       // @ts-ignore

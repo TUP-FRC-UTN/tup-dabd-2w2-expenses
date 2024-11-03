@@ -30,7 +30,7 @@ import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-per
 export const routes: Routes = [
   // Ruta periodos - manejo del estado del periodo
   { path: 'periodo', component: ExpensesPeriodListComponent },
-  { path: 'periodo/:period_id/expensas', component: ExpensesPeriodComponent },
+  { path: 'periodo/:period_id/expensas', component: ExpensesListComponent },
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationComponent },
   { path: 'periodo/:period_id/liquidacion/:id/:categoria', component: LiquidationExpenseDetailsComponent },
 
