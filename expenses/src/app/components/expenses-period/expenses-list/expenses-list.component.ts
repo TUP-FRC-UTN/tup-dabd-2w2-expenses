@@ -35,10 +35,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ExpensesListComponent implements OnInit{
 
 
-
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-
+  private route = inject(ActivatedRoute);
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
   private readonly service = inject(ExpenseServiceService)
@@ -66,28 +63,18 @@ export class ExpensesListComponent implements OnInit{
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-
-  text : string = ""
-
-  fileName : string = "Expensas.xlsx"
-
-
-  applyFilterWithNumber: boolean = false;
-  applyFilterWithCombo: boolean = false;
-  contentForFilterCombo : string[] = []
-  actualFilter : string | undefined = ExpenseFilters.NOTHING;
-  filterTypes = ExpenseFilters;
-  filterInput : string = "";
-
-
   ngOnInit(): void {
     this.currentPage = 0
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if(periodPath != null) {
+      this.selectedPeriodId = Number(periodPath) ;
+    }
     this.loadSelect()
     this.loadExpenses()
   }
-
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+      console.log(data.content)
       this.expenses = data.content.map(expense => {
         const expenses = this.keysToCamel(expense) as Expense;
         return {
@@ -119,11 +106,9 @@ export class ExpensesListComponent implements OnInit{
     const half = Math.floor(this.maxPagesToShow / 2);
     let start = Math.max(0, this.currentPage - half);
     let end = Math.min(this.totalPages, start + this.maxPagesToShow);
-
     if (end - start < this.maxPagesToShow) {
       start = Math.max(0, end - this.maxPagesToShow);
     }
-
     this.visiblePages = [];
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
@@ -174,25 +159,36 @@ export class ExpensesListComponent implements OnInit{
   //carga el select de periodo y lote
   filterConfig: Filter[] = [
     new SelectFilter('Periodos','period','Seleccione un periodo',this.periods),
-    new SelectFilter('Lote','period','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','period','Seleccione un tipo de lote',this.types)
+    new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
+    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types)
   ]
 
 
   loadSelect() {
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if (periodPath != null) {
+      console.log('Path: ' + periodPath);
+      this.periods.push({value: periodPath, label: 'Periodo Seleccionado'})
+    } else {
     this.periodService.get().subscribe((data) => {
+      // @ts-ignore
+      this.periods.push({value: null, label: 'Todos'})
       data.forEach(item => {
         // @ts-ignore
         this.periods.push({value: item.id, label: item.month +'/'+ item.year})
       })
-    })
+    })}
     this.lotsService.get().subscribe((data: Lot[]) => {
+      // @ts-ignore
+      this.lotss.push({value: null, label: 'Todos'})
       data.forEach(l => {
         // @ts-ignore
         this.lotss.push({value: l.id, label: l.plot_number})
       })
     })
     this.billService.getBillTypes().subscribe((data: BillType[]) => {
+      // @ts-ignore
+      this.types.push({ value: null, label: 'Todos' });
       data.forEach(item => {
         // @ts-ignore
         this.types.push({value: item.bill_type_id, label: item.name})
@@ -244,9 +240,9 @@ export class ExpensesListComponent implements OnInit{
       const data = expenses.map(expense => ({
         'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
-        'Fecha de liquidación': expense.liquidationDate,
+        'Fecha de liquidacion': expense.liquidationDate,
         'Estado': expense.state,
-        'Número de lote': expense.plotNumber,
+        'Numero de lote': expense.plotNumber,
         'Typo de lote': expense.typePlot,
         'Porcentaje': expense.percentage,
         'Tipo de expensa': expense.billType
@@ -263,8 +259,16 @@ export class ExpensesListComponent implements OnInit{
 
   }
 
-    filterChange($event: Record<string, any>) {
-
+  filterChange(event: Record<string, any>) {
+    // Actualizar las variables de filtro con los valores seleccionados
+    this.selectedPeriodId = event['period'] || null;
+    this.selectedLotId = event['lot'] || null;
+    this.selectedTypeId = event['type'] || null;
+    console.log(this.selectedPeriodId)
+    console.log(this.selectedLotId)
+    console.log(this.selectedTypeId)
+    // Llamar a loadExpenses para aplicar los filtros en el backend
+    this.loadExpenses();
   }
 }
 
