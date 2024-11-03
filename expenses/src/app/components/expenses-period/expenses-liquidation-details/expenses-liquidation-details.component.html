@@ -1,3 +1,9 @@
+<!-- <ng-template #amountTemplate let-item>
+  <p class="text-end hola">
+    hola
+  </p>
+</ng-template> -->
+
 <app-main-container
   [title]="'Liquidación de Expensas | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
   (infoButtonClick)="showModal(modalTemplate)"
@@ -7,13 +13,19 @@
     [items]="billsFiltered"
     [showSearchBar]="true"
     [showHeaderButton]="false"
-    [pagination]="tablePagination"
     (excelButtonClick)="downloadTable()"
     (pdfButtonClick)="imprimir()"
     [tableFilters]="filters"
     [columns]="columns"
     (searchValueChange)="filterTableByText($event)"
     (filterValueChange)="filterTableBySelects($event)"
+    [pagination]="{
+      totalItems: totalItems,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
   >
   </app-table>
 

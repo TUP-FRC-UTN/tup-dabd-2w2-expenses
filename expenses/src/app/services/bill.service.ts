@@ -1,13 +1,14 @@
 import {inject, Injectable} from '@angular/core';
 import {Bill} from '../models/bill';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import {map, Observable, of} from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
 import {BillDto} from "../models/billDto";
 import { PaginatedResponse } from '../models/paginatedResponse';
 import {PORT} from '../const';
 import { Page } from './expense.service';
+import { PagerComponent } from 'ngx-bootstrap/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -113,7 +114,7 @@ export class BillService {
     return this.http.get<BillType[]>(`${this.url}bill-type`)
   }
 
-  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number | null, status:string | null):Observable<Bill[]>{
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number | null, status:string | null):Observable<{pagination: Observable<PaginatedResponse<BillDto>>, bills:Observable<Bill[]>}>{
     let request = `${this.url}bills?size=${size}&page=${page}`
 
     if (type != null) request = request + `&type=${type}`
@@ -121,8 +122,10 @@ export class BillService {
     if (category != null) request = request + `&category=${category}`
     if (period != null) request = request + `&period=${period}`
 
+    let data = this.http.get<PaginatedResponse<BillDto>>(request)
+
     try {
-      return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(request));
+      return of({pagination: data,bills: this.formatBills(data)});
     } catch (e) {
       console.log(e)
       throw e

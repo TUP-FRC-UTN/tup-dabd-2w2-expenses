@@ -1,9 +1,8 @@
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +18,7 @@ import autoTable from 'jspdf-autotable';
 import moment from 'moment';
 import { TablePagination, ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -70,15 +70,21 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
 
   // items
+
+  @ViewChild('amountTemplate') amountTemplate!: TemplateRef<any>;
+
   billsFiltered: Bill[] = [];
   originalBills: Bill[] = [];
+
+  items$: Observable<Bill[]> = of([]);
+
   columns: TableColumn[] = [
     {headerName: 'Categoría', accessorKey: 'category.name'},
     {headerName: 'Tipo', accessorKey: 'billType.name'},
     {headerName: 'Fecha', accessorKey: 'date'},
     {headerName: 'Proveedor', accessorKey: 'supplier.name'},
     {headerName: 'Descripción', accessorKey: 'description'},
-    {headerName: 'Monto', accessorKey: 'amount'},
+    {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
   ];
 
   // filters
@@ -93,24 +99,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   ];
 
   // pagination
-  cantPages: number = 10;
-  currentPage = 1;
-  itemsPerPage = 10;
   totalItems = 0;
-  totalPages = 0;
-  pages: number[] = [];
-  tablePagination: TablePagination = {
-    totalItems: this.totalItems,
-    page: this.currentPage,
-    size: this.itemsPerPage,
-
-    onPageChange: function (page: number): void {
-      throw new Error('Function not implemented.');
-    },
-    onPageSizeChange: function (itemsPerPage: number): void {
-      throw new Error('Function not implemented.');
-    }
-  };
+  page = 0;
+  size = 10;
 
   // other variables
 
@@ -172,8 +163,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
               this.period = parseInt(periodId);
             }
             this.getBills(
-              this.itemsPerPage,
-              this.currentPage
+              this.size,
+              this.page,
+              this.period
             );
           });
       }
@@ -182,21 +174,28 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   private getBills(
     itemsPerPage: number,
-    page: number
+    page: number,
+    period: number | null
   ) {
     this.billsService
       .getAllBillsPaged(
         itemsPerPage,
-        page - 1,
-        null,
+        page,
+        period,
         null,
         null,
         null
       )
       .subscribe((data) => {
-        this.billsFiltered = data;
-        this.originalBills = this.billsFiltered;
-        this.cantPages = data.length;
+        data.bills.subscribe(data => {
+          this.billsFiltered = data
+          this.originalBills = this.billsFiltered;
+        })
+        data.pagination.subscribe(data => {
+          this.totalItems = data.totalElements
+        });
+        this.items$ = of(this.billsFiltered);
+
       });
   }
 
@@ -250,33 +249,22 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
         return matchesFilter1 && matchesFilter2 && matchesFilter3;
     });
-}
+  }
 
 
 
   // Pagination
 
-  // initializePagination() {
-  //   this.totalItems =
-  //   this.liquidationExpense.liquidation_expenses_details.length;
-  //   this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  //   this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  // }
+  onPageChange = (page: number) => {
+    this.page = (page-1);
+    this.loadLiquidationExpenseDetails();
+  };
 
-  // changePage(page: number) {
-  //   if (page >= 1 && page <= this.totalPages) {
-  //     this.currentPage = page;
-  //   }
-  //   this.getBills(
-  //     this.itemsPerPage,
-  //     this.currentPage
-  //   );
-  // }
-
-  // onItemsPerPageChange() {
-  //   this.currentPage = 1;
-  //   this.initializePagination();
-  // }
+  onPageSizeChange = (size: number) => {
+    this.size = size;
+    this.page = 0;
+    this.loadLiquidationExpenseDetails();
+  };
 
 
   // PDF Y Excel
