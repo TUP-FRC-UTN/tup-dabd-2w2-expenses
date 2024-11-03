@@ -1,43 +1,64 @@
+<ng-template #amountTemplate let-item>
+  <td style="text-align: end">
+    {{
+      item.amount?.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    }}
+  </td>
+</ng-template>
+
+<ng-template #dateTemplate let-item>
+  <td>
+    {{ item.date | date: 'dd/MM/yyyy' }}
+  </td>
+</ng-template>
+
+<ng-template #actionsTemplate let-item>
+  <td style="display: flex; flex-direction: row; gap: 4px;">
+    <button type="button" class="btn btn-primary" (click)="showPaidModal(item)">
+      <i class="bi bi-eye"></i>
+    </button>
+    <button type="button" class="btn btn-warning" (click)="edit(item.expenditureId)">
+      <i class="bi bi-pencil"></i>
+    </button>
+  </td>
+</ng-template>
+
+<ng-template #paidPdf let-item>
+  <div class="d-flex justify-content-center align-items-center">
+    <img src="https://res.cloudinary.com/dxatwbzff/image/upload/v1728734703/factura_ecogas_numerada_rvn6pt.jpg" alt="" height="500px" width="400px">
+  </div>
+</ng-template>
+
+
 <app-main-container
-  [title]="'Liquidación de Expensas ' + liquidationExpense.bill_type?.name + ' | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
-  (infoButtonClick)="showModal(modalTemplate)"
+  [title]="'Liquidación de Expensas | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
+  (infoButtonClick)="showModal()"
 >
 
-  <app-table
-    [items]="billsFiltered"
-    [showSearchBar]="true"
-    [showHeaderButton]="false"
-    [pagination]="tablePagination"
-    (excelButtonClick)="downloadTable()"
-    (pdfButtonClick)="imprimir()"
-    [tableFilters]="filters"
-    [columns]="columns"
-    (searchValueChange)="filterTableByText($event)"
-    (filterValueChange)="filterTableBySelects($event)"
-  >
-  <div>
-    <p style="margin: 0; font-size: 14px;"  class="text-end">
-      <b>Monto Total</b>
-    </p>
-    <p style="margin: 0; font-size: 14px;" class="text-end">
-      {{
-        liquidationExpense.total_amount?.toLocaleString("es-AR", {
-          style: "currency",
-          currency: "ARS",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      }}
-    </p>
-  </div>
-  </app-table>
+
+<app-table
+  [items]="billsFiltered"
+  [columns]="columns"
+  [showSearchBar]="true"
+  [showHeaderButton]="false"
+  (excelButtonClick)="downloadTable()"
+  (pdfButtonClick)="imprimir()"
+  (searchValueChange)="filterTableByText($event)"
+  (filterValueChange)="filterTableBySelects($event)"
+  [pagination]="{
+      totalItems: totalItems,
+      page: page,
+      size: size,
+      onPageChange: onPageChange,
+      onPageSizeChange: onPageSizeChange
+    }"
+>
+</app-table>
 </app-main-container>
 
 
-<ng-template #modalTemplate let-modal>
-  <app-confirm-alert
-    [alertTitle]="'Acerca de Gastos de expensa'"
-    [alertMessage]="'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla'"
-    [alertType]="'info'"
-  ></app-confirm-alert>
-</ng-template>
