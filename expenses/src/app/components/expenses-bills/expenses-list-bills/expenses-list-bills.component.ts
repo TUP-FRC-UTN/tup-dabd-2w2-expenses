@@ -73,6 +73,7 @@ export class ExpensesListBillsComponent implements OnInit {
   totalItems = 0;
   page = 1;
   size = 10;
+  sizeOptions : number[] = [10, 25, 50]
   sortField = 'billType.name';
   sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -144,39 +145,23 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   filterTableBySelects(value: Record<string, any>) {
-    const filterCategory = value['selectedCategory']?.toLowerCase() || '';
-    const filterSupplier = value['selectedSupplier']?.toLowerCase() || '';
-    const filterPeriod = value['selectedPeriod']?.toLowerCase() || '';
-    const filterType = value['selectedType']?.toLowerCase() || '';
-
-    if (!filterCategory && !filterSupplier && !filterPeriod && !filterType) {
-      this.filteredBills = this.bills;
-      return;
-    }
+    const filterCategory = value['selectedCategory'] || 0;
+    const filterSupplier = value['selectedSupplier'] || 0;
+    const filterPeriod = value['selectedPeriod'] || 0;
+    const filterType = value['selectedType'] || 0;
 
     this.filteredBills = this.bills.filter((bill) => {
       const matchesCategory = filterCategory
-        ? bill.category?.name
-          ? bill.category.name.toLowerCase().includes(filterCategory)
-          : false
+        ? bill.category?.category_id === filterCategory
         : true;
       const matchesSupplier = filterSupplier
-        ? bill.supplier?.name
-          ? bill.supplier.name.toLowerCase().includes(filterSupplier)
-          : false
+        ? bill.supplier?.id === filterSupplier
         : true;
       const matchesPeriod = filterPeriod
-        ? bill.period?.end_date
-          ? bill.period.end_date
-              .toISOString()
-              .toLowerCase()
-              .includes(filterPeriod)
-          : false
+        ? bill.period?.id === filterPeriod
         : true;
       const matchesType = filterType
-        ? bill.billType?.name
-          ? bill.billType.name.toLowerCase().includes(filterType)
-          : false
+        ? bill.billType?.bill_type_id === filterType
         : true;
 
       return matchesCategory && matchesSupplier && matchesPeriod && matchesType;
@@ -185,9 +170,19 @@ export class ExpensesListBillsComponent implements OnInit {
 
   onSearchValueChange(searchTerm: string) {
     this.searchTerm = searchTerm;
-    this.page = 0;
-    this.loadBills();
+    this.page = 1; // Resetea a la primera página cuando buscas
+    this.filterTableByText(searchTerm);
   }
+
+  onFilterChange() {
+    const filters = this.filters.value;
+    this.filterTableBySelects(filters);
+  }
+
+  onFilterValueChange($event: Record<string, any>) {
+    this.filterTableBySelects($event);
+  }
+
   //#endregion
 
   @ViewChild('actionsTemplate', { static: true })
@@ -206,6 +201,16 @@ export class ExpensesListBillsComponent implements OnInit {
       cellRenderer: this.actionsTemplate,
     },
   ];
+
+  ngOnInit(): void {
+    this.filteredBills = this.bills;
+    this.getCategories();
+    this.getProviders();
+    this.getPeriods();
+    this.getBillTypes();
+    this.loadBills();
+    this.initializeFilters();
+  }
 
   onSortChange(field: string) {
     if (this.sortField === field) {
@@ -232,14 +237,14 @@ export class ExpensesListBillsComponent implements OnInit {
     `;
   }
 
-  onPageChange = (page: number) => {
-    this.currentPage = page;
+  onPageChange = (newPage: number) => {
+    this.page = newPage;
     this.loadBills();
   };
 
-  onPageSizeChange = (size: number) => {
-    this.pageSize = size;
-    this.currentPage = 1;
+  onPageSizeChange = (newSize: number) => {
+    this.size = newSize;
+    this.page = 1; // Resetea a la primera página cuando cambias el tamaño
     this.loadBills();
   };
 
@@ -258,15 +263,15 @@ export class ExpensesListBillsComponent implements OnInit {
   //#endregion
 
   //#region INITIALIZATION AND DATA LOADING
-  ngOnInit(): void {
-    this.filteredBills = this.bills;
-    this.getCategories();
-    this.getProviders();
-    this.getPeriods();
-    this.getBillTypes();
-    this.loadBills();
-    this.initializeFilters();
-  }
+  // ngOnInit(): void {
+  //   this.filteredBills = this.bills;
+  //   this.getCategories();
+  //   this.getProviders();
+  //   this.getPeriods();
+  //   this.getBillTypes();
+  //   this.loadBills();
+  //   this.initializeFilters();
+  // }
 
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -348,14 +353,14 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   // Load all bills with pagination and filters
-  loadBills() {
+  private loadBills(): void {
     this.bills = [];
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
-        this.pageSize,
-        this.currentPage - 1,
+        this.size,
+        this.page - 1,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
         filters.selectedSupplier?.valueOf(),

@@ -9,14 +9,21 @@
       </button>
     </div>
   </ng-template>
-  <app-table [items]="bills" [columns]="columns" [pagination]="{
+  <app-table [items]="filteredBills" [columns]="columns" [pagination]="{
     totalItems: totalItems,
     page: page,
     size: size,
     onPageChange: onPageChange,
     onPageSizeChange: onPageSizeChange
-  }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
-    (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="filterTableBySelects($event)"
-    [tableFilters]="filterConfig" (excelButtonClick)="downloadTable()" (pdfButtonClick)="imprimir()">
-  </app-table>
+  }"
+  [showSearchBar]="true"
+  [isLoading]="isLoading"
+  (searchValueChange)="onSearchValueChange($event)"
+  (headerButtonClick)="nuevoGasto()"
+  [showHeaderButton]="true"
+  (filterValueChange)="onFilterValueChange($event)"
+  [tableFilters]="filterConfig"
+  (excelButtonClick)="downloadTable()"
+  (pdfButtonClick)="imprimir()">
+</app-table>
 </app-main-container>
