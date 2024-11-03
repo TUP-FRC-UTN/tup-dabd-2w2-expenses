@@ -18,13 +18,14 @@ import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
 import {MainContainerComponent, ToastService} from "ngx-dabd-grupo01";
 import {NgArrayPipesModule} from "ngx-pipes";
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 
 
 
 @Component({
   selector: 'app-expenses-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, RouterLink, NgArrayPipesModule, MainContainerComponent],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, RouterLink, NgArrayPipesModule, MainContainerComponent, NgSelectComponent, NgOptionComponent],
   templateUrl: './expenses-add-bill.component.html',
   styleUrl: './expenses-add-bill.component.css',
   providers: [DatePipe]
