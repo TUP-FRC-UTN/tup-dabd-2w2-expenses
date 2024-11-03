@@ -5,7 +5,7 @@ import Expense, { ExpenseFilters } from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
-import { CommonModule } from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Lot from '../../../models/lot';
@@ -15,37 +15,27 @@ import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
-import {TableColumn, TableComponent} from "ngx-dabd-grupo01";
-import {delay, Observable, of} from "rxjs";
+import {
+  TableColumn, TableComponent, ConfirmAlertComponent,
+
+  MainContainerComponent,
+  ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
+} from "ngx-dabd-grupo01" ;
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+
 
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
-  imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent, TableComponent,NgPipesModule],
+  imports: [CommonModule, RouterModule, FormsModule, PeriodSelectComponent, TableComponent, NgPipesModule, MainContainerComponent, TableFiltersComponent],
+  providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-list.component.html',
   styleUrl: './expenses-list.component.css'
 })
 export class ExpensesListComponent implements OnInit{
 
 
-
-
-
-
-showInfo() {
-throw new Error('Method not implemented.');
-}
-
-
-
-
-
-onFilterTextBoxChanged($event: Event) {
-throw new Error('Method not implemented.');
-}
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-
+  private route = inject(ActivatedRoute);
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
   private readonly service = inject(ExpenseServiceService)
@@ -73,28 +63,18 @@ throw new Error('Method not implemented.');
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-
-  text : string = ""
-
-  fileName : string = "Expensas.xlsx"
-
-
-  applyFilterWithNumber: boolean = false;
-  applyFilterWithCombo: boolean = false;
-  contentForFilterCombo : string[] = []
-  actualFilter : string | undefined = ExpenseFilters.NOTHING;
-  filterTypes = ExpenseFilters;
-  filterInput : string = "";
-
-
   ngOnInit(): void {
     this.currentPage = 0
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if(periodPath != null) {
+      this.selectedPeriodId = Number(periodPath) ;
+    }
     this.loadSelect()
     this.loadExpenses()
   }
-
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+      console.log(data.content)
       this.expenses = data.content.map(expense => {
         const expenses = this.keysToCamel(expense) as Expense;
         return {
@@ -126,11 +106,9 @@ throw new Error('Method not implemented.');
     const half = Math.floor(this.maxPagesToShow / 2);
     let start = Math.max(0, this.currentPage - half);
     let end = Math.min(this.totalPages, start + this.maxPagesToShow);
-
     if (end - start < this.maxPagesToShow) {
       start = Math.max(0, end - this.maxPagesToShow);
     }
-
     this.visiblePages = [];
     for (let i = start; i < end; i++) {
       this.visiblePages.push(i);
@@ -175,16 +153,46 @@ throw new Error('Method not implemented.');
     this.searchTerm = ''
     this.pageSize = 10
   }
+  periods: FilterOption[] = [];
+  lotss: FilterOption[] = []
+  types: FilterOption[]= []
   //carga el select de periodo y lote
+  filterConfig: Filter[] = [
+    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods),
+    new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
+    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types)
+  ]
+
+
   loadSelect() {
-    this.periodService.get().subscribe((data: Period[]) => {
-      this.periodos = data
-    })
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if (periodPath != null) {
+      console.log('Path: ' + periodPath);
+      this.periods.push({value: periodPath, label: 'Periodo Seleccionado'})
+    } else {
+    this.periodService.get().subscribe((data) => {
+      // @ts-ignore
+      this.periods.push({value: null, label: 'Todos'})
+      data.forEach(item => {
+        // @ts-ignore
+        this.periods.push({value: item.id, label: item.month +'/'+ item.year})
+      })
+    })}
     this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
+      // @ts-ignore
+      this.lotss.push({value: null, label: 'Todos'})
+      data.forEach(l => {
+        // @ts-ignore
+        this.lotss.push({value: l.id, label: l.plot_number})
+      })
     })
     this.billService.getBillTypes().subscribe((data: BillType[]) => {
-      this.tipos = data
+      // @ts-ignore
+      this.types.push({ value: null, label: 'Todos' });
+      data.forEach(item => {
+        // @ts-ignore
+        this.types.push({value: item.bill_type_id, label: item.name})
+      })
     })
   }
   getMonthName(month: number): string {
@@ -194,6 +202,9 @@ throw new Error('Method not implemented.');
     ];
     return monthNames[month - 1];
   }
+  showInfo() {
+    throw new Error('Method not implemented.');
+  }
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();
@@ -201,7 +212,6 @@ throw new Error('Method not implemented.');
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
-
     // Llamada al servicio para obtener las expensas
     this.service.getWithoutFilters(this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Usando autoTable para agregar la tabla
@@ -218,7 +228,6 @@ throw new Error('Method not implemented.');
           expense.billType
         ]),
       });
-
       // Guardar el PDF después de agregar la tabla
       doc.save('expenses_report.pdf');
       console.log('Impreso')
@@ -231,9 +240,9 @@ throw new Error('Method not implemented.');
       const data = expenses.map(expense => ({
         'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
-        'Fecha de liquidación': expense.liquidationDate,
+        'Fecha de liquidacion': expense.liquidationDate,
         'Estado': expense.state,
-        'Número de lote': expense.plotNumber,
+        'Numero de lote': expense.plotNumber,
         'Typo de lote': expense.typePlot,
         'Porcentaje': expense.percentage,
         'Tipo de expensa': expense.billType
@@ -243,8 +252,23 @@ throw new Error('Method not implemented.');
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-      XLSX.writeFile(wb, this.fileName);
+      XLSX.writeFile(wb,  'Expensas ' + Date.now().toString() + '.xlsx');
     })}
 
+  onFilterTextBoxChanged($event: Event) {
+
+  }
+
+  filterChange(event: Record<string, any>) {
+    // Actualizar las variables de filtro con los valores seleccionados
+    this.selectedPeriodId = event['period'] || null;
+    this.selectedLotId = event['lot'] || null;
+    this.selectedTypeId = event['type'] || null;
+    console.log(this.selectedPeriodId)
+    console.log(this.selectedLotId)
+    console.log(this.selectedTypeId)
+    // Llamar a loadExpenses para aplicar los filtros en el backend
+    this.loadExpenses();
+  }
 }
 

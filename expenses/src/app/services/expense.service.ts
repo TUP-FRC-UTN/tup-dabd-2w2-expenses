@@ -21,12 +21,12 @@ export class ExpenseServiceService {
   private readonly http = inject(HttpClient)
   private apiUrl = `${PORT}expense/`
   getExpenses(page: number, size: number, periodId?: number, plotId?: number, typeId?: number, sortField?: string, sortOrder?: string): Observable<Page<Expense>> {
+    this.apiUrl = "http://localhost:8088/expense/all/pageable"
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
-
     // Parámetros adicionales
-    if (periodId !== undefined && periodId !== 0) {
+    if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
     if(periodId == 0) {
@@ -48,7 +48,8 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(this.apiUrl + 'all/pageable', { params });
+    return this.http.get<Page<Expense>>(this.apiUrl, { params });
+
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo

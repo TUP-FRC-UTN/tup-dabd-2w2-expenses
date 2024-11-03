@@ -21,8 +21,10 @@ export class ExpensesStatePeriodStyleComponent {
         return `${baseClass} border-danger text-danger`;
       case 'liquidación cerrada':
         return `${baseClass} border-secondary text-secondary`;
-      case 'Calculado':
+      case 'calculado':
         return `${baseClass} border-success text-success`;
+      case 'obsoleto':
+        return `${baseClass} border-warning text-warning`;
       default:
         return `${baseClass} border-secondary text-dark`;
     }
