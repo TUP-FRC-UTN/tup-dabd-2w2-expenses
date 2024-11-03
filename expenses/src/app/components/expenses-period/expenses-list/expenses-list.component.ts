@@ -5,7 +5,7 @@ import Expense, { ExpenseFilters } from '../../../models/expense';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Period from '../../../models/period';
-import { CommonModule } from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import { PeriodService } from '../../../services/period.service';
 import { LotsService } from '../../../services/lots.service';
 import Lot from '../../../models/lot';
@@ -15,13 +15,20 @@ import * as XLSX from 'xlsx'
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {NgPipesModule} from "ngx-pipes";
-import {TableColumn, TableComponent} from "ngx-dabd-grupo01";
-import {delay, Observable, of} from "rxjs";
+import {
+  TableColumn, TableComponent, ConfirmAlertComponent,
+
+  MainContainerComponent,
+  ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
+} from "ngx-dabd-grupo01" ;
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+
 
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
-  imports: [ CommonModule ,RouterModule, FormsModule, PeriodSelectComponent, TableComponent,NgPipesModule],
+  imports: [CommonModule, RouterModule, FormsModule, PeriodSelectComponent, TableComponent, NgPipesModule, MainContainerComponent, TableFiltersComponent],
+  providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-list.component.html',
   styleUrl: './expenses-list.component.css'
 })
@@ -29,20 +36,6 @@ export class ExpensesListComponent implements OnInit{
 
 
 
-
-
-
-showInfo() {
-throw new Error('Method not implemented.');
-}
-
-
-
-
-
-onFilterTextBoxChanged($event: Event) {
-throw new Error('Method not implemented.');
-}
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -175,16 +168,35 @@ throw new Error('Method not implemented.');
     this.searchTerm = ''
     this.pageSize = 10
   }
+  periods: FilterOption[] = [];
+  lotss: FilterOption[] = []
+  types: FilterOption[]= []
   //carga el select de periodo y lote
+  filterConfig: Filter[] = [
+    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods),
+    new SelectFilter('Lote','period','Seleccione un lote',this.lotss),
+    new SelectFilter('Tipo de lote','period','Seleccione un tipo de lote',this.types)
+  ]
+
+
   loadSelect() {
-    this.periodService.get().subscribe((data: Period[]) => {
-      this.periodos = data
+    this.periodService.get().subscribe((data) => {
+      data.forEach(item => {
+        // @ts-ignore
+        this.periods.push({value: item.id, label: item.month +'/'+ item.year})
+      })
     })
     this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
+      data.forEach(l => {
+        // @ts-ignore
+        this.lotss.push({value: l.id, label: l.plot_number})
+      })
     })
     this.billService.getBillTypes().subscribe((data: BillType[]) => {
-      this.tipos = data
+      data.forEach(item => {
+        // @ts-ignore
+        this.types.push({value: item.bill_type_id, label: item.name})
+      })
     })
   }
   getMonthName(month: number): string {
@@ -194,6 +206,9 @@ throw new Error('Method not implemented.');
     ];
     return monthNames[month - 1];
   }
+  showInfo() {
+    throw new Error('Method not implemented.');
+  }
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();
@@ -201,7 +216,6 @@ throw new Error('Method not implemented.');
     // Título del PDF
     doc.setFontSize(18);
     doc.text('Expenses Report', 14, 20);
-
     // Llamada al servicio para obtener las expensas
     this.service.getWithoutFilters(this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
       // Usando autoTable para agregar la tabla
@@ -218,7 +232,6 @@ throw new Error('Method not implemented.');
           expense.billType
         ]),
       });
-
       // Guardar el PDF después de agregar la tabla
       doc.save('expenses_report.pdf');
       console.log('Impreso')
@@ -243,8 +256,15 @@ throw new Error('Method not implemented.');
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-      XLSX.writeFile(wb, this.fileName);
+      XLSX.writeFile(wb,  'Expensas ' + Date.now().toString() + '.xlsx');
     })}
 
+  onFilterTextBoxChanged($event: Event) {
+
+  }
+
+    filterChange($event: Record<string, any>) {
+
+  }
 }
 
