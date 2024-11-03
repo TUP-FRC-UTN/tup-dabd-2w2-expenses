@@ -9,14 +9,14 @@ import { CategoryService } from "../../../services/category.service";
 import { ProviderService } from "../../../services/provider.service";
 import { PeriodService } from "../../../services/period.service";
 import { BillService } from "../../../services/bill.service";
-import { AsyncPipe, NgClass } from "@angular/common";
+import { AsyncPipe, DatePipe, NgClass } from "@angular/common";
 import BillType from "../../../models/billType";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { RouterLink } from "@angular/router";
 import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
 import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
-import {ToastService} from "ngx-dabd-grupo01";
+import {MainContainerComponent, ToastService} from "ngx-dabd-grupo01";
 import {NgArrayPipesModule} from "ngx-pipes";
 
 
@@ -24,9 +24,10 @@ import {NgArrayPipesModule} from "ngx-pipes";
 @Component({
   selector: 'app-expenses-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, RouterLink, NgArrayPipesModule],
+  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, RouterLink, NgArrayPipesModule, MainContainerComponent],
   templateUrl: './expenses-add-bill.component.html',
-  styleUrl: './expenses-add-bill.component.css'
+  styleUrl: './expenses-add-bill.component.css',
+  providers: [DatePipe]
 })
 export class ExpensesAddBillComponent implements OnInit {
   private fb = inject(FormBuilder);
