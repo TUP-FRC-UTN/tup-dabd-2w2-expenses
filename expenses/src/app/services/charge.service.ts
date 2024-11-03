@@ -93,5 +93,9 @@ export class ChargeService {
     return this.http.get<CategoryCharge[]>(this.categoryChargeUrl);
   }
 
+  getCategoriesExcFines() : Observable<CategoryCharge[]> {
+    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/exceptFines`);
+  }
+
 
 }

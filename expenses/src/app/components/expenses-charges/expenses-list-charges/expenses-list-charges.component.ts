@@ -38,7 +38,7 @@ import {
 } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { debounceTime, forkJoin } from 'rxjs';
+import { debounceTime, forkJoin, Subject } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 
 @Component({
@@ -92,28 +92,7 @@ throw new Error('Method not implemented.');
   filterTypes = ChargeFilters;
   filterInput: string = '';
 
-  filterConfig: Filter[] = new FilterConfigBuilder()
-
-  .numberFilter('Categoria', 'categoryCharge', 'Seleccione una categoria')
-  .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
-    {value: 'COMMERCIAL', label: 'Comercial'},
-    {value: 'PRIVATE', label: 'Privado'},
-    {value: 'COMMUNAL', label: 'Comunal'},
-  ])
-  .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
-    {value: 'CREATED', label: 'Creado'},
-    {value: 'FOR_SALE', label: 'En Venta'},
-    {value: 'SALE', label: 'Venta'},
-    {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
-    {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
-    {value: 'EMPTY', label: 'Vacio'},
-  ])
-  .radioFilter('Activo', 'isActive', [
-    {value: 'true', label: 'Activo'},
-    {value: 'false', label: 'Inactivo'},
-    {value: 'undefined', label: 'Todo'},
-  ])
-  .build()
+  
 
   //#endregion
 
@@ -137,7 +116,10 @@ throw new Error('Method not implemented.');
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
   params: number[] = [];
-
+  filterSubject = new Subject<Charges[]>();
+  filter$ = this.filterSubject.asObservable();
+  itemsList!: Charges[];
+  filterConfig: Filter[] = [];
   filterChange($event: Record<string, any>) {
     console.log($event)
   }
@@ -168,25 +150,56 @@ throw new Error('Method not implemented.');
     this.cargarPaginado();
     this.searchTerm = '';
   }
+
+  createFilters() {
+    this.filterConfig = new FilterConfigBuilder()
+
+  
+  .selectFilter('Categoría', 'categoryCharge', 'Seleccione una categoría', this.categorias.map(category => ({
+    value: category.categoryChargeId.toString(),
+    label: category.name
+  })))
+  .selectFilter('Lote','lots','Seleccione un lote', this.lots.map(lot => ({
+    value: lot.id.toString(),
+    label: lot.plot_number.toString()
+  })))
+  .selectFilter('Tipo de Cargo','chargeType','Seleccione un tipo',  [
+    { value: 'Positivo', label: 'Positivo' },
+    { value: 'Porcentaje', label: 'Porcentaje' },
+    { value: 'Negativo', label: 'Negativo' }
+  ])
+  .radioFilter('Activo', 'isActive', [
+    {value: 'true', label: 'Activo'},
+    {value: 'false', label: 'Inactivo'},
+    {value: 'undefined', label: 'Todo'},
+  ])
+  .build()
+  }
+
+  
+
   //#endregion
 
   // Métodos de Carga de Datos
   //#region DATA LOADING
   ngOnInit(): void {
     this.loadSelect();
-    this.loadCategoryCharge();
+    //this.loadCategoryCharge();
     this.cargarPaginado();
   }
 
   loadSelect() {
     forkJoin({
       periodos: this.periodService.get(),
-      lots: this.lotsService.get()
+      lots: this.lotsService.get(),
+      categories: this.chargeService.getCategoryCharges(),
     }).subscribe({
-      next: ({ periodos, lots }) => {
+      next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
         this.lots = lots;
         console.log('Lotes:', this.lots);
+        this.categorias = categories;
+        this.createFilters();
         this.cargarPaginado();
       },
       error: (error) => {
@@ -200,6 +213,7 @@ throw new Error('Method not implemented.');
       .getCategoryCharges()
       .subscribe((data: CategoryCharge[]) => {
         this.categorias = data;
+        this.createFilters();
       });
   }
 
@@ -424,10 +438,8 @@ throw new Error('Method not implemented.');
   }
 
   getPlotNumber(lotId: number) {
-      const lot = this.lots.find((lot) => lot.id === lotId);
-      return lot ? lot.plot_number : undefined;
-    
-    
+    const lot = this.lots.find((lot) => lot.id === lotId);
+    return lot ? lot.plot_number : undefined;     
   }
 
   isClosed(period: PeriodCharge): boolean {
@@ -455,6 +467,26 @@ throw new Error('Method not implemented.');
 
   //#region METODOS FILTER BUTTONS
   onFilterTextBoxChanged(event: Event){
+    // const target = event.target as HTMLInputElement;
 
+    // if (target.value?.length <= 2) {
+    //   this.filterSubject.next(this.itemsList);
+    // } else {
+    //   const filterValue = target.value.toLowerCase();
+
+    //   const filteredList = this.itemsList.filter(item => {
+    //     return Object.values(item).some(prop => {
+    //       const propString = prop ? prop.toString().toLowerCase() : '';
+
+    //       const translations = this.dictionaries && this.dictionaries.length
+    //         ? this.dictionaries.map(dict => this.translateDictionary(propString, dict)).filter(Boolean)
+    //         : [];
+
+    //       return propString.includes(filterValue) || translations.some(trans => trans?.toLowerCase().includes(filterValue));
+    //     });
+    //   });
+
+    //   this.filterSubject.next(filteredList.length > 0 ? filteredList : []);
+    // }
   }
 }
