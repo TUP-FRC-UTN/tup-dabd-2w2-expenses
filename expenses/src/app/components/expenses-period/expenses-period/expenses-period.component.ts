@@ -2,20 +2,32 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import Expense from '../../../models/expense';
 import { ActivatedRoute } from '@angular/router';
-import { NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { FormsModule } from '@angular/forms';
-import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import {
+  ToastService,
+  ConfirmAlertComponent,
+  FilterConfigBuilder,
+  MainContainerComponent,
+  TableFiltersComponent,
+  Filter,
+  TableComponent,
+} from 'ngx-dabd-grupo01';
 import { switchMap, tap } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-expenses-period',
   standalone: true,
-  imports: [NgbModule, FormsModule, MainContainerComponent],
+  imports: [NgbModule, FormsModule, MainContainerComponent,TableFiltersComponent],
   templateUrl: './expenses-period.component.html',
   styleUrl: './expenses-period.component.css',
+  providers: [DatePipe, NgbActiveModal, NgbModule, NgbModal],
+
 })
 export class ExpensesPeriodComponent implements OnInit {
+
   showModal() {
     throw new Error('Method not implemented.');
   }
@@ -32,6 +44,29 @@ export class ExpensesPeriodComponent implements OnInit {
   type: number | undefined = undefined;
   lote: number | null = null;
   filter: string | null = null;
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+    .numberFilter('Año', 'year', 'Seleccione un año')
+    .selectFilter('Mes', 'month', 'Seleccione un mes', [
+      { value: '1', label: 'Enero' },
+      { value: '2', label: 'Febrero' },
+      { value: '3', label: 'Marzo' },
+      { value: '4', label: 'Abril' },
+      { value: '5', label: 'Mayo' },
+      { value: '6', label: 'Junio' },
+      { value: '7', label: 'Julio' },
+      { value: '8', label: 'Agosto' },
+      { value: '9', label: 'Septiembre' },
+      { value: '10', label: 'Octubre' },
+      { value: '11', label: 'Noviembre' },
+      { value: '12', label: 'Diciembre' },
+    ])
+    .radioFilter('Activo', 'estate', [
+      { value: 'OPEN', label: 'Activos' },
+      { value: 'CLOSE', label: 'Finalizados' },
+      { value: 'null', label: 'Todo' },
+    ])
+    .build();
 
   changeFilter(filter: string | null) {
     if (!filter) {
@@ -133,6 +168,7 @@ export class ExpensesPeriodComponent implements OnInit {
 
   loadId() {
     this.periodId = this.route.snapshot.paramMap.get('period_id');
+
   }
   changeIndex($event: number) {
     this.currentPage = $event;

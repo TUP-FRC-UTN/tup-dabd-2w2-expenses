@@ -49,6 +49,7 @@ export class ExpenseServiceService {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
     return this.http.get<Page<Expense>>(this.apiUrl, { params });
+
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
