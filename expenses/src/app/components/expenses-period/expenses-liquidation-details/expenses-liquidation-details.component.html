@@ -1,5 +1,5 @@
 <app-main-container
-  [title]="'Liquidación de Expensas ' + liquidationExpense.bill_type?.name + ' | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
+  [title]="'Liquidación de Expensas | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
   (infoButtonClick)="showModal(modalTemplate)"
 >
 
@@ -15,29 +15,16 @@
     (searchValueChange)="filterTableByText($event)"
     (filterValueChange)="filterTableBySelects($event)"
   >
-  <div>
-    <p style="margin: 0; font-size: 14px;"  class="text-end">
-      <b>Monto Total</b>
-    </p>
-    <p style="margin: 0; font-size: 14px;" class="text-end">
-      {{
-        liquidationExpense.total_amount?.toLocaleString("es-AR", {
-          style: "currency",
-          currency: "ARS",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      }}
-    </p>
-  </div>
   </app-table>
+
+  <ng-template #modalTemplate let-modal>
+    <app-confirm-alert
+      [alertTitle]="'Acerca de Gastos de expensa'"
+      [alertMessage]="'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla'"
+      [alertType]="'info'"
+    ></app-confirm-alert>
+  </ng-template>
+
 </app-main-container>
 
 
-<ng-template #modalTemplate let-modal>
-  <app-confirm-alert
-    [alertTitle]="'Acerca de Gastos de expensa'"
-    [alertMessage]="'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla'"
-    [alertType]="'info'"
-  ></app-confirm-alert>
-</ng-template>

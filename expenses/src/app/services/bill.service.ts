@@ -67,7 +67,7 @@ export class BillService {
   getAllBillsAndPagination(size?: number, page?: number, period?: number, category?: number, supplier?: number, type?: number, provider?: string, status?: string): Observable<PaginatedResponse<BillDto>>{
     let params = new HttpParams();
 
-    
+
     // Agrega solo los parámetros que tengan valores válidos
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
@@ -113,16 +113,16 @@ export class BillService {
     return this.http.get<BillType[]>(`${this.url}bill-type`)
   }
 
-  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number|null, status:string):Observable<Page<Bill>>{
-    let request = `${this.url}bills?size=${size}&page=${page}&type=${type}&status=${status}`
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number | null, status:string | null):Observable<Bill[]>{
+    let request = `${this.url}bills?size=${size}&page=${page}`
 
-    if (category != null) {
-      request = request + `&category=${category}`
-    }
+    if (type != null) request = request + `&type=${type}`
+    if (status != null) request = request + `&status=${status}`
+    if (category != null) request = request + `&category=${category}`
     if (period != null) request = request + `&period=${period}`
 
     try {
-      return this.http.get<Page<Bill>>(request);
+      return this.formatBills(this.http.get<PaginatedResponse<BillDto>>(request));
     } catch (e) {
       console.log(e)
       throw e
