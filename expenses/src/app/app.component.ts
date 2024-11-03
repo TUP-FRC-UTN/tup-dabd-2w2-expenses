@@ -44,15 +44,10 @@ export class AppComponent {
         {
           label: 'Periodo',
           subMenu: [
-            { label: 'Listado', routerLink: '/periodo' }
+            { label: 'Listado', routerLink: '/periodo' },
+            { label: 'Historico de expensas', routerLink: '/expenses' }
           ]
         },
-        {
-          label: 'Expensas',
-          subMenu: [
-            { label: 'Listado', routerLink: '/expenses' }
-          ]
-        }
       ],
     },
     {

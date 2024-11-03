@@ -3,8 +3,8 @@
 
       <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- Sección de búsqueda y filtros -->
-        <div class="btn-group me-5" role="group">
-          <div class="col-sm-12 col-md-8 col-xl-8">
+        <div class="d-flex align-items-center mb-2" role="group">
+          <div class="col-sm-12 col-md-8 col-xl-12">
             <div class="input-group">
             <span class="input-group-text" id="search-icon">
               <i class="bi bi-search"></i>
@@ -17,10 +17,8 @@
                 placeholder="Buscar..."
               />
               <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
-
             </div>
           </div>
-
         </div>
         <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
         <div class="d-flex align-items-center">
@@ -99,7 +97,7 @@
       <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" id="table-data">
         <thead class="justify-content-end">
           <tr>
-            <th scope="col" style="text-align: center">Número de Lote</th>
+            <th scope="col">Número de Lote</th>
             <th scope="col">Tipo de lote</th>
             <th scope="col">Periodo</th>
             <th scope="col">Porcentaje</th>
@@ -119,7 +117,7 @@
                 <td>{{expense.percentage  * 100 + '%'}}</td>
                 <td>{{expense.billType}}</td>
                 <td>{{expense.liquidationDate | date:'MMM d, yyyy'}}</td>
-              <td>{{expense.totalAmount.toLocaleString("es-AR", {
+              <td style="text-align:  right">{{expense.totalAmount.toLocaleString("es-AR", {
                 style: "currency",
                 currency: "ARS",
                 minimumFractionDigits: 2,
@@ -138,18 +136,14 @@
         </tbody>
       </table>
     </div>
-  </div>
-
-    <br>
-    <div class="row align-items-end">
-      <div class="col-2 d-flex justify-content-start">
-        <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-        </select>
-      </div>
-
+      <div class="row align-items-end">
+        <div class="col-1 d-flex justify-content-start">
+          <select name="cantidadPaginas" id="cantidadPaginas" class="form-select" aria-label="Cantidad de elementos por página" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
 
         <div class="col d-flex justify-content-end align-items-center">
           <nav aria-label="Page navigation example">
@@ -176,6 +170,9 @@
           </nav>
         </div>
       </div>
+  </div>
+
+
       <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
