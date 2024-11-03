@@ -1,131 +1,39 @@
 <app-main-container title="Expensas" (infoButtonClick)="showModal()">
 
-  <div class="row align-items-center mb-3">
-    <div class="col-sm-12 col-md-12 col-xl-12">
-      <div class="input-group" style="max-width: 360px">
-        <span class="input-group-text" id="search-icon">
-          <i class="bi bi-search"></i>
-        </span>
-        <input
-          type="text"
-          class="form-control"
-          id="filter-text-box"
-          placeholder="Buscar"
-        />
-      </div>
-    </div>
-  </div>
-
-  <div
-    class="col-sm-12 col-md-4 col-xl-64 text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
-  >
-    <div class="col align-items-center mb-3 d-flex justify-content-end">
-      <div style="margin-left: 20px">
-        <button class="btn btn-success me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
-          <i class="bi bi-file-earmark-excel"></i>
-        </button>
-        <button class="btn btn-danger me-2 mb-md-2 mb-xl-0 mt-2 mt-xl-0">
-          <i class="bi bi-file-earmark-pdf"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div
-    class="container-fluid text-xl-center text-center mt-3 mt-md-0 d-flex align-items-center justify-content-end"
-  >
-    <div class="col-6 d-flex">
-      <div class="btn-group me-2">
-        <button
-          type="button"
-          (click)="changeFilter(null)"
-          class="btn btn-outline-danger"
-        >
-          <i class="bi bi-trash-fill"></i> Limpiar
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-outline-info dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <i class="bi bi-funnel-fill"></i> Filtros
-        </button>
-        <ul class="dropdown-menu">
-          <li>
-            <a class="dropdown-item" (click)="changeFilter('Lote')">Lote</a>
-          </li>
-        </ul>
-      </div>
-      <div>
-        @if (filter==="Lote") {
-        <input
-          type="number"
-          class="form-control me-2"
-          id="filter-number"
-          name="Lote"
-          [min]="1"
-          [(ngModel)]="lote"
-        />
-        }
-      </div>
-      <div>
-        @if (filter) {
-        <div class="ms-auto">
-          <button class="btn btn-secondary" type="button" (click)="finde()">
-            Buscar
-          </button>
+  <div class="row col-12" role="group">
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="filter-text-box"
+            placeholder="Buscar..."
+          />
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <app-table-filters
+            [filters]="filterConfig"
+          ></app-table-filters>
         </div>
-        }
       </div>
     </div>
-    <div
-      class="col-6"
-      style="display: flex; flex-direction: row; justify-content: end"
-    >
-      <div
-        class="btn-group"
-        role="group"
-        aria-label="Basic radio toggle button group"
-      >
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio2"
-          autocomplete="off"
-          (click)="selectType('Extraordinarias')"
-        />
-        <label class="btn btn-outline-primary" for="btnradio2"
-          >Extraordinarias</label
-        >
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio3"
-          autocomplete="off"
-          (click)="selectType('Ordinarias')"
-        />
-        <label class="btn btn-outline-primary" for="btnradio3"
-          >Ordinarias</label
-        >
 
-        <input
-          type="radio"
-          class="btn-check"
-          name="btnradio"
-          id="btnradio1"
-          autocomplete="off"
-          checked
-          (click)="selectType(undefined)"
-        />
-        <label class="btn btn-outline-primary" for="btnradio1">Todas</label>
-      </div>
+    <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+    <div class="d-flex col-9 justify-content-end">
+
+      <!-- Línea vertical y botones de exportación -->
+      <div class="vertical-line mx-3"></div>
+      <button class="btn btn-success me-2" >
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
+      <button class="btn btn-danger me-2">
+        <i class="bi bi-file-earmark-pdf"></i>
+      </button>
     </div>
   </div>
-  <div>
+
     <table class="table table-striped">
       <thead>
         <tr>
@@ -185,5 +93,4 @@
         ></ngb-pagination>
       </div>
     </div>
-  </div>
 </app-main-container>
