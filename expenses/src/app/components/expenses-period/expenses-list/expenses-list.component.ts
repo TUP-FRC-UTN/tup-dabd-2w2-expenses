@@ -63,6 +63,9 @@ export class ExpensesListComponent implements OnInit{
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
+
+  periodPath = this.route.snapshot.paramMap.get('period_id');
+
   ngOnInit(): void {
     this.currentPage = 0
     const periodPath = this.route.snapshot.paramMap.get('period_id');
@@ -73,6 +76,9 @@ export class ExpensesListComponent implements OnInit{
     this.loadExpenses()
   }
   loadExpenses(page: number = 0, size: number = 10): void {
+    if (this.periodPath != null) {
+      this.selectedPeriodId = Number(this.periodPath)
+    }
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
       console.log(data.content)
       this.expenses = data.content.map(expense => {
@@ -165,10 +171,9 @@ export class ExpensesListComponent implements OnInit{
 
 
   loadSelect() {
-    const periodPath = this.route.snapshot.paramMap.get('period_id');
-    if (periodPath != null) {
-      console.log('Path: ' + periodPath);
-      this.selectedPeriodId = Number(periodPath);
+
+    if (this.periodPath != null) {
+      console.log('Path: ' + this.periodPath);
       this.filterConfig.pop();
     } else {
     this.periodService.get().subscribe((data) => {
@@ -195,6 +200,7 @@ export class ExpensesListComponent implements OnInit{
         this.types.push({value: item.bill_type_id, label: item.name})
       })
     })
+
   }
   getMonthName(month: number): string {
     const monthNames = [
