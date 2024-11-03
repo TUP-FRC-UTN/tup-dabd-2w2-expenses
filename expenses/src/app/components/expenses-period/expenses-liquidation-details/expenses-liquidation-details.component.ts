@@ -74,6 +74,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
   @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
   @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
+  @ViewChild('statusTemplate', { static: true }) statusTemplate!: TemplateRef<any>;
 
   billsFiltered: Bill[] = [];
   originalBills: Bill[] = [];
@@ -81,9 +82,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   columns: TableColumn[] = [];
 
   // filters
+  isFiltering: boolean = false;
   categories: FilterOption[] = [];
   suppliers: FilterOption[] = [];
   billTypes: FilterOption[] = [];
+
+  filterCategory: number | null = null;
+  filterSupplier: number | null = null;
+  filterType: number | null = null;
 
   filters: Filter[] = [
     new SelectFilter('Categoría', 'category', 'Seleccione la categoría', this.categories),
@@ -92,6 +98,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   ];
 
   // pagination
+  originalTotalItems = 0;
   totalItems = 0;
   page = 0;
   size = 10;
@@ -121,6 +128,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       {headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate},
       {headerName: 'Proveedor', accessorKey: 'supplier.name'},
       {headerName: 'Descripción', accessorKey: 'description'},
+      {headerName: 'Estado', accessorKey: 'status', cellRenderer: this.statusTemplate},
       {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
@@ -130,7 +138,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadBillTypes() {
     this.billTypeService.getBillTypes().subscribe((data) => {
       data.forEach(e => {
-        this.billTypes.push({value: e.name ,label: e.name})
+        this.billTypes.push({value: e.bill_type_id.toString() ,label: e.name})
       })
     });
   }
@@ -138,7 +146,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe((data) => {
       data.forEach(e => {
-        this.categories.push({value: e.name ,label: e.name})
+        this.categories.push({value: e.category_id.toString() ,label: e.name})
       })
     });
   }
@@ -146,7 +154,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadSuppliers() {
     this.supplierService.getAllProviders().subscribe((data) => {
       data.forEach(e => {
-        this.suppliers.push({value: e.name ,label: e.name})
+        this.suppliers.push({value: e.id.toString() ,label: e.name})
       })
     });
   }
@@ -168,8 +176,11 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
             }
             this.getBills(
               this.size,
-              this.page,
-              this.period
+              this.page -1,
+              this.period,
+              null,
+              null,
+              null
             );
           });
       }
@@ -179,16 +190,20 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private getBills(
     itemsPerPage: number,
     page: number,
-    period: number | null
+    period: number | null,
+    type: number | null,
+    supplier: number | null,
+    category: number | null
   ) {
     this.billsService
       .getAllBillsPaged(
         itemsPerPage,
         page,
         period,
+        category,
+        type,
         null,
-        null,
-        null
+        supplier
       )
       .subscribe((data) => {
         data.bills.subscribe(data => {
@@ -197,6 +212,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         })
         data.pagination.subscribe(data => {
           this.totalItems = data.totalElements
+          this.originalTotalItems = this.totalItems
         });
       });
   }
@@ -222,35 +238,35 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   filterTableBySelects(value: Record<string, any>) {
+    this.filterCategory = value['category']?.toLowerCase() || null;
+    this.filterSupplier = value['supplier']?.toLowerCase() || null;
+    this.filterType = value['type']?.toLowerCase() || null;
 
-    const filter1 = value['category']?.toLowerCase() || '';
-    const filter2 = value['supplier']?.toLowerCase() || '';
-    const filter3 = value['type']?.toLowerCase() || '';
-
-    if (filter1 === '' && filter2 === '' && filter3 === '') {
+    if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null) {
       this.billsFiltered = this.originalBills;
+      this.totalItems = this.originalTotalItems
       return;
     }
 
-    this.billsFiltered = this.originalBills.filter(bill => {
-        const matchesFilter1 = filter1
-            ? bill.category.name.toLowerCase().includes(filter1)
-            : true;
-
-        const matchesFilter2 = filter2
-            ? bill.supplier.name.toLowerCase().includes(filter2)
-            : true;
-
-        const matchesFilter3 = filter3
-        ? (filter3.startsWith("ex")
-            ? bill.billType.name.toLowerCase().includes(filter3.toLowerCase())
-            : !bill.billType.name.toLowerCase().startsWith("ex") &&
-              bill.billType.name.toLowerCase().includes(filter3.toLowerCase())
-        )
-        : true;
-
-        return matchesFilter1 && matchesFilter2 && matchesFilter3;
-    });
+    this.billsService
+      .getAllBillsPaged(
+        this.size,
+        this.page,
+        this.period,
+        this.filterCategory,
+        this.filterType,
+        null,
+        this.filterSupplier
+      )
+      .subscribe((data) => {
+        data.bills.subscribe(data => {
+          this.billsFiltered = data
+          this.isFiltering = true;
+        })
+        data.pagination.subscribe(data => {
+          this.totalItems = data.totalElements
+        });
+      });
   }
 
 
@@ -258,13 +274,19 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // Pagination
 
   onPageChange = (page: number) => {
-    this.page = (page-1);
-    this.loadLiquidationExpenseDetails();
+    this.page = page;
+    if (this.isFiltering) {
+      this.filterTableBySelects({category: this.filterCategory, supplier: this.filterSupplier ,type: this.filterType});
+    } else {
+      this.loadLiquidationExpenseDetails();
+    }
   };
 
   onPageSizeChange = (size: number) => {
     this.size = size;
     this.page = 0;
+    if (this.isFiltering) return;
+
     this.loadLiquidationExpenseDetails();
   };
 
