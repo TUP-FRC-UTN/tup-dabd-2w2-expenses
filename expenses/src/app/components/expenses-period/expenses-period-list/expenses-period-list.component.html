@@ -1,6 +1,6 @@
 <app-main-container
   title="Lista de Periodos"
-  (infoButtonClick)="showModal(modalTemplateInfo)"
+  (infoButtonClick)="showModal()"
 >
   <div class="d-flex justify-content-between align-items-center mb-3">
     <!-- Sección de búsqueda y filtros -->
@@ -21,7 +21,6 @@
             <app-table-filters
               [filters]="filterConfig"
               (filterValueChange)="filterChange($event)"
-              
             ></app-table-filters>
           </div>
         </div>
@@ -51,7 +50,6 @@
   </div>
 
   <div class="">
-
     <table
       class="table table-striped fixed-table"
       style="
@@ -120,43 +118,39 @@
               justify-content: center;
             "
           >
-            <div class="btn-group" role="group">
+            <div class="btn-group" ngbDropdown>
               <button
                 type="button"
-                class="btn btn-sm btn-secondary dropdown-toggle"
-                data-bs-toggle="dropdown"
+                class="btn btn-sm btn-secondary"
+                ngbDropdownToggle
                 aria-expanded="false"
               >
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu">
+              <div ngbDropdownMenu>
+                <button
+                  class="dropdown-item"
+                  [routerLink]="['/periodo', period.id, 'expensas']"
+                >
+                  Expensas
+                </button>
+                <button
+                  class="dropdown-item"
+                  [routerLink]="['/periodo', period.id, 'liquidacion']"
+                >
+                  Liquidacion
+                </button>
+                @if (period.state !== 'CLOSE') {
                 <li>
-                  <a
-                    class="dropdown-item btn btn-primary"
-                    [href]="'/periodo/' + period.id + '/expensas'"
-                    >Expensas</a
-                  >
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item btn btn-info"
-                    [href]="'/periodo/' + period.id + '/liquidacion'"
-                    >Liquidacion</a
-                  >
-                </li>
-                @if (period.state!=="CLOSE") {
-                <li>
-                  <a
+                  <button
                     class="dropdown-item btn btn-danger"
-                    data-bs-target="#exampleModal"
-                    data-bs-toggle="modal"
-                    (click)="open(modalTemplate, period.id)"
-                    >Cerrar</a
+                    (click)="open( period.id)"
                   >
+                    Cerrar
+                  </button>
                 </li>
                 }
-                <li><a class="dropdown-item btn btn-primary">Detalle</a></li>
-              </ul>
+              </div>
             </div>
           </td>
         </tr>
@@ -191,26 +185,19 @@
         ></ngb-pagination>
       </div>
     </div>
-    
   </div>
-  <ng-template #modalTemplate let-modal>
-    <app-expenses-modal
-      [title]="'Cierre de Periodo'"
-      [paragraph]="
-        '¿Desea cerrar el periodo?. Recuerde que una vez concluido el cierre del periodo no podra agregar, modificar o eliminar gastos o periodos.'
-      "
-      (onAccept)="closePeriod()"
-      (onCancel)="modal.dismiss('cancel')"
-    ></app-expenses-modal>
-  </ng-template>
 
   <ng-template #modalTemplateInfo let-modal>
-    <app-info-modal
-      [title]="'Acerca de Periodos'"
-      [body]="
-        'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. Puede filtrarse tanto por sus estados abiertos o cerrados como por su mes o año'
+    <app-confirm-alert
+      [alertTitle]="'Confirmación requerida'"
+      [alertType]="'info'"
+      [alertMessage]="
+        'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.'
       "
-      (onAccept)="modal.dismiss('cancel')"
-    ></app-info-modal>
+      [alertVariant]="'default'"
+      [contentPlacement]="'top'"
+    >
+    </app-confirm-alert>
   </ng-template>
+
 </app-main-container>
