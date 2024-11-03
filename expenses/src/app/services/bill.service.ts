@@ -114,13 +114,14 @@ export class BillService {
     return this.http.get<BillType[]>(`${this.url}bill-type`)
   }
 
-  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number | null, status:string | null):Observable<{pagination: Observable<PaginatedResponse<BillDto>>, bills:Observable<Bill[]>}>{
+  getAllBillsPaged(size: number, page:number, period: number | null, category: number | null, type: number | null, status:string | null, supplier: number | null):Observable<{pagination: Observable<PaginatedResponse<BillDto>>, bills:Observable<Bill[]>}>{
     let request = `${this.url}bills?size=${size}&page=${page}`
 
     if (type != null) request = request + `&type=${type}`
     if (status != null) request = request + `&status=${status}`
     if (category != null) request = request + `&category=${category}`
     if (period != null) request = request + `&period=${period}`
+    if (supplier != null) request = request + `&supplier=${supplier}`
 
     let data = this.http.get<PaginatedResponse<BillDto>>(request)
 
