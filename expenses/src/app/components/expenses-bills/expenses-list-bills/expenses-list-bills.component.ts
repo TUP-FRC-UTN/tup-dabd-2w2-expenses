@@ -185,16 +185,23 @@ export class ExpensesListBillsComponent implements OnInit {
 
   //#endregion
 
+  @ViewChild('amountTemplate', { static: true })
+  amountTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
   @ViewChild('actionsTemplate', { static: true })
   actionsTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [
     { headerName: 'Tipo', accessorKey: 'billType.name' },
     { headerName: 'Proveedor', accessorKey: 'supplier.name' },
-    { headerName: 'Monto', accessorKey: 'amount' },
+    {
+      headerName: 'Monto',
+      accessorKey: 'amount',
+      cellRenderer: this.amountTemplate,
+    },
     { headerName: 'Periodo', accessorKey: 'period.end_date' },
     { headerName: 'Categoría', accessorKey: 'category.name' },
-    { headerName: 'Fecha', accessorKey: 'date' },
+    { headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate },
     {
       headerName: 'Acciones',
       accessorKey: 'actions',
