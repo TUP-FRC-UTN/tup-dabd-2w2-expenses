@@ -99,7 +99,7 @@
       <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;" id="table-data">
         <thead class="justify-content-end">
           <tr>
-            <th scope="col" style="text-align: center">Número de Lote</th>
+            <th scope="col">Número de Lote</th>
             <th scope="col">Tipo de lote</th>
             <th scope="col">Periodo</th>
             <th scope="col">Porcentaje</th>
@@ -119,7 +119,7 @@
                 <td>{{expense.percentage  * 100 + '%'}}</td>
                 <td>{{expense.billType}}</td>
                 <td>{{expense.liquidationDate | date:'MMM d, yyyy'}}</td>
-              <td>{{expense.totalAmount.toLocaleString("es-AR", {
+              <td style="text-align:  right">{{expense.totalAmount.toLocaleString("es-AR", {
                 style: "currency",
                 currency: "ARS",
                 minimumFractionDigits: 2,
