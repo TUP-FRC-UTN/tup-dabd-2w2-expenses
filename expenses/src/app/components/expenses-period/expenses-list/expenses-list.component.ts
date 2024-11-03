@@ -35,7 +35,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ExpensesListComponent implements OnInit{
 
 
-
+  private route = inject(ActivatedRoute);
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
   private readonly service = inject(ExpenseServiceService)
@@ -63,18 +63,15 @@ export class ExpensesListComponent implements OnInit{
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-
-
-
-
-
-
   ngOnInit(): void {
     this.currentPage = 0
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if(periodPath != null) {
+      this.selectedPeriodId = Number(periodPath) ;
+    }
     this.loadSelect()
     this.loadExpenses()
   }
-
   loadExpenses(page: number = 0, size: number = 10): void {
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
       console.log(data.content)
@@ -168,20 +165,23 @@ export class ExpensesListComponent implements OnInit{
 
 
   loadSelect() {
+    const periodPath = this.route.snapshot.paramMap.get('period_id');
+    if (periodPath != null) {
+      console.log('Path: ' + periodPath);
+      this.periods.push({value: periodPath, label: 'Periodo Seleccionado'})
+    } else {
     this.periodService.get().subscribe((data) => {
       // @ts-ignore
       this.periods.push({value: null, label: 'Todos'})
       data.forEach(item => {
-        console.log(item.year)
         // @ts-ignore
         this.periods.push({value: item.id, label: item.month +'/'+ item.year})
       })
-    })
+    })}
     this.lotsService.get().subscribe((data: Lot[]) => {
       // @ts-ignore
       this.lotss.push({value: null, label: 'Todos'})
       data.forEach(l => {
-        console.log(l.plot_number)
         // @ts-ignore
         this.lotss.push({value: l.id, label: l.plot_number})
       })
@@ -190,7 +190,6 @@ export class ExpensesListComponent implements OnInit{
       // @ts-ignore
       this.types.push({ value: null, label: 'Todos' });
       data.forEach(item => {
-        console.log(item.name)
         // @ts-ignore
         this.types.push({value: item.bill_type_id, label: item.name})
       })
