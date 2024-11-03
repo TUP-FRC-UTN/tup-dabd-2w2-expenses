@@ -7,13 +7,13 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Charge, ChargeFilters, PeriodCharge } from '../../../models/charge';
+import { Charge, ChargeFilters, Charges, PeriodCharge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
 import { ExpensesUpdateChargeComponent } from '../expenses-update-charge/expenses-update-charge.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
-import Lot from '../../../models/lot';
+import Lot, { Lots } from '../../../models/lot';
 import { LotsService } from '../../../services/lots.service';
 import { PeriodService } from '../../../services/period.service';
 import { BorrarItemComponent } from '../../modals/borrar-item/borrar-item.component';
@@ -29,6 +29,8 @@ import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-mod
 import Period from '../../../models/period';
 import { NgPipesModule } from 'ngx-pipes';
 import {
+  Filter,
+  FilterConfigBuilder,
   MainContainerComponent,
   TableComponent,
   TableFiltersComponent,
@@ -36,7 +38,7 @@ import {
 } from 'ngx-dabd-grupo01';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { debounceTime } from 'rxjs';
+import { debounceTime, forkJoin } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 
 @Component({
@@ -53,7 +55,7 @@ import autoTable from 'jspdf-autotable';
     ExpensesModalComponent,
     NgbModule,
     MainContainerComponent,
-    //TableFiltersComponent
+    TableFiltersComponent
   ],
   templateUrl: './expenses-list-charges.component.html',
   styleUrl: './expenses-list-charges.component.css',
@@ -89,13 +91,38 @@ throw new Error('Method not implemented.');
   actualFilter: string | undefined = ChargeFilters.NOTHING;
   filterTypes = ChargeFilters;
   filterInput: string = '';
+
+  filterConfig: Filter[] = new FilterConfigBuilder()
+
+  .numberFilter('Categoria', 'categoryCharge', 'Seleccione una categoria')
+  .selectFilter('Tipo', 'plotType', 'Seleccione un tipo', [
+    {value: 'COMMERCIAL', label: 'Comercial'},
+    {value: 'PRIVATE', label: 'Privado'},
+    {value: 'COMMUNAL', label: 'Comunal'},
+  ])
+  .selectFilter('Estado', 'plotStatus', 'Seleccione un estado', [
+    {value: 'CREATED', label: 'Creado'},
+    {value: 'FOR_SALE', label: 'En Venta'},
+    {value: 'SALE', label: 'Venta'},
+    {value: 'SALE_PROCESS', label: 'Proceso de Venta'},
+    {value: 'CONSTRUCTION_PROCESS', label: 'En construcciones'},
+    {value: 'EMPTY', label: 'Vacio'},
+  ])
+  .radioFilter('Activo', 'isActive', [
+    {value: 'true', label: 'Activo'},
+    {value: 'false', label: 'Inactivo'},
+    {value: 'undefined', label: 'Todo'},
+  ])
+  .build()
+
   //#endregion
 
   // Variables de Carga de Datos y Paginación
   //#region DATA VARIABLES
   charges: Charge[] = [];
+  chargesCompleted : Charges[] = [];
   chargeId: number = 0;
-  lots: Lot[] = [];
+  lots: Lots[] = [];
   categorias: CategoryCharge[] = [];
   periodos: Period[] = [];
   totalElements: number = 0;
@@ -110,6 +137,11 @@ throw new Error('Method not implemented.');
   selectedCharge: Charge | null = null;
   selectedCharges: number[] = [];
   params: number[] = [];
+
+  filterChange($event: Record<string, any>) {
+    console.log($event)
+  }
+
   //#endregion
 
   // Servicios Inyectados
@@ -147,11 +179,19 @@ throw new Error('Method not implemented.');
   }
 
   loadSelect() {
-    this.periodService.get().subscribe((data: Period[]) => {
-      this.periodos = data;
-    });
-    this.lotsService.get().subscribe((data: Lot[]) => {
-      this.lots = data;
+    forkJoin({
+      periodos: this.periodService.get(),
+      lots: this.lotsService.get()
+    }).subscribe({
+      next: ({ periodos, lots }) => {
+        this.periodos = periodos;
+        this.lots = lots;
+        console.log('Lotes:', this.lots);
+        this.cargarPaginado();
+      },
+      error: (error) => {
+        console.error('Error al cargar los datos en loadSelect:', error);
+      }
     });
   }
 
@@ -178,10 +218,29 @@ throw new Error('Method not implemented.');
       .getCharges(this.currentPage, this.pageSize, period, lot, category)
       .subscribe((response) => {
         this.charges = response.content;
+        this.charges = response.content.map(charge => {
+          const charges = this.keysToCamel(charge) as Charge; //Cambiar de snake_Case a camelCase
+          return {
+            ...charges,
+            plotNumber: this.getPlotNumber(charge.lotId), //
+          };
+  
+        });
+        this.loadChargesCompleted();
         this.totalPages = response.totalPages;
         this.totalItems = response.totalElements;
         this.currentPage = response.number;
       });
+    console.log(this.charges);
+  }
+
+
+  loadChargesCompleted() {
+    this.chargesCompleted = this.charges.map(charge => ({
+      ...charge,
+      plotNumber: this.getPlotNumber(charge.lotId),
+    }));
+    console.log(this.chargesCompleted);
   }
   //#endregion
 
@@ -365,12 +424,32 @@ throw new Error('Method not implemented.');
   }
 
   getPlotNumber(lotId: number) {
-    const lot = this.lots.find((lot) => lot.id === lotId);
-    return lot ? lot.plot_number : undefined;
+      const lot = this.lots.find((lot) => lot.id === lotId);
+      return lot ? lot.plot_number : undefined;
+    
+    
   }
 
   isClosed(period: PeriodCharge): boolean {
     return period.state === 'closed';
+  }
+
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
+
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
   }
   //#endregion
 

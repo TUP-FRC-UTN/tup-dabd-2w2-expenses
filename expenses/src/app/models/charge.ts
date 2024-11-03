@@ -20,7 +20,22 @@ export interface Charge {
     period: PeriodCharge;
     status: boolean;
     description: string;
+    amountSign: string;
     
+}
+
+export interface Charges {
+    amount: number;
+    categoryCharge: CategoryCharge;
+    chargeId: number;
+    date: Date;
+    fineId: number;
+    lotId: number;
+    period: PeriodCharge;
+    status: boolean;
+    description: string;
+    amountSign: string;
+    plotNumber?: number;
 }
 
 export interface CategoryCharge {
