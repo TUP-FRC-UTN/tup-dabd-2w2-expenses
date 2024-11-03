@@ -16,9 +16,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
-import { TablePagination, ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
-import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -71,21 +70,15 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // items
 
-  @ViewChild('amountTemplate') amountTemplate!: TemplateRef<any>;
+  @ViewChild('amountTemplate', { static: true }) amountTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
+  @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
 
   billsFiltered: Bill[] = [];
   originalBills: Bill[] = [];
 
-  items$: Observable<Bill[]> = of([]);
-
-  columns: TableColumn[] = [
-    {headerName: 'Categoría', accessorKey: 'category.name'},
-    {headerName: 'Tipo', accessorKey: 'billType.name'},
-    {headerName: 'Fecha', accessorKey: 'date'},
-    {headerName: 'Proveedor', accessorKey: 'supplier.name'},
-    {headerName: 'Descripción', accessorKey: 'description'},
-    {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
-  ];
+  columns: TableColumn[] = [];
 
   // filters
   categories: FilterOption[] = [];
@@ -116,10 +109,21 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   ngOnInit(): void {
+
     this.loadLiquidationExpenseDetails();
     this.loadCategories();
     this.loadSuppliers();
     this.loadBillTypes();
+
+    this.columns = [
+      {headerName: 'Categoría', accessorKey: 'category.name'},
+      {headerName: 'Tipo', accessorKey: 'billType.name'},
+      {headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate},
+      {headerName: 'Proveedor', accessorKey: 'supplier.name'},
+      {headerName: 'Descripción', accessorKey: 'description'},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
+    ];
   }
 
   //  load lists
@@ -194,8 +198,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         data.pagination.subscribe(data => {
           this.totalItems = data.totalElements
         });
-        this.items$ = of(this.billsFiltered);
-
       });
   }
 
@@ -337,21 +339,32 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // Modals
 
-  // openModal() {
-  //   const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
-  // }
+  showModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
 
-  showModal(content: TemplateRef<any>) {
-    const modalRef = this.modalService.open(content, {
-      ariaLabelledBy: 'modal-basic-title',
-    });
+    modalRef.componentInstance.alertTitle = 'Acerca de Gastos de expensa'
+    modalRef.componentInstance.alertMessage =
+      'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla.';
+    modalRef.componentInstance.alertType = 'info';
+  }
+
+  showPaidModal(item: Bill) {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertTitle = 'Pago'
+    modalRef.componentInstance.content = this.paidPdf;
+    modalRef.componentInstance.alertMessage = `${item.category.name} ${item.billType.name} - ${item.supplier.name} (${item.amount?.toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })})`;
+    modalRef.componentInstance.alertType = 'info';
   }
 
 
   //  Pther buttons
   edit(id: number | null) {
-    console.log(id);
-
     if (id == null) return;
     this.router.navigate([`gastos/modificar/${id}`]);
   }
