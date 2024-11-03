@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { ActivatedRoute, RedirectCommand, Router } from '@angular/router';
-import { CommonModule, DatePipe, Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
@@ -18,6 +18,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
+import { TablePagination, ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
+import { ProviderService } from '../../../services/provider.service';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -31,47 +33,118 @@ import moment from 'moment';
     NgModalComponent,
     NgPipesModule,
     NgbModule,
+    TableComponent,
+    TableFiltersComponent,
+    MainContainerComponent,
+    ConfirmAlertComponent,
   ],
+  providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-liquidation-details.component.html',
   styleUrl: './expenses-liquidation-details.component.css',
 })
 export class LiquidationExpenseDetailsComponent implements OnInit {
-  private readonly location = inject(Location);
+  //
+  //  Services
+  //
+
   private readonly service = inject(LiquidationExpenseService);
   private readonly billsService = inject(BillService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly supplierService = inject(ProviderService)
+
+  private modalService = inject(NgbModal);
+
+  //
+  // routing
+  //
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private modalService = inject(NgbModal);
-  private readonly categoryService = inject(CategoryService);
-  cantPages: number = 10;
+
+
+  //
+  // Table
+  //
+
+  // back data
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
-  bills: Bill[] = [];
-  categories: Category[] = [];
-  id:number|null=null
+
+  // items
+  billsFiltered: Bill[] = [];
+  originalBillls: Bill[] = [];
+  columns: TableColumn[] = [
+    {headerName: 'Categoría', accessorKey: 'category.name'},
+    {headerName: 'Fecha', accessorKey: 'date'},
+    {headerName: 'Proveedor', accessorKey: 'supplier.name'},
+    {headerName: 'Descripción', accessorKey: 'description'},
+    {headerName: 'Monto', accessorKey: 'amount'}]
+    ;
+
+  // filters
+  categories: FilterOption[] = [];
+  suppliers: FilterOption[] = [];
+
+  filters: Filter[] = [
+    new SelectFilter('Categoría', 'category', 'Seleccione la categoría', this.categories),
+    new SelectFilter('Proveedor', 'supplier', 'Seleccione el proveedor', this.suppliers)
+  ];
+
+  // pagination
+  cantPages: number = 10;
   currentPage = 1;
   itemsPerPage = 10;
   totalItems = 0;
   totalPages = 0;
   pages: number[] = [];
+  tablePagination: TablePagination = {
+    totalItems: this.totalItems,
+    page: this.currentPage,
+    size: this.itemsPerPage,
 
+    onPageChange: function (page: number): void {
+      throw new Error('Function not implemented.');
+    },
+    onPageSizeChange: function (itemsPerPage: number): void {
+      throw new Error('Function not implemented.');
+    }
+  };
+
+  // other variables
+
+  id:number|null=null
   category: number | null = null;
   period: number | null = null;
   type: number | undefined = undefined;
-
   typeFilter: string = '';
-
   searchTerm: string = '';
 
   fileName = 'reporte-gastos-liquidación';
 
+
+  //
+  // Methods
+  //
+
   ngOnInit(): void {
     this.loadLiquidationExpenseDetails();
     this.loadCategories();
+    this.loadSuppliers();
   }
 
+  //  load lists
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe((data) => {
-      this.categories = data;
+      data.forEach(e => {
+        this.categories.push({value: e.name ,label: e.name})
+      })
+    });
+  }
+
+  private loadSuppliers() {
+    this.supplierService.getAllProviders().subscribe((data) => {
+      data.forEach(e => {
+        this.suppliers.push({value: e.name ,label: e.name})
+      })
     });
   }
 
@@ -129,23 +202,73 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
           status
         )
         .subscribe((data) => {
-          this.bills = data.content;
+          this.billsFiltered = data.content;
+          this.originalBillls = this.billsFiltered;
           this.cantPages = data.totalElements;
         });
     } else console.log('No hay un tipo de expensa definido');
   }
 
-  goBack() {
-    this.location.back();
+
+  // Filter data
+
+  filterTableByText(value: string) {
+    const filterValue = value?.toLowerCase() || '';
+    if(filterValue === '') {
+      this.billsFiltered = this.originalBillls;
+      return;
+    }
+
+    this.billsFiltered = this.originalBillls.filter(bill =>
+      bill.category.name.toLowerCase().includes(filterValue) ||
+      bill.supplier.name.toLowerCase().includes(filterValue) ||
+      bill.amount.toString().toLowerCase().includes(filterValue) ||
+      bill.billType?.name.toLowerCase().includes(filterValue) ||
+      bill.description.toLowerCase().includes(filterValue) ||
+      bill.date.toString().toLowerCase().includes(filterValue)
+    );
   }
 
-  //
+  filterTableBySelects(value: Record<string, any>) {
+
+    const filter1 = value['category']?.toLowerCase() || '';
+    const filter2 = value['supplier']?.toLowerCase() || '';
+
+    if (filter1 === '' && filter2 === '') {
+      this.billsFiltered = this.originalBillls;
+      return;
+    }
+
+    this.billsFiltered = this.originalBillls.filter(bill => {
+        const matchesFilter1 = filter1
+            ? (bill.category.name.toLowerCase().includes(filter1) ||
+               bill.supplier.name.toLowerCase().includes(filter1))
+            : true;
+
+        const matchesFilter2 = filter2
+            ? (bill.category.name.toLowerCase().includes(filter2) ||
+               bill.supplier.name.toLowerCase().includes(filter2))
+            : true;
+
+        return matchesFilter1 && matchesFilter2;
+    });
+}
+
+
+  handleCategoryChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedId = +selectElement.value;
+    this.category = selectedId;
+
+    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
+  }
+
+
   // Pagination
-  //
 
   initializePagination() {
     this.totalItems =
-      this.liquidationExpense.liquidation_expenses_details.length;
+    this.liquidationExpense.liquidation_expenses_details.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
@@ -169,9 +292,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.initializePagination();
   }
 
-  //
+
   // PDF Y Excel
-  //
 
   downloadTable() {
     this.billsService
@@ -257,9 +379,9 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       });
   }
 
-  //
-  // Modal
-  //
+
+
+  // Modals
 
   openModal() {
     const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
@@ -271,6 +393,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     });
   }
 
+
+  //  Pther buttons
   edit(id: number | null) {
     console.log(id);
 
@@ -278,28 +402,4 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.router.navigate([`gastos/modificar/${id}`]);
   }
 
-  selectFilter(text: string) {
-    this.typeFilter = text;
-  }
-  handleCategoryChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedId = +selectElement.value;
-    this.category = selectedId;
-    console.log(selectedId);
-    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
-  }
-
-  clean() {
-    this.category = null;
-    this.typeFilter = '';
-    this.searchTerm = '';
-    this.getBills(
-      this.itemsPerPage,
-      this.currentPage,
-      this.period,
-      this.category,
-      this.type,
-      'ACTIVE'
-    );
-  }
 }

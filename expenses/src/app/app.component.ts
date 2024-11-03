@@ -8,7 +8,7 @@ import {MainLayoutComponent, NavbarComponent, NavbarItem, SidebarComponent, Toas
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent],
+  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent, ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
