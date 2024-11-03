@@ -1,9 +1,8 @@
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { ActivatedRoute, RedirectCommand, Router } from '@angular/router';
-import { CommonModule, DatePipe, Location } from '@angular/common';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
 import { CurrencyPipe } from '@angular/common';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ModalLiquidationDetailComponent } from './modal-liquidation-detail/modal-liquidation-detail.component';
+import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
 import { FormsModule } from '@angular/forms';
@@ -12,12 +11,13 @@ import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
 import { Bill } from '../../../models/bill';
 import { CategoryService } from '../../../services/category.service';
-import Category from '../../../models/category';
 import { NgPipesModule } from 'ngx-pipes';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
+import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
+import { ProviderService } from '../../../services/provider.service';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -31,47 +31,123 @@ import moment from 'moment';
     NgModalComponent,
     NgPipesModule,
     NgbModule,
+    TableComponent,
+    TableFiltersComponent,
+    MainContainerComponent,
+    ConfirmAlertComponent,
   ],
+  providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-liquidation-details.component.html',
   styleUrl: './expenses-liquidation-details.component.css',
 })
 export class LiquidationExpenseDetailsComponent implements OnInit {
-  private readonly location = inject(Location);
+  //
+  //  Services
+  //
+
   private readonly service = inject(LiquidationExpenseService);
   private readonly billsService = inject(BillService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly supplierService = inject(ProviderService);
+  private readonly billTypeService = inject(BillService);
+
+  private modalService = inject(NgbModal);
+
+  //
+  // routing
+  //
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private modalService = inject(NgbModal);
-  private readonly categoryService = inject(CategoryService);
-  cantPages: number = 10;
+
+
+  //
+  // Table
+  //
+
+  // back data
   liquidationExpense: LiquidationExpense = new LiquidationExpense();
-  bills: Bill[] = [];
-  categories: Category[] = [];
-  id:number|null=null
-  currentPage = 1;
-  itemsPerPage = 10;
+
+  // items
+
+  @ViewChild('amountTemplate', { static: true }) amountTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
+  @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
+
+  billsFiltered: Bill[] = [];
+  originalBills: Bill[] = [];
+
+  columns: TableColumn[] = [];
+
+  // filters
+  categories: FilterOption[] = [];
+  suppliers: FilterOption[] = [];
+  billTypes: FilterOption[] = [];
+
+  filters: Filter[] = [
+    new SelectFilter('Categoría', 'category', 'Seleccione la categoría', this.categories),
+    new SelectFilter('Proveedor', 'supplier', 'Seleccione el proveedor', this.suppliers),
+    new SelectFilter('Tipo', 'type', 'Seleccione el tipo', this.billTypes)
+  ];
+
+  // pagination
   totalItems = 0;
-  totalPages = 0;
-  pages: number[] = [];
+  page = 0;
+  size = 10;
 
-  category: number | null = null;
+  // other variables
+
+  id:number|null=null
   period: number | null = null;
-  type: number | undefined = undefined;
-
-  typeFilter: string = '';
-
-  searchTerm: string = '';
 
   fileName = 'reporte-gastos-liquidación';
 
+
+  //
+  // Methods
+  //
+
   ngOnInit(): void {
+
     this.loadLiquidationExpenseDetails();
     this.loadCategories();
+    this.loadSuppliers();
+    this.loadBillTypes();
+
+    this.columns = [
+      {headerName: 'Categoría', accessorKey: 'category.name'},
+      {headerName: 'Tipo', accessorKey: 'billType.name'},
+      {headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate},
+      {headerName: 'Proveedor', accessorKey: 'supplier.name'},
+      {headerName: 'Descripción', accessorKey: 'description'},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
+    ];
+  }
+
+  //  load lists
+  private loadBillTypes() {
+    this.billTypeService.getBillTypes().subscribe((data) => {
+      data.forEach(e => {
+        this.billTypes.push({value: e.name ,label: e.name})
+      })
+    });
   }
 
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe((data) => {
-      this.categories = data;
+      data.forEach(e => {
+        this.categories.push({value: e.name ,label: e.name})
+      })
+    });
+  }
+
+  private loadSuppliers() {
+    this.supplierService.getAllProviders().subscribe((data) => {
+      data.forEach(e => {
+        this.suppliers.push({value: e.name ,label: e.name})
+      })
     });
   }
 
@@ -79,12 +155,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       const periodId = params.get('period_id');
       const id = params.get('id');
-      const category = params.get('categoria');
-      if (!category || category == '0') {
-        this.category = null;
-      } else {
-        this.category = Number(category);
-      }
 
       if (id && !isNaN(Number(id))) {
         this.id = Number(params.get('id')) ;
@@ -92,18 +162,14 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
           .getById(Number(id))
           .subscribe((data: LiquidationExpense) => {
             this.liquidationExpense = data;
-            this.type = data.bill_type?.bill_type_id;
 
             if (periodId && !isNaN(Number(periodId))) {
               this.period = parseInt(periodId);
             }
             this.getBills(
-              this.itemsPerPage,
-              this.currentPage,
-              this.period,
-              this.category,
-              this.type,
-              'ACTIVE'
+              this.size,
+              this.page,
+              this.period
             );
           });
       }
@@ -113,96 +179,119 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private getBills(
     itemsPerPage: number,
     page: number,
-    period: number | null,
-    category: number | null,
-    type: number | undefined,
-    status: string
+    period: number | null
   ) {
-    if (type != undefined) {
-      this.billsService
-        .getAllBillsPaged(
-          itemsPerPage,
-          page - 1,
-          period,
-          category,
-          type,
-          status
-        )
-        .subscribe((data) => {
-          this.bills = data.content;
-          this.cantPages = data.totalElements;
+    this.billsService
+      .getAllBillsPaged(
+        itemsPerPage,
+        page,
+        period,
+        null,
+        null,
+        null
+      )
+      .subscribe((data) => {
+        data.bills.subscribe(data => {
+          this.billsFiltered = data
+          this.originalBills = this.billsFiltered;
+        })
+        data.pagination.subscribe(data => {
+          this.totalItems = data.totalElements
         });
-    } else console.log('No hay un tipo de expensa definido');
+      });
   }
 
-  goBack() {
-    this.location.back();
-  }
 
-  //
-  // Pagination
-  //
+  // Filter data
 
-  initializePagination() {
-    this.totalItems =
-      this.liquidationExpense.liquidation_expenses_details.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
+  filterTableByText(value: string) {
+    const filterValue = value?.toLowerCase() || '';
+    if(filterValue === '') {
+      this.billsFiltered = this.originalBills;
+      return;
     }
-    this.getBills(
-      this.itemsPerPage,
-      this.currentPage,
-      this.period,
-      this.category,
-      this.type,
-      'ACTIVE'
+
+    this.billsFiltered = this.originalBills.filter(bill =>
+      bill.category.name.toLowerCase().includes(filterValue) ||
+      bill.supplier.name.toLowerCase().includes(filterValue) ||
+      bill.amount.toString().toLowerCase().includes(filterValue) ||
+      bill.billType.name.toLowerCase().includes(filterValue) ||
+      bill.description.toLowerCase().includes(filterValue) ||
+      bill.date.toString().toLowerCase().includes(filterValue)
     );
   }
 
-  onItemsPerPageChange() {
-    this.currentPage = 1;
-    this.initializePagination();
+  filterTableBySelects(value: Record<string, any>) {
+
+    const filter1 = value['category']?.toLowerCase() || '';
+    const filter2 = value['supplier']?.toLowerCase() || '';
+    const filter3 = value['type']?.toLowerCase() || '';
+
+    if (filter1 === '' && filter2 === '' && filter3 === '') {
+      this.billsFiltered = this.originalBills;
+      return;
+    }
+
+    this.billsFiltered = this.originalBills.filter(bill => {
+        const matchesFilter1 = filter1
+            ? bill.category.name.toLowerCase().includes(filter1)
+            : true;
+
+        const matchesFilter2 = filter2
+            ? bill.supplier.name.toLowerCase().includes(filter2)
+            : true;
+
+        const matchesFilter3 = filter3
+        ? (filter3.startsWith("ex")
+            ? bill.billType.name.toLowerCase().includes(filter3.toLowerCase())
+            : !bill.billType.name.toLowerCase().startsWith("ex") &&
+              bill.billType.name.toLowerCase().includes(filter3.toLowerCase())
+        )
+        : true;
+
+        return matchesFilter1 && matchesFilter2 && matchesFilter3;
+    });
   }
 
-  //
+
+
+  // Pagination
+
+  onPageChange = (page: number) => {
+    this.page = (page-1);
+    this.loadLiquidationExpenseDetails();
+  };
+
+  onPageSizeChange = (size: number) => {
+    this.size = size;
+    this.page = 0;
+    this.loadLiquidationExpenseDetails();
+  };
+
+
   // PDF Y Excel
-  //
 
   downloadTable() {
-    this.billsService
-      .getAllBillsPaged(
-        this.itemsPerPage,
-        this.currentPage - 1,
-        this.period,
-        this.category,
-        this.type || null,
-        'ACTIVE'
-      )
-      .subscribe((bill) => {
-        // Mapear los datos a un formato tabular adecuado
-        const data = bill.content.map((bill) => ({
-          Categoría: `${bill.category.name}`,
-          Fecha: `${bill.date}`,
-          Proveedor: `${bill.supplier.name}`,
-          Monto: `${bill.amount}`,
-          Descripción: `${bill.description}`,
-        }));
+    // Mapear los datos a un formato tabular adecuado
+    const data = this.billsFiltered.map((bill) => ({
+      Categoría: `${bill.category.name}`,
+      Tipo: `${bill.billType.name}`,
+      Fecha: `${bill.date}`,
+      Proveedor: `${bill.supplier.name}`,
+      Monto: `${bill.amount}`,
+      Descripción: `${bill.description}`,
+    }));
 
-        const fecha = new Date();
-        console.log(fecha);
-        const finalFileName =
-          this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
+    const fecha = new Date();
+    console.log(fecha);
+    const finalFileName =
+      this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
 
-        const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-        const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
-        XLSX.writeFile(wb, `${finalFileName}.xlsx`);
-      });
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Gastos de Liquidación');
+    XLSX.writeFile(wb, `${finalFileName}.xlsx`);
+
   }
 
   imprimir() {
@@ -213,93 +302,71 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     doc.setFontSize(18);
     doc.text('Reporte de Gastos de Liquidación', 14, 20);
 
-    // Llamada al servicio para obtener las expensas
-    this.billsService
-      .getAllBillsPaged(
-        this.itemsPerPage,
-        this.currentPage - 1,
-        this.period,
-        this.category,
-        this.type || null,
-        'ACTIVE'
-      )
-      .subscribe((bill) => {
-        // Usando autoTable para agregar la tabla
-        autoTable(doc, {
-          startY: 30,
-          head: [['Categoría', 'Fecha', 'Proveedor', 'Monto', 'Descripcion']],
-          body: bill.content.map((bill) => [
-            bill.category?.name || 'N/A',
-            bill.date instanceof Date
-              ? bill.date.toLocaleDateString()
-              : new Date(bill.date).toLocaleDateString() || 'N/A',
-            bill.supplier?.name || 'N/A',
-            bill?.amount?.toLocaleString('es-AR', {
-              style: 'currency',
-              currency: 'ARS',
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }) || 'N/A',
-            bill?.description || 'N/A',
-          ]),
-        });
-
-        // Guardar el PDF después de agregar la tabla
-        const fecha = new Date();
-        console.log(fecha);
-        const finalFileName =
-          this.fileName +
-          '-' +
-          moment(fecha).format('DD-MM-YYYY_HH-mm') +
-          '.pdf';
-        doc.save(finalFileName);
-        console.log('Impreso');
-      });
-  }
-
-  //
-  // Modal
-  //
-
-  openModal() {
-    const modalRef = this.modalService.open(ModalLiquidationDetailComponent);
-  }
-
-  showModal(content: TemplateRef<any>) {
-    const modalRef = this.modalService.open(content, {
-      ariaLabelledBy: 'modal-basic-title',
+    // Usando autoTable para agregar la tabla
+    autoTable(doc, {
+      startY: 30,
+      head: [['Categoría', 'Tipo','Fecha', 'Proveedor', 'Monto', 'Descripcion']],
+      body: this.billsFiltered.map((bill) => [
+        bill.category?.name || 'N/A',
+        bill.billType?.name || 'N/A',
+        bill.date instanceof Date
+          ? bill.date.toLocaleDateString()
+          : new Date(bill.date).toLocaleDateString() || 'N/A',
+        bill.supplier?.name || 'N/A',
+        bill?.amount?.toLocaleString('es-AR', {
+          style: 'currency',
+          currency: 'ARS',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) || 'N/A',
+        bill?.description || 'N/A',
+      ]),
     });
+
+    // Guardar el PDF después de agregar la tabla
+    const fecha = new Date();
+    console.log(fecha);
+    const finalFileName =
+      this.fileName +
+      '-' +
+      moment(fecha).format('DD-MM-YYYY_HH-mm') +
+      '.pdf';
+    doc.save(finalFileName);
+    console.log('Impreso');
   }
 
-  edit(id: number | null) {
-    console.log(id);
 
+
+  // Modals
+
+  showModal() {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertTitle = 'Acerca de Gastos de expensa'
+    modalRef.componentInstance.alertMessage =
+      'En esta pantalla se desplliegan los gastos de la expensa previamente seleccionada. Los gastos puede ser filtrada tanto por categoría o por sus proveedores y presentan botones para ver la factura del pago o para editarla.';
+    modalRef.componentInstance.alertType = 'info';
+  }
+
+  showPaidModal(item: Bill) {
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertTitle = 'Pago'
+    modalRef.componentInstance.content = this.paidPdf;
+    modalRef.componentInstance.alertMessage = `${item.category.name} ${item.billType.name} - ${item.supplier.name} (${item.amount?.toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })})`;
+    modalRef.componentInstance.alertType = 'info';
+  }
+
+
+  //  Pther buttons
+  edit(id: number | null) {
     if (id == null) return;
     this.router.navigate([`gastos/modificar/${id}`]);
   }
 
-  selectFilter(text: string) {
-    this.typeFilter = text;
-  }
-  handleCategoryChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedId = +selectElement.value;
-    this.category = selectedId;
-    console.log(selectedId);
-    this.router.navigate([`periodo/${this.period}/liquidacion/${this.id}/${selectedId}`]);
-  }
-
-  clean() {
-    this.category = null;
-    this.typeFilter = '';
-    this.searchTerm = '';
-    this.getBills(
-      this.itemsPerPage,
-      this.currentPage,
-      this.period,
-      this.category,
-      this.type,
-      'ACTIVE'
-    );
-  }
 }
