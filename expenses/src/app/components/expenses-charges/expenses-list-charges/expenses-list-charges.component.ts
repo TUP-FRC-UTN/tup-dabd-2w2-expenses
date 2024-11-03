@@ -65,6 +65,16 @@ throw new Error('Method not implemented.');
 }
 showInfo() {
 throw new Error('Method not implemented.');
+/*
+// 'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.'
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertMessage =
+      'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.';
+    modalRef.componentInstance.alertType = 'info';
+
+    this.idClosePeriod = null;
+*/
 }
   // Variables de Filtros y Paginación
   //#region FILTER VARIABLES

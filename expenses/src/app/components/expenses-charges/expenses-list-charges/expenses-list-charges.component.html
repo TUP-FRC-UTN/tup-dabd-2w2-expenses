@@ -1,23 +1,129 @@
 <app-main-container title="Listado de Cargos" (infoButtonClick)="showInfo()">
-  <div class="btn-group me-5" role="group">
-    <div class="col-sm-12 col-md-8 col-xl-8">
-      <div class="input-group">
-        <span class="input-group-text" id="search-icon">
-          <i class="bi bi-search"></i>
-        </span>
-        <input
-          type="text"
-          class="form-control"
-          id="filter-text-box"
-          placeholder="Buscar..." [(ngModel)]="searchTerm"
-        />
-        <!--<app-table-filters></app-table-filters> -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Sección de búsqueda y filtros -->
+      <div class="btn-group me-5" role="group">
+        <div class="col-sm-12 col-md-8 col-xl-8">
+          <div class="input-group">
+            <span class="input-group-text" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              id="filter-text-box"
+              (input)="onFilterTextBoxChanged($event)"
+              placeholder="Buscar..."
+            />
+            <app-table></app-table>
+
+          </div>
+        </div>
+
+
       </div>
-    </div>
 
+      <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+      <div class="d-flex align-items-center">
+        <!-- Botón "+" -->
+        <button type="button" class="btn btn-outline-primary" (click)="addCharge()">+</button>
 
+        <!-- Línea vertical y botones de exportación -->
+        <div class="vertical-line mx-3"></div>
+        <button class="btn btn-success me-2" (click)="downloadTable()">
+          <i class="bi bi-file-earmark-excel"></i>
+        </button>
+        <button class="btn btn-danger me-2" (click)="imprimir()">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </button>
+      </div>
   </div>
+  <div class="card">
+    <table class="table table-striped fixed-table">
+      <thead>
+        <tr>
+          <th scope="col" style="text-align:center;" >Fecha</th>
+          <th scope="col" style="text-align: center;">Número de Lote</th>
+          <th scope="col" style="text-align: center;">Categoría</th>
+          <th scope="col" style="text-align: center;">Descripción</th>
+          <th scope="col" style="text-align: center;">Monto</th>
+          <th scope="col" style="text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (charge of charges | filterBy: ['lotId', 'amount','description','categoryCharge.name','plotNumber','date']: searchTerm; track $index) {<tr>
+          <td style="text-align: center;" >{{charge.date | date:'MMM d, yyyy'}}</td>
+          <td style="text-align: center;">{{getPlotNumber(charge.lotId)}}</td>
+          <td>{{charge.categoryCharge.name}}</td>
+          <td>{{charge.description}}</td>
+          <td style="text-align: right;" >{{charge.amount.toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) }}</td>
+          <td  style="display: flex; flex-direction: row; gap: 2px; justify-content: center;" >
+            @if(charge.categoryCharge.name == "Multa" ||charge.period.state == "CLOSE") {
 
+              <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
+                <i class="bi bi-eye"></i>
+              </button>
+
+            } @else {
+              <div class="btn-group" role="group">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-secondary dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-primary"
+                      (click)="openViewModal(charge)"
+                      >Ver</a
+                    ><!--aca modal ver cargo-->
+                  </li>
+                  @if (charge.period.state != "CLOSE") {
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-info"
+                      (click)="openUpdateModal(charge)"
+                      >Editar</a
+                    ><!--aca modal editar cargo-->
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item btn btn-danger"
+                      data-bs-target="#exampleModal"
+                      data-bs-toggle="modal"
+                      (click)="open(modalTemplate, charge.chargeId)"
+                      >Eliminar</a
+                    >
+                  </li>
+                  }
+                </ul>
+              </div>
+
+            }
+          </td>
+
+
+      </tr>
+      }@empty {
+          <td colspan="7" class="text-center">
+            <div class="text-center p-3">
+              <div class="alert alert-secondary">
+                No hay cargos para mostrar
+              </div>
+            </div>
+          </td>
+      }
+      </tbody>
+    </table>
+  </div>
 </app-main-container>
 
 
@@ -29,8 +135,8 @@
 
 
 <div class="container" style="margin-top: 18px;">
-  <div class="row" style="align-items:end">
-    <div class="position-relative">
+   <div class="row" style="align-items:end">
+  <!--  <div class="position-relative">
       <h1>Listado de cargos</h1>
     </div>
     <div class="input-group w-25">
@@ -42,7 +148,7 @@
       <span class="input-group-text">
         <i class="bi bi-search"></i>
       </span>
-    </div>
+    </div> -->
 
     <!-- Modal con los selectores -->
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
