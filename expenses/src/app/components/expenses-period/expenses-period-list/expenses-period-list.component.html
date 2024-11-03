@@ -68,7 +68,7 @@
         </tr>
       </thead>
       <tbody>
-        @if (listPeriod?.length ===0) {
+        @if (listPeriod.length ===0) {
         <tr>
           <td
             class="alert alert-secondary"
@@ -140,16 +140,36 @@
                 >
                   Liquidacion
                 </button>
-                @if (period.state !== 'CLOSE') {
+                @if ( period.state == 'Liquidación Cerrada') {
                 <li>
                   <button
                     class="dropdown-item btn btn-danger"
                     (click)="open( period.id)"
                   >
-                    Cerrar
+                    Finalizar
                   </button>
                 </li>
                 }
+                @if ( period.state !== 'Liquidación Cerrada'&&  period.state !== 'Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationClose( period.id)"
+                    >
+                      Cerrar Liquidacion
+                    </button>
+                  </li>
+                 }
+                 @if ( period.state == 'Liquidación Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationOpen( period.id)"
+                    >
+                      abrir Liquidacion
+                    </button>
+                  </li>
+                 }
               </div>
             </div>
           </td>

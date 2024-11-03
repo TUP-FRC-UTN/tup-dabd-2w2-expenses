@@ -5,38 +5,41 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModule, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { generateNumberArray } from '../../../utils/generateArrayNumber';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from 'ngx-dabd-grupo01';
-import {switchMap} from "rxjs";
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-expenses-period',
   standalone: true,
-  imports: [ NgbModule, FormsModule ],
+  imports: [NgbModule, FormsModule, MainContainerComponent],
   templateUrl: './expenses-period.component.html',
   styleUrl: './expenses-period.component.css',
 })
 export class ExpensesPeriodComponent implements OnInit {
+  showModal() {
+    throw new Error('Method not implemented.');
+  }
 
-finde() {
-  this.loadList()
-}
-  toastService:ToastService = inject(ToastService)
+  finde() {
+    this.loadList();
+  }
+  toastService: ToastService = inject(ToastService);
   cantPages: number = 1;
   indexActive = 1;
   size = 10;
   currentPage: number = 1;
   visiblePages: number[] = [];
-  type:number|undefined=undefined
+  type: number | undefined = undefined;
   lote: number | null = null;
-  filter:string|null=null
+  filter: string | null = null;
 
-  changeFilter(filter: string|null) {
-    if(!filter){
-      this.lote=null
-      this.loadList()
+  changeFilter(filter: string | null) {
+    if (!filter) {
+      this.lote = null;
+      this.loadList();
     }
-    this.filter=filter
-    }
+    this.filter = filter;
+  }
 
   onSelectChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
@@ -44,18 +47,17 @@ finde() {
     this.loadList();
   }
 
-  selectType(arg0: string|undefined) {
-    if(arg0==="Ordinarias"){
-      this.type=1
+  selectType(arg0: string | undefined) {
+    if (arg0 === 'Ordinarias') {
+      this.type = 1;
     }
-     if(arg0==="Extraordinarias"){
-      this.type=2
+    if (arg0 === 'Extraordinarias') {
+      this.type = 2;
     }
-    if(!arg0){
-      this.type=undefined
-      console.log(this.type)
+    if (!arg0) {
+      this.type = undefined;
     }
-    this.loadList()
+    this.loadList();
   }
 
   ngOnInit(): void {
@@ -69,46 +71,66 @@ finde() {
   listExpenses: Expense[] = [];
 
   loadList() {
-    console.log(this.periodId)
-    this.expenseService.getByPeriod(Number(this.periodId))
+    if (!this.periodId) {
+      console.error('periodId is not defined');
+      return;
+    }
+  
+    console.log("Period ID:", this.periodId);
+  
+    this.expenseService
+      .getByPeriod(Number(this.periodId))
       .pipe(
+        tap(() => {
+          console.log("getByPeriod called and completed");
+        }),
         switchMap(() => {
+          console.log("Calling getExpenses...");
           return this.expenseService.getExpenses(
             this.currentPage - 1,
             this.size,
             Number(this.periodId),
-            this.lote||undefined,
+            this.lote || undefined,
             this.type
           );
         })
       )
-      .subscribe((data) => {
-        this.listExpenses = data.content.map(expense => {
-          const expenses = this.keysToCamel(expense) as Expense;
-          return {
-            ...expenses,
-           
-          };  });
-        this.cantPages = data.totalElements;
-      });
+      .subscribe(
+        (data) => {
+          console.log("Data received from getExpenses:", data);
+          this.listExpenses = data.content.map((expense) => {
+            const expenses = this.keysToCamel(expense) as Expense;
+            return { ...expenses };
+          });
+          this.cantPages = data.totalElements;
+        },
+        (error) => {
+          console.error("Error in loadList:", error);
+        }
+      );
   }
+
   toCamel(s: string) {
-    return s.replace(/([-_][a-z])/ig, ($1) => {
-      return $1.toUpperCase()
-        .replace('-', '')
-        .replace('_', '');
+    return s.replace(/([-_][a-z])/gi, ($1) => {
+      return $1.toUpperCase().replace('-', '').replace('_', '');
     });
   }
 
   keysToCamel(o: any): any {
     if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
-      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+      const n: { [key: string]: any } = {};
+      Object.keys(o).forEach((k) => {
         n[this.toCamel(k)] = this.keysToCamel(o[k]);
-      });       return n;
+      });
+      return n;
     } else if (Array.isArray(o)) {
-      return o.map((i) => {         return this.keysToCamel(i);       });
-    }     return o;
+      return o.map((i) => {
+        return this.keysToCamel(i);
+      });
+    }
+    return o;
   }
+
   loadId() {
     this.periodId = this.route.snapshot.paramMap.get('period_id');
   }
