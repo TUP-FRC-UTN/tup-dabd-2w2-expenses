@@ -1,9 +1,12 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { Bill } from '../../../models/bill';
 import { BillService } from '../../../services/bill.service';
-import Period from '../../../models/period';
-import { Provider } from '../../../models/provider';
-import Category from '../../../models/category';
 import { CategoryService } from '../../../services/category.service';
 import { ProviderService } from '../../../services/provider.service';
 import {
@@ -12,23 +15,18 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import BillType from '../../../models/billType';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
-import { PaginatedResponse } from '../../../models/paginatedResponse';
-import { BillDto } from '../../../models/billDto';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { map, Observable } from 'rxjs';
 import { NgPipesModule } from 'ngx-pipes';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
-import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 import { ListBillsInfoComponent } from '../../modals/info/list-bills-info/list-bills-info.component';
 import { Router } from '@angular/router';
 import moment from 'moment';
@@ -36,7 +34,10 @@ import {
   Filter,
   FilterConfigBuilder,
   MainContainerComponent,
-  TableFiltersComponent
+  TableColumn,
+  TableComponent,
+  TableFiltersComponent,
+  TablePagination,
 } from 'ngx-dabd-grupo01';
 
 @Component({
@@ -50,11 +51,12 @@ import {
     NgPipesModule,
     CommonModule,
     MainContainerComponent,
-    TableFiltersComponent
+    TableFiltersComponent,
+    TableComponent,
   ],
   templateUrl: './expenses-list-bills.component.html',
   styleUrl: './expenses-list-bills.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class ExpensesListBillsComponent implements OnInit {
   //#region VARIABLES
@@ -63,20 +65,25 @@ export class ExpensesListBillsComponent implements OnInit {
   updatedBill: Bill | undefined;
 
   filterConfig: Filter[] = [];
-  categoryList: { value: string, label: string }[] = [];
-  supplierList: { value: string, label: string }[] = [];
-  periodsList: { value: string, label: string }[] = [];
-  typesList: { value: string, label: string }[] = [];
+  categoryList: { value: string; label: string }[] = [];
+  supplierList: { value: string; label: string }[] = [];
+  periodsList: { value: string; label: string }[] = [];
+  typesList: { value: string; label: string }[] = [];
+
+  totalItems = 0;
+  page = 1;
+  size = 10;
+  sortField = 'billType.name';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   searchTerm: string = '';
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-  currentPage: number = 0;
+  currentPage: number = 1;
   pageSize: number = 10;
   totalPages: number = 0;
   totalElements: number = 0;
-  totalItems: number = 0;
   cantPages: number[] = [];
   indexActive: number = 1;
   isLoading: boolean = false;
@@ -98,7 +105,147 @@ export class ExpensesListBillsComponent implements OnInit {
     selectedStatus: new FormControl('ACTIVE'),
     selectedType: new FormControl(0),
   });
+
+  filterTableByText(value: string) {
+    const filterValue = value?.toLowerCase() || '';
+    if (filterValue === '') {
+      this.filteredBills = this.bills;
+      return;
+    }
+
+    this.filteredBills = this.bills.filter(
+      (bill) =>
+        (bill.billType?.name
+          ? bill.billType.name.toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.supplier?.name
+          ? bill.supplier.name.toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.amount
+          ? bill.amount.toString().toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.period?.end_date
+          ? bill.period.end_date
+              .toISOString()
+              .toLowerCase()
+              .includes(filterValue)
+          : false) ||
+        (bill.category?.name
+          ? bill.category.name.toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.date
+          ? bill.date.toString().toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.description
+          ? bill.description.toLowerCase().includes(filterValue)
+          : false) ||
+        (bill.status ? bill.status.toLowerCase().includes(filterValue) : false)
+    );
+  }
+
+  filterTableBySelects(value: Record<string, any>) {
+    const filterCategory = value['selectedCategory']?.toLowerCase() || '';
+    const filterSupplier = value['selectedSupplier']?.toLowerCase() || '';
+    const filterPeriod = value['selectedPeriod']?.toLowerCase() || '';
+    const filterType = value['selectedType']?.toLowerCase() || '';
+
+    if (!filterCategory && !filterSupplier && !filterPeriod && !filterType) {
+      this.filteredBills = this.bills;
+      return;
+    }
+
+    this.filteredBills = this.bills.filter((bill) => {
+      const matchesCategory = filterCategory
+        ? bill.category?.name
+          ? bill.category.name.toLowerCase().includes(filterCategory)
+          : false
+        : true;
+      const matchesSupplier = filterSupplier
+        ? bill.supplier?.name
+          ? bill.supplier.name.toLowerCase().includes(filterSupplier)
+          : false
+        : true;
+      const matchesPeriod = filterPeriod
+        ? bill.period?.end_date
+          ? bill.period.end_date
+              .toISOString()
+              .toLowerCase()
+              .includes(filterPeriod)
+          : false
+        : true;
+      const matchesType = filterType
+        ? bill.billType?.name
+          ? bill.billType.name.toLowerCase().includes(filterType)
+          : false
+        : true;
+
+      return matchesCategory && matchesSupplier && matchesPeriod && matchesType;
+    });
+  }
+
+  onSearchValueChange(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    this.page = 0;
+    this.loadBills();
+  }
   //#endregion
+
+  @ViewChild('actionsTemplate', { static: true })
+  actionsTemplate!: TemplateRef<any>;
+
+  columns: TableColumn[] = [
+    { headerName: 'Tipo', accessorKey: 'billType.name' },
+    { headerName: 'Proveedor', accessorKey: 'supplier.name' },
+    { headerName: 'Monto', accessorKey: 'amount' },
+    { headerName: 'Periodo', accessorKey: 'period.end_date' },
+    { headerName: 'Categoría', accessorKey: 'category.name' },
+    { headerName: 'Fecha', accessorKey: 'date' },
+    {
+      headerName: 'Acciones',
+      accessorKey: 'actions',
+      cellRenderer: this.actionsTemplate,
+    },
+  ];
+
+  onSortChange(field: string) {
+    if (this.sortField === field) {
+      // Alterna entre ascendente y descendente si se vuelve a hacer clic en la misma columna
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Cambia a la nueva columna y establece la dirección predeterminada a ascendente
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    this.loadBills(); // Recarga los datos con la nueva configuración de ordenación
+  }
+
+  actionsRenderer(params: any) {
+    return `
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-warning me-2" onclick="editBill(${params.data.id})">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-primary" onclick="viewBill(${params.data.id})">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+    `;
+  }
+
+  onPageChange = (page: number) => {
+    this.currentPage = page;
+    this.loadBills();
+  };
+
+  onPageSizeChange = (size: number) => {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.loadBills();
+  };
+
+  openFormModal() {
+    throw new Error('Method not implemented.');
+  }
 
   //#region DEPENDENCY INJECTION
   billService = inject(BillService);
@@ -112,38 +259,22 @@ export class ExpensesListBillsComponent implements OnInit {
 
   //#region INITIALIZATION AND DATA LOADING
   ngOnInit(): void {
+    this.filteredBills = this.bills;
     this.getCategories();
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
     this.loadBills();
-    this.initializeFilters(); // Initialize filters after loading data
-
-    // Form group initialization for bill and new category
-    // this.billForm = this.fb.group({
-    //   category_id: ['', Validators.required],
-    //   description: [''],
-    //   amount: ['', [Validators.required, Validators.min(0.0001)]],
-    //   date: ['', Validators.required],
-    //   supplierId: ['', Validators.required],
-    //   typeId: ['', Validators.required],
-    //   periodId: ['', Validators.required],
-    //   status: ['ACTIVE', Validators.required],
-    // });
-
-    // this.newCategoryForm = this.fb.group({
-    //   name: ['', [Validators.required, Validators.minLength(2)]],
-    //   description: ['', [Validators.required, Validators.minLength(2)]],
-    // });
+    this.initializeFilters();
   }
 
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
       this.categoryList = categories.map((category: any) => ({
         value: category.id,
-        label: category.name
+        label: category.name,
       }));
-      this.initializeFilters();  // Actualiza el filtro después de obtener datos
+      this.initializeFilters(); // Actualiza el filtro después de obtener datos
     });
   }
 
@@ -151,27 +282,27 @@ export class ExpensesListBillsComponent implements OnInit {
     this.providerService.getAllProviders().subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
         value: provider.id,
-        label: provider.name
+        label: provider.name,
       }));
       this.initializeFilters();
     });
   }
-  
+
   getPeriods() {
     this.periodService.get().subscribe((periods) => {
       this.periodsList = periods.map((period: any) => ({
         value: period.id,
-        label: `${period.month}/${period.year}`
+        label: `${period.month}/${period.year}`,
       }));
       this.initializeFilters();
     });
   }
-  
+
   getBillTypes() {
     this.billService.getBillTypes().subscribe((types) => {
       this.typesList = types.map((type: any) => ({
         value: type.id,
-        label: type.name
+        label: type.name,
       }));
       this.initializeFilters();
     });
@@ -180,11 +311,26 @@ export class ExpensesListBillsComponent implements OnInit {
   // Initialize filter configurations
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
-      .selectFilter('Tipo', 'billType.name', 'Seleccione un tipo', this.typesList)
-      .selectFilter('Proveedor', 'supplier.name', 'Seleccione un proveedor', this.supplierList)
+      .selectFilter(
+        'Tipo',
+        'billType.name',
+        'Seleccione un tipo',
+        this.typesList
+      )
+      .selectFilter(
+        'Proveedor',
+        'supplier.name',
+        'Seleccione un proveedor',
+        this.supplierList
+      )
       .numberFilter('Monto', 'amount', 'Ingrese el monto')
       .dateFilter('Fecha', 'date', 'Seleccione una fecha')
-      .selectFilter('Categoría', 'category.name', 'Seleccione una categoría', this.categoryList)
+      .selectFilter(
+        'Categoría',
+        'category.name',
+        'Seleccione una categoría',
+        this.categoryList
+      )
       .radioFilter('Activo', 'isActive', [
         { value: 'true', label: 'Activo' },
         { value: 'false', label: 'Inactivo' },
@@ -222,7 +368,20 @@ export class ExpensesListBillsComponent implements OnInit {
           console.log('Respuesta del servicio:', response);
           this.totalElements = response.totalElements;
           response.content.map((bill) => {
-            this.bills.push(new Bill(bill.expenditure_id, bill.date, bill.amount, bill.description, bill.supplier, bill.period, bill.category, bill.bill_type, bill.status));
+            this.bills.push(
+              new Bill(
+                bill.expenditure_id,
+                bill.date,
+                bill.amount,
+                bill.description,
+                bill.supplier,
+                bill.period,
+                bill.category,
+                bill.bill_type,
+                bill.status
+              )
+            );
+            this.filteredBills = [...this.bills];
           });
         },
         error: (error) => console.error('Error al cargar las facturas:', error),
@@ -256,11 +415,6 @@ export class ExpensesListBillsComponent implements OnInit {
   //#region PAGINATION AND PAGE SIZE
   onItemsPerPageChange() {
     this.currentPage = 1;
-  }
-
-  onPageChange(number: number) {
-    this.currentPage = number;
-    this.loadBills();
   }
 
   updatePageSize() {
@@ -331,7 +485,18 @@ export class ExpensesListBillsComponent implements OnInit {
       .subscribe((bills) => {
         autoTable(doc, {
           startY: 30,
-          head: [['Periodo', 'Monto total', 'Fecha', 'Estado', 'Proveedor', 'Categoría', 'Tipo', 'Descripción']],
+          head: [
+            [
+              'Periodo',
+              'Monto total',
+              'Fecha',
+              'Estado',
+              'Proveedor',
+              'Categoría',
+              'Tipo',
+              'Descripción',
+            ],
+          ],
           body: bills.map((bill) => [
             bill.period ? `${bill.period.month}/${bill.period.year}` : null,
             bill.amount ? `$ ${bill.amount}` : null,
@@ -343,7 +508,9 @@ export class ExpensesListBillsComponent implements OnInit {
             bill.description,
           ]),
         });
-        doc.save(`Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`);
+        doc.save(
+          `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`
+        );
         console.log('Impreso');
       });
   }
