@@ -32,7 +32,7 @@ export const routes: Routes = [
   { path: 'periodo', component: ExpensesPeriodListComponent },
   { path: 'periodo/:period_id/expensas', component: ExpensesListComponent },
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationComponent },
-  { path: 'periodo/:period_id/liquidacion/:id/:categoria', component: LiquidationExpenseDetailsComponent },
+  { path: 'periodo/:period_id/gastos', component: LiquidationExpenseDetailsComponent },
 
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpensesListComponent },
