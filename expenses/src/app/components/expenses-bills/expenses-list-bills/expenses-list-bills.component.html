@@ -11,6 +11,13 @@
   </td>
 </ng-template>
 
+<ng-template #periodTemplate let-item>
+  <td>
+    {{ item.period.month }}/{{ item.period.year }}
+  </td>
+</ng-template>
+
+
 <ng-template #dateTemplate let-item>
   <td>
     {{ item.date | date: 'dd/MM/yyyy' }}

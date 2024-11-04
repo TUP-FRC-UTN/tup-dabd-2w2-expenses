@@ -93,8 +93,6 @@ export class ExpensesListBillsComponent implements OnInit {
   today: Date = new Date();
   fileName: string = `Gastos_${this.today.toLocaleDateString()}.xlsx`;
 
-  // billForm: FormGroup;
-  // newCategoryForm: FormGroup;
   selectedBill: Bill | undefined;
 
   // FormGroup for filters
@@ -170,7 +168,7 @@ export class ExpensesListBillsComponent implements OnInit {
 
   onSearchValueChange(searchTerm: string) {
     this.searchTerm = searchTerm;
-    this.page = 1; // Resetea a la primera página cuando buscas
+    this.page = 1;
     this.filterTableByText(searchTerm);
   }
 
@@ -185,29 +183,12 @@ export class ExpensesListBillsComponent implements OnInit {
 
   //#endregion
 
-  @ViewChild('amountTemplate', { static: true })
-  amountTemplate!: TemplateRef<any>;
+  @ViewChild('amountTemplate', { static: true }) amountTemplate!: TemplateRef<any>;
   @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
-  @ViewChild('actionsTemplate', { static: true })
-  actionsTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
+  @ViewChild('periodTemplate', { static: true }) periodTemplate!: TemplateRef<any>;
 
-  columns: TableColumn[] = [
-    // { headerName: 'Tipo', accessorKey: 'billType.name' },
-    // { headerName: 'Proveedor', accessorKey: 'supplier.name' },
-    // {
-    //   headerName: 'Monto',
-    //   accessorKey: 'amount',
-    //   cellRenderer: this.amountTemplate,
-    // },
-    // { headerName: 'Periodo', accessorKey: 'period.end_date' },
-    // { headerName: 'Categoría', accessorKey: 'category.name' },
-    // { headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate },
-    // {
-    //   headerName: 'Acciones',
-    //   accessorKey: 'actions',
-    //   cellRenderer: this.actionsTemplate,
-    // },
-  ];
+  columns: TableColumn[] = [];
 
   ngAfterViewInit(): void {
     setTimeout(()=>{
@@ -219,7 +200,7 @@ export class ExpensesListBillsComponent implements OnInit {
       accessorKey: 'amount',
       cellRenderer: this.amountTemplate,
     },
-    { headerName: 'Periodo', accessorKey: 'period.end_date' },
+    { headerName: 'Periodo', accessorKey: 'period.end_date', cellRenderer: this.periodTemplate },
     { headerName: 'Categoría', accessorKey: 'category.name' },
     { headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate },
     {
@@ -229,7 +210,6 @@ export class ExpensesListBillsComponent implements OnInit {
     },
       ];
     })
-
   }
 
   ngOnInit(): void {
@@ -244,28 +224,26 @@ export class ExpensesListBillsComponent implements OnInit {
 
   onSortChange(field: string) {
     if (this.sortField === field) {
-      // Alterna entre ascendente y descendente si se vuelve a hacer clic en la misma columna
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // Cambia a la nueva columna y establece la dirección predeterminada a ascendente
       this.sortField = field;
       this.sortDirection = 'asc';
     }
-    this.loadBills(); // Recarga los datos con la nueva configuración de ordenación
+    this.loadBills();
   }
 
-  actionsRenderer(params: any) {
-    return `
-      <div class="btn-group" role="group">
-        <button class="btn btn-sm btn-warning me-2" onclick="editBill(${params.data.id})">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-primary" onclick="viewBill(${params.data.id})">
-          <i class="bi bi-eye"></i>
-        </button>
-      </div>
-    `;
-  }
+  // actionsRenderer(params: any) {
+  //   return `
+  //     <div class="btn-group" role="group">
+  //       <button class="btn btn-sm btn-warning me-2" onclick="editBill(${params.data.id})">
+  //         <i class="bi bi-pencil"></i>
+  //       </button>
+  //       <button class="btn btn-sm btn-primary" onclick="viewBill(${params.data.id})">
+  //         <i class="bi bi-eye"></i>
+  //       </button>
+  //     </div>
+  //   `;
+  // }
 
   onPageChange = (newPage: number) => {
     this.page = newPage;
@@ -291,17 +269,6 @@ export class ExpensesListBillsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   //#endregion
-
-  //#region INITIALIZATION AND DATA LOADING
-  // ngOnInit(): void {
-  //   this.filteredBills = this.bills;
-  //   this.getCategories();
-  //   this.getProviders();
-  //   this.getPeriods();
-  //   this.getBillTypes();
-  //   this.loadBills();
-  //   this.initializeFilters();
-  // }
 
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -357,6 +324,12 @@ export class ExpensesListBillsComponent implements OnInit {
         'supplier.name',
         'Seleccione un proveedor',
         this.supplierList
+      )
+      .selectFilter(
+        'Periodo',
+        'period.id',
+        'Seleccione un periodo',
+        this.periodsList
       )
       // .numberFilter('Monto', 'amount', 'Ingrese el monto')
       // .dateFilter('Fecha', 'date', 'Seleccione una fecha')
