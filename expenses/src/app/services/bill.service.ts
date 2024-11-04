@@ -186,7 +186,34 @@ export class BillService {
     return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill);
   }
 
-  private formatBills(
+  // private formatBills(
+  //   billsDto$: Observable<PaginatedResponse<BillDto>>
+  // ): Observable<Bill[]> {
+  //   return billsDto$.pipe(
+  //     map((response) => {
+  //       const billsDto = response.content;
+  //       if (!Array.isArray(billsDto)) {
+  //         console.error('La respuesta del servidor no contiene una array');
+  //         return [];
+  //       }
+  //       return billsDto.map(
+  //         (billDto) =>
+  //           new Bill(
+  //             billDto.expenditure_id,
+  //             billDto.date,
+  //             billDto.amount,
+  //             billDto.description,
+  //             billDto.supplier,
+  //             billDto.period,
+  //             billDto.category,
+  //             billDto.bill_type,
+  //             billDto.status
+  //           )
+  //       );
+  //     })
+  //   );
+  // }
+  formatBills(
     billsDto$: Observable<PaginatedResponse<BillDto>>
   ): Observable<Bill[]> {
     return billsDto$.pipe(
