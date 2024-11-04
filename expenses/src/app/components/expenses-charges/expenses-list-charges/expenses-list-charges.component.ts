@@ -83,7 +83,7 @@ addCharge() {
   selectedLotId: number = 0;
   selectedCategoryId: number = 0;
   selectedPeriodId: number = 0;
-  TypeAmount : String = '';
+  TypeAmount : string = '';
 
   applyFilterWithNumber: boolean = false;
   applyFilterWithCombo: boolean = false;
@@ -131,6 +131,7 @@ addCharge() {
     this.selectedLotId = event['lot'] || null;
     this.selectedCategoryId = event['categoryCharge'] || null;
     this.TypeAmount = event['chargeType'] || undefined;
+    console.log('El tipo es' + this.TypeAmount)
     this.cargarPaginado();
   }
   categoriasCargos :FilterOption[] = [];
@@ -268,9 +269,9 @@ addCharge() {
     });
   }
 
-  getChargeType(value: String): ChargeType | undefined {
+  getChargeType(value: string): ChargeType | undefined { 
     const entry = Object.entries(ChargeType).find(([_, v]) => v === value);
-    return entry ? (ChargeType as any)[entry[0]] : undefined;
+    return entry ? ChargeType[entry[0] as keyof typeof ChargeType] : undefined;
 }
 
   cargarPaginado() {
@@ -279,8 +280,9 @@ addCharge() {
     const lot = this.selectedLotId || undefined;
     const type = this.getChargeType(this.TypeAmount) || undefined;
     
+    console.log('El tipo es ' + type)
     this.chargeService
-      .getCharges(this.currentPage, this.pageSize, period, lot, category,type?.valueOf())
+      .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
       .subscribe((response) => {
         this.charges = response.content;
         this.charges = response.content.map(charge => {

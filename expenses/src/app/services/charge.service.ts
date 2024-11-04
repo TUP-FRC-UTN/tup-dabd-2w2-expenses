@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { PORT } from '../const';
+import Category from '../models/category';
 
 interface Page<T> {
   content: T[];
@@ -31,7 +32,7 @@ export class ChargeService {
     return this.http.get<Charge[]>(this.apiUrl);
   }
 
-  getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: string): Observable<Page<Charge>> {
+  getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: ChargeType): Observable<Page<Charge>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -56,9 +57,17 @@ export class ChargeService {
       }
     }
     
-    if (type != undefined || type != null) {      
-      console.log('tipo = '+type);
-      params = params.set('type', type);
+    if (type != undefined || type != null) {     
+      let tipo = '';
+      switch(type){
+        case 'Positivo': tipo = 'ABSOLUTE'; break;
+        case 'Porcentaje': tipo ='PERCENTAGE'; break;
+        case 'Negativo': tipo = 'NEGATIVE'; break;
+        default : tipo = 'ABSOLUTE'; break;
+
+      } 
+      console.log('tipo SIGN ES '+tipo);
+      params = params.set('type', tipo);
       
     }
     console.log(params);
