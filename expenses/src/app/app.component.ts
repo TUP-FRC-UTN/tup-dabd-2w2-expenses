@@ -28,31 +28,23 @@ export class AppComponent {
       sidebarMenu: [
         {
           label: 'Gastos',
-          // routerLink: '/gastos',
+          routerLink: '/gastos',
           subMenu: [
-            { label: 'Nuevo', routerLink: '/gastos/nuevo' },
             { label: 'Listado', routerLink: '/gastos' },
             { label: 'Categorias', routerLink: '/gastos/categorias' }
           ],
         },
         {
           label: 'Cargos',
-          subMenu: [
-            { label: 'Nuevo', routerLink: '/cargos/nuevo' },
-            { label: 'Listado', routerLink: '/cargos' }
-          ],
+          routerLink: '/cargos'
         },
         {
           label: 'Periodo',
-          subMenu: [
-            { label: 'Listado', routerLink: '/periodo' }
-          ]
+          routerLink: '/periodo'
         },
         {
           label: 'Expensas',
-          subMenu: [
-            { label: 'Listado', routerLink: '/expenses' }
-          ]
+          routerLink: '/expenses'
         }
       ],
     },
