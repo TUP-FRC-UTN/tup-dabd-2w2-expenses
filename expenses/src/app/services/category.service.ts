@@ -12,47 +12,29 @@ export class CategoryService {
 
   private http = inject(HttpClient);
   private url = `${PORT}categories`
-  constructor() { }
 
   getPaginatedCategories(
     page: number,
     size: number,
     sortField: string,
-    direction: string
+    direction: string,
+    searchParams: any = {}
   ): Observable<PaginatedResponse<Category>> {
     try {
-      // Construimos el objeto pageable según el formato esperado por el backend
-      /*const pageable = {
-        page: page,
-        size: size,
-        sort: [`${sortField},${direction}`]
-      };*/
-
-      // Construimos los parámetros
-      // let params = new HttpParams().set('pageable', JSON.stringify(pageable));
-
-      const pageable = {
-        page: page,
-        size: size,
-        sort: [`${sortField},${direction}`]
-      };
-
-      // Construimos los parámetros
-      /*let params = new HttpParams()
-        .set('pageable', JSON.stringify(pageable));*/
 
       let params = new HttpParams()
         .set('page', page.toString())
         .set('size', size.toString())
-        .set('sort', [`${sortField},${direction}`].toString());
+        .set('sort', [`${sortField},${direction}`].toString())
 
-      // Si necesitas pasar el isDeleted como parámetro opcional
-      // params = params.set('isDeleted', 'false');
+      Object.keys(searchParams).forEach((key) => {
+        if (searchParams[key]) {
+          params = params.set(key, searchParams[key]);
+        }
+      });
 
-      console.log('Request URL:', `${this.url}/page`);
-      console.log('Request params:', params.toString());
-
-      console.log(this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params }));
+      // console.log('Request URL:', `${this.url}/page`);
+      // console.log('Request params:', params.toString());
 
       return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
     } catch (error) {
@@ -89,5 +71,9 @@ export class CategoryService {
     } catch (error) {
       throw error;
     }
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.url}/valid-name?name=${encodeURIComponent(name)}`);
   }
 }
