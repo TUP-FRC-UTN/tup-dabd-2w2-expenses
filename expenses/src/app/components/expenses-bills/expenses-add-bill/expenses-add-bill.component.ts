@@ -1,32 +1,50 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { BillPostRequest } from '../../../models/bill-post-request';
-import {Observable, map, of, switchMap} from "rxjs";
-import Category from "../../../models/category";
-import Period from "../../../models/period";
-import { Provider } from "../../../models/provider";
-import { CategoryService } from "../../../services/category.service";
-import { ProviderService } from "../../../services/provider.service";
-import { PeriodService } from "../../../services/period.service";
-import { BillService } from "../../../services/bill.service";
-import { AsyncPipe, NgClass } from "@angular/common";
-import BillType from "../../../models/billType";
+import { Observable, map, of, switchMap } from 'rxjs';
+import Category from '../../../models/category';
+import Period from '../../../models/period';
+import { Provider } from '../../../models/provider';
+import { CategoryService } from '../../../services/category.service';
+import { ProviderService } from '../../../services/provider.service';
+import { PeriodService } from '../../../services/period.service';
+import { BillService } from '../../../services/bill.service';
+import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
+import BillType from '../../../models/billType';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
-import { RouterLink } from "@angular/router";
-import {BillInfoComponent} from "../../modals/info/bill-info/bill-info.component";
-import {NewCategoryModalComponent} from "../../modals/bills/new-category-modal/new-category-modal.component";
-import {ToastService} from "ngx-dabd-grupo01";
-import {NgArrayPipesModule} from "ngx-pipes";
-
-
+import { RouterLink } from '@angular/router';
+import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
+import { NewCategoryModalComponent } from '../../modals/bills/new-category-modal/new-category-modal.component';
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { NgArrayPipesModule } from 'ngx-pipes';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-expenses-add-bill',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AsyncPipe, NgClass, RouterLink, NgArrayPipesModule],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    AsyncPipe,
+    NgClass,
+    RouterLink,
+    NgArrayPipesModule,
+    MainContainerComponent,
+    NgSelectComponent,
+    NgOptionComponent
+  ],
   templateUrl: './expenses-add-bill.component.html',
-  styleUrl: './expenses-add-bill.component.css'
+  styleUrl: './expenses-add-bill.component.css',
+  providers: [DatePipe],
 })
 export class ExpensesAddBillComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -40,6 +58,7 @@ export class ExpensesAddBillComponent implements OnInit {
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
   searchTerm: any;
+  periodId: number = 0;
 
   categories: Observable<Category[]> | undefined;
   providers: Observable<Provider[]> | undefined;
@@ -51,20 +70,55 @@ export class ExpensesAddBillComponent implements OnInit {
       categoryId: ['', Validators.required],
       description: [''],
       amount: ['', [Validators.required, Validators.min(0.0001)]],
-      date: ['', Validators.required],
+      date: ['',
+        [Validators.required],
+        [(control) => this.dateValidator(control)] // Pasar el control directamente
+      ],
       supplierId: ['', [Validators.required]],
       typeId: ['', [Validators.required]],
-      periodId: ['', [Validators.required]]
+      periodId: ['', [Validators.required]],
     });
 
     this.newCategoryForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      description: ['', [Validators.required, Validators.minLength(2)]]
+      description: ['', [Validators.required, Validators.minLength(2)]],
+    });
+
+    this.billForm.get('period')?.valueChanges.subscribe(() => {
+      this.billForm.get('date')?.updateValueAndValidity();
     });
   }
 
   ngOnInit() {
     this.loadSelectOptions();
+    this.periods = this.periods?.pipe(
+      map((periods) =>
+        periods.map((period) => ({
+          ...period,
+          displayPeriod: `${period.month}/${period.year}`,
+        }))
+      )
+    );
+  }
+
+  dateValidator(control: AbstractControl): ReturnType<AsyncValidatorFn> {
+    if (!control.value) {
+      return Promise.resolve(null);
+    }
+
+    // Obtener el periodId del formulario
+    const periodId = this.billForm?.get('periodId')?.value;
+
+    if (!periodId) {
+      return Promise.resolve(null);
+    }
+    const numericPeriodId = parseInt(periodId?.toString().split('/')[0]);
+
+    return this.billService.validateDate(control.value, numericPeriodId).pipe(
+      map(isValid => {
+        return !isValid ? { invalidDate: true } : null;
+      })
+    );
   }
 
   loadSelectOptions() {
@@ -72,6 +126,10 @@ export class ExpensesAddBillComponent implements OnInit {
     this.providers = this.providerService.getAllProviders();
     this.periods = this.periodService.get();
     this.types = this.billService.getBillTypes();
+  }
+
+  comparePeriodFn(period1: any, period2: any) {
+    return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
 
   onSubmit() {
@@ -83,7 +141,7 @@ export class ExpensesAddBillComponent implements OnInit {
           billRequest.description = formValue.description;
           billRequest.amount = Number(formValue.amount);
           billRequest.date = `${formValue.date}T00:00:00Z`;
-          billRequest.status = 'ACTIVE';
+          billRequest.status = 'Nuevo';
           billRequest.supplierId = Number(formValue.supplierId);
           billRequest.supplierEmployeeType = 'SUPPLIER';
           billRequest.typeId = Number(formValue.typeId);
@@ -112,7 +170,9 @@ export class ExpensesAddBillComponent implements OnInit {
       });
     } else {
       console.log('Formulario inválido');
-      this.toastService.sendError('Por favor, complete todos los campos requeridos correctamente.')
+      this.toastService.sendError(
+        'Por favor, complete todos los campos requeridos correctamente.'
+      );
       // this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
   }
@@ -130,22 +190,20 @@ export class ExpensesAddBillComponent implements OnInit {
 
   openNewCategoryModal() {
     const modalRef = this.modalService.open(NewCategoryModalComponent, {
-      ariaLabelledBy: 'modal-basic-title'
+      ariaLabelledBy: 'modal-basic-title',
     });
 
-    modalRef.result.then(
-      (result) => {
-        if (result) {
-          if (result.success) {
-            this.toastService.sendSuccess(result.message);
-            this.loadSelectOptions();
-          } else {
-            this.toastService.sendError(result.message);
-            // this.showModal('Error', result.message);
-          }
+    modalRef.result.then((result) => {
+      if (result) {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message);
+          this.loadSelectOptions();
+        } else {
+          this.toastService.sendError(result.message);
+          // this.showModal('Error', result.message);
         }
       }
-    );
+    });
   }
 
   showInfo(): void {
@@ -154,7 +212,7 @@ export class ExpensesAddBillComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
       centered: true,
-      scrollable: true
+      scrollable: true,
     });
   }
 }

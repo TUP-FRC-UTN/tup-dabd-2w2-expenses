@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
-import { CategoryCharge, Charge } from '../../../models/charge';
+import { CategoryCharge, Charge, ChargeType } from '../../../models/charge';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
@@ -17,11 +17,12 @@ import { ModalService } from 'ngx-dabd-2w1-core';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.component';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })
@@ -49,7 +50,13 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   showInfo(){
-
+    this.modalService.open(ChargeInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
   }
   loadSelect() {
     this.periodService.get().subscribe((data=>{
@@ -93,8 +100,15 @@ export class ExpensesAddChargeComponent implements OnInit{
         ...formValue,
         date: new Date(formValue.date).toISOString(),
       };
+      if(this.chargeForm.get('categoryChargeId')?.value !=6){
+        charge.amountSign = ChargeType.ABSOLUTE;
+      } else{
+        charge.amountSign = ChargeType.NEGATIVE;
+      }
       console.log(charge);
-      this.chargeService.createCharge(charge).subscribe(
+      const charges = this.camelToSnake(charge) as Charge;
+      
+      this.chargeService.addCharge(charges).subscribe(
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
@@ -111,6 +125,19 @@ export class ExpensesAddChargeComponent implements OnInit{
     }
   }
 
-
+  camelToSnake(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.camelToSnake(item));
+    } else if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce((acc, key) => {
+        // Convierte la clave de camelCase a snake_case
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        // Aplica la conversión recursiva si el valor es un objeto o array
+        acc[snakeKey] = this.camelToSnake(obj[key]);
+        return acc;
+      }, {} as any);
+    }
+    return obj;
+  }
 
 }

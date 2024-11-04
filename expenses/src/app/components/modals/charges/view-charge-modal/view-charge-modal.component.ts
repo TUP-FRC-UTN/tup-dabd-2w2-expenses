@@ -1,24 +1,24 @@
-import { ChargeService } from './../../../services/charge.service';
+import { ChargeService } from '../../../../services/charge.service';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CategoryCharge, Charge } from '../../../models/charge';
+import { CategoryCharge, Charge } from '../../../../models/charge';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import moment from 'moment';
-import { PeriodService } from '../../../services/period.service';
-import { LotsService } from '../../../services/lots.service';
-import Lot from '../../../models/lot';
+import { PeriodService } from '../../../../services/period.service';
+import { LotsService } from '../../../../services/lots.service';
+import Lot from '../../../../models/lot';
 import { CommonModule } from '@angular/common';
-import Period from '../../../models/period';
+import Period from '../../../../models/period';
 import { forkJoin, map, Observable, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-expenses-update-charge',
+  selector: 'app-view-charge-modal',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
-  templateUrl: './expenses-update-charge.component.html',
-  styleUrl: './expenses-update-charge.component.css',
+  templateUrl: './view-charge-modal.component.html',
+  styleUrl: './view-charge-modal.component.css'
 })
-export class ExpensesUpdateChargeComponent implements OnInit {
+export class ViewChargeModalComponent implements OnInit {
   chargeForm: FormGroup;
   private chargeService = inject(ChargeService);
   public activeModal = inject(NgbActiveModal);
