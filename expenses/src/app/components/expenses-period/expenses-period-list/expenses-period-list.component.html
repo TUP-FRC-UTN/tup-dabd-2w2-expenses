@@ -2,52 +2,43 @@
   title="Lista de Periodos"
   (infoButtonClick)="showModal()"
 >
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <!-- Sección de búsqueda y filtros -->
-    <div class="row col-12" role="group">
-      <div class="col-3">
-        <div class="input-group">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              id="filter-text-box"
-              placeholder="Buscar..."
-              [(ngModel)]="searchTerm"
-            />
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Sección de búsqueda y filtros -->
+        <div class="d-flex align-items-center mb-2" role="group">
+            <div class="col-sm-12 col-md-8 col-xl-12">
+                <div class="input-group">
             <span class="input-group-text" id="search-icon">
               <i class="bi bi-search"></i>
             </span>
-            <app-table-filters
-              [filters]="filterConfig"
-              (filterValueChange)="filterChange($event)"
-            ></app-table-filters>
-          </div>
+                    <input
+                            type="text"
+                            class="form-control"
+                            id="filter-text-box"
+                            (input)="onFilterTextBoxChanged($event)"
+                            placeholder="Buscar..."
+                    />
+                    <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
+                </div>
+            </div>
         </div>
-      </div>
+        <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
+        <div class="d-flex align-items-center">
+            <!-- Botón "+" -->
+            <button type="button" class="btn btn-outline-primary" (click)="newPeriod()">+</button>
 
-      <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
-      <div class="d-flex col-9 justify-content-end">
-        <!-- Botón "+" -->
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          (click)="newPeriod()"
-        >
-          +
-        </button>
-
-        <!-- Línea vertical y botones de exportación -->
-        <div class="vertical-line mx-3"></div>
-        <button class="btn btn-success me-2" (click)="downloadTable()">
-          <i class="bi bi-file-earmark-excel"></i>
-        </button>
-        <button class="btn btn-danger me-2" (click)="imprimir()">
-          <i class="bi bi-file-earmark-pdf"></i>
-        </button>
-      </div>
+            <!-- Línea vertical y botones de exportación -->
+            <div class="vertical-line mx-3"></div>
+            <button class="btn btn-success me-2" (click)="downloadTable()">
+                <i class="bi bi-file-earmark-excel"></i>
+            </button>
+            <button class="btn btn-danger me-2" (click)="imprimir()">
+                <i class="bi bi-file-earmark-pdf"></i>
+            </button>
+        </div>
     </div>
-  </div>
+
+
+
 
   <div class="">
     <table
@@ -68,7 +59,7 @@
         </tr>
       </thead>
       <tbody>
-        @if (listPeriod?.length ===0) {
+        @if (listPeriod.length ===0) {
         <tr>
           <td
             class="alert alert-secondary"
@@ -136,20 +127,40 @@
                 </button>
                 <button
                   class="dropdown-item"
-                  [routerLink]="['/periodo', period.id, 'liquidacion']"
+                  [routerLink]="['/periodo', period.id, 'gastos']"
                 >
                   Liquidacion
                 </button>
-                @if (period.state !== 'CLOSE') {
+                @if ( period.state == 'Liquidación Cerrada') {
                 <li>
                   <button
                     class="dropdown-item btn btn-danger"
                     (click)="open( period.id)"
                   >
-                    Cerrar
+                    Finalizar
                   </button>
                 </li>
                 }
+                @if ( period.state !== 'Liquidación Cerrada'&&  period.state !== 'Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationClose( period.id)"
+                    >
+                      Cerrar Liquidacion
+                    </button>
+                  </li>
+                 }
+                 @if ( period.state == 'Liquidación Cerrada') {
+                  <li>
+                    <button
+                      class="dropdown-item btn btn-danger"
+                      (click)="openLiquidationOpen( period.id)"
+                    >
+                      abrir Liquidacion
+                    </button>
+                  </li>
+                 }
               </div>
             </div>
           </td>

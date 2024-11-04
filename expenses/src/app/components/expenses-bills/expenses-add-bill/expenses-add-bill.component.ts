@@ -83,7 +83,7 @@ export class ExpensesAddBillComponent implements OnInit {
           billRequest.description = formValue.description;
           billRequest.amount = Number(formValue.amount);
           billRequest.date = `${formValue.date}T00:00:00Z`;
-          billRequest.status = 'ACTIVE';
+          billRequest.status = 'Nuevo';
           billRequest.supplierId = Number(formValue.supplierId);
           billRequest.supplierEmployeeType = 'SUPPLIER';
           billRequest.typeId = Number(formValue.typeId);

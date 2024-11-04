@@ -24,9 +24,8 @@ export class ExpenseServiceService {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
-
     // Parámetros adicionales
-    if (periodId !== undefined && periodId !== 0) {
+    if (periodId !== undefined && periodId !== 0 && periodId != null ) {
       params = params.set('periodId', periodId.toString());
     }
     if(periodId == 0) {
@@ -48,7 +47,8 @@ export class ExpenseServiceService {
     if (sortField) {
       params = params.set('sort', `${sortField},${sortOrder}`);
     }
-    return this.http.get<Page<Expense>>(this.apiUrl + 'all/pageable', { params });
+    return this.http.get<Page<Expense>>('http://localhost:8088/expense/all/pageable', { params });
+
   }
   getByPeriod(periodId:number):Observable<Expense[]>{
     //calcular y recuperar lista de expensas de un periodo
@@ -57,7 +57,7 @@ export class ExpenseServiceService {
   getWithoutFilters(periodId?: number, plotId?: number, typeId?: number): Observable<Expense[]> {
     let params = new HttpParams()
     // Parámetros adicionales
-    if (periodId !== undefined && periodId !== 0) {
+    if (periodId !== undefined && periodId !== 0 && periodId !== null) {
       params = params.set('periodId', periodId.toString());
     }
     if(periodId == 0) {

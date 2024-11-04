@@ -34,6 +34,9 @@ import { NgPipesModule } from 'ngx-pipes';
 import moment from 'moment';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { RouterModule } from '@angular/router';
+import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
+import { forkJoin, mergeMap } from 'rxjs';
+import { ExpenseServiceService } from '../../../services/expense.service';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -55,10 +58,18 @@ import { RouterModule } from '@angular/router';
   ],
   providers: [DatePipe, NgbActiveModal, NgbModule, NgbModal],
   templateUrl: './expenses-period-list.component.html',
-  styleUrls: ['./expenses-period-list.component.css'], // Cambia a styleUrls
+  styleUrls: ['./expenses-period-list.component.css'], 
 })
 export class ExpensesPeriodListComponent implements OnInit {
   private readonly periodService: PeriodService = inject(PeriodService);
+  private modalService = inject(NgbModal);
+  toastService: ToastService = inject(ToastService);
+  private readonly liquidationService: LiquidationExpenseService = inject(
+    LiquidationExpenseService
+  );
+  private readonly expensesService: ExpenseServiceService = inject(
+    ExpenseServiceService
+  );
 
   listOpenPeriod: Period[] = [];
   listPeriod: Period[] = [];
@@ -67,12 +78,10 @@ export class ExpensesPeriodListComponent implements OnInit {
   size = 10;
   idClosePeriod: number | null = null;
   private state: string | null = null;
-  private modalService = inject(NgbModal);
   currentPage: number = 1;
   typeFilter: string | null = null;
   year: number | null = null;
   month: number | null = null;
-  toastService: ToastService = inject(ToastService);
 
   ngOnInit(): void {
     this.loadPaged(1);
@@ -122,6 +131,25 @@ export class ExpensesPeriodListComponent implements OnInit {
       .getPage(this.size, page, this.state, this.month, this.year)
       .subscribe((data) => {
         this.listPeriod = data.content;
+        const listPeriodOpen = data.content.filter(
+          (p) => p.state == 'Obsoleto'|| p.state == 'Abierto'
+        );
+        if (listPeriodOpen.length > 0) {
+          const liquidationRequests = listPeriodOpen.map((p) =>
+            this.liquidationService.get(p.id).pipe(
+              mergeMap(() => this.expensesService.getByPeriod(p.id))
+            )
+          );
+
+          forkJoin(liquidationRequests).subscribe(() => {
+            this.periodService
+              .getPage(this.size, page, this.state, this.month, this.year)
+              .subscribe((newData) => {
+                this.listPeriod = newData.content;
+                this.cantPages = generateNumberArray(newData.totalPages);
+              });
+          });
+        }
         this.cantPages = generateNumberArray(data.totalPages);
       });
   }
@@ -140,9 +168,46 @@ export class ExpensesPeriodListComponent implements OnInit {
       'Al cerrar el periodo no podrá cargar mas gastos ni cargos al mismo, se cerrará el cálculo y enviará a tickets la información para procesarla. ¿Está seguro que desea continuar?';
     modalRef.componentInstance.alertType = 'danger';
     modalRef.result.then((result) => {
-      console.log(result)
+      console.log(result);
       if (result) {
         this.closePeriod();
+        this.loadPaged(this.currentPage)
+
+      }
+    });
+  }
+  openLiquidationClose(id: number | null) {
+    this.idClosePeriod = id;
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertMessage =
+      'Al cerrar la liquidación inhabilitara la posibilidad de añadir nuevos gastos al periodo. ¿Desea continuar?';
+    modalRef.componentInstance.alertType = 'warning';
+    modalRef.result.then((result) => {
+      console.log(result);
+      if (result && this.idClosePeriod) {
+        this.liquidationService.putCloseLiquidationExpensesPeriod(this.idClosePeriod).subscribe(()=>{
+          this.idClosePeriod=null
+          this.loadPaged(this.currentPage)
+        });
+      }
+    });
+  }
+  openLiquidationOpen(id: number | null) {
+    this.idClosePeriod = id;
+    const modalRef = this.modalService.open(ConfirmAlertComponent);
+
+    modalRef.componentInstance.alertMessage =
+      'Al abrir la liquidación habilitara nuevamente la posibilidad de añadir nuevos gastos al periodo. ¿Desea continuar?';
+    modalRef.componentInstance.alertType = 'warning';
+    modalRef.result.then((result) => {
+      console.log(result);
+      if (result && this.idClosePeriod) {
+        this.liquidationService.putCloseLiquidationExpensesPeriod(this.idClosePeriod).subscribe(()=>{
+          this.idClosePeriod=null
+          this.loadPaged(this.currentPage)
+
+        });
       }
     });
   }
@@ -169,11 +234,10 @@ export class ExpensesPeriodListComponent implements OnInit {
   }
 
   closePeriod() {
-
     if (this.idClosePeriod) {
       this.periodService.closePeriod(this.idClosePeriod).subscribe({
         next: (data) => {
-          this.idClosePeriod = null
+          this.idClosePeriod = null;
           console.log('Period closed successfully');
         },
         error: (err) => {
@@ -285,5 +349,9 @@ export class ExpensesPeriodListComponent implements OnInit {
         doc.save(finalFileName);
         console.log('Impreso');
       });
+  }
+
+  onFilterTextBoxChanged($event: Event) {
+    
   }
 }
