@@ -189,7 +189,7 @@ export class BillService {
     return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers });
   }
 
-  private formatBills(
+  formatBills(
     billsDto$: Observable<PaginatedResponse<BillDto>>
   ): Observable<Bill[]> {
     return billsDto$.pipe(
@@ -215,5 +215,14 @@ export class BillService {
         );
       })
     );
+  }
+
+  validateDate(date: string, periodId: number): Observable<boolean> {
+    const formattedDate = new Date(date).toISOString().replace('Z', '');
+    const params = new HttpParams()
+      .set('date', formattedDate)
+      .set('periodId', periodId.toString());
+
+    return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
 }
