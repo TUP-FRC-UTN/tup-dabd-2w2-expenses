@@ -114,7 +114,7 @@ export class ExpensesListBillsComponent implements OnInit {
       this.filteredBills = this.bills;
       return;
     }
-  
+
     this.filteredBills = this.bills.filter(
       (bill) =>
         (bill.billType?.name
@@ -357,7 +357,7 @@ export class ExpensesListBillsComponent implements OnInit {
         filters.selectedSupplier?.valueOf(),
         filters.selectedType?.valueOf(),
         filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString()
+        filters.selectedStatus?.valueOf().toString(),
       )
       .subscribe({
         next: (response) => {
