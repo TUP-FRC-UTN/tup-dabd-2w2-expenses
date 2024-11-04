@@ -76,6 +76,7 @@ export class ExpensesListComponent implements OnInit{
     this.loadExpenses()
   }
   loadExpenses(page: number = 0, size: number = 10): void {
+    debugger
     if (this.periodPath != null) {
       this.selectedPeriodId = Number(this.periodPath)
     }

@@ -70,6 +70,7 @@ export class ExpensesPeriodComponent implements OnInit {
 
   changeFilter(filter: string | null) {
     if (!filter) {
+      debugger
       this.lote = null;
       this.loadList();
     }
@@ -106,6 +107,7 @@ export class ExpensesPeriodComponent implements OnInit {
   listExpenses: Expense[] = [];
 
   loadList() {
+    debugger
     if (!this.periodId) {
       console.error('periodId is not defined');
       return;

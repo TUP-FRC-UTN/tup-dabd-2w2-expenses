@@ -1,8 +1,8 @@
 <app-main-container title="Listado de Cargos" (infoButtonClick)="showInfo()">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-16">
       <!-- Sección de búsqueda y filtros -->
       <div class="btn-group me-5" role="group">
-        <div class="  col-xl-11">
+        <div class=" col-md-8  col-xl-12 col-lg-10 col-sm-6">
           <div class="input-group">
             <span class="input-group-text" id="search-icon">
               <i class="bi bi-search"></i>
@@ -13,6 +13,7 @@
               class="form-control"
               id="filter-text-box"
               placeholder="Buscar..."
+              [(ngModel)]="searchTerm"
             />
             <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>
           </div>
@@ -22,12 +23,12 @@
       </div>
 
       <!-- Botones de Activo, Inactivo, Todo y "+" en el mismo grupo -->
-      <div class="d-flex align-items-center">
+      <div class="d-flex ">
         <!-- Botón "+" -->
         <button type="button" class="btn btn-outline-primary" (click)="addCharge()">+</button>
 
         <!-- Línea vertical y botones de exportación -->
-        <div class="vertical-line mx-3"></div>
+        <div class="d-flex gap-2 ms-3 ps-3" style="border-left: 2px solid #e0e0e0;"></div>
         <button class="btn btn-success me-2" (click)="downloadTable()">
           <i class="bi bi-file-earmark-excel"></i>
         </button>
@@ -69,7 +70,7 @@
             }) }}</td>
           }          
           <td  style="text-align: center; justify-content: center;" >
-            @if(charge.categoryCharge.name == "Multa" ||charge.period.state == "CLOSE") {
+            @if(isFine(charge.categoryCharge.name)  ||charge.period.state == "CLOSE") {
 
               <button class="btn btn-primary btn-sm m-1" (click)="openViewModal(charge)">
                 <i class="bi bi-eye"></i>
@@ -177,8 +178,6 @@
   (excelButtonClick)="downloadTable()"
   (pdfButtonClick)="imprimir()"
   [tableFilters]="filters"
-  (searchValueChange)="filterTableByText($event)"
-  (filterValueChange)="filterTableBySelects($event)"
   [pagination]="{
       totalItems: totalItems,
       page: currentPage,

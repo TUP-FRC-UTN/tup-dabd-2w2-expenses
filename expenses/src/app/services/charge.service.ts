@@ -1,4 +1,4 @@
-import { CategoryCharge, Charge } from './../models/charge';
+import { CategoryCharge, Charge, ChargeType } from './../models/charge';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
@@ -28,7 +28,7 @@ export class ChargeService {
     return this.http.get<Charge[]>(this.apiUrl);
   }
 
-  getCharges(page: number, size: number, periodId?: number, plotId?: number, typeId?: number): Observable<Page<Charge>> {
+  getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: ChargeType): Observable<Page<Charge>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -42,16 +42,22 @@ export class ChargeService {
     if(plotId != undefined || plotId != null ){
       if (plotId) {
         console.log('lote= '+plotId)
-        params = params.set('plotId', plotId);
+        params = params.set('lot', plotId);
       }
     }
     
-    if (typeId != undefined || typeId != null) {
-      if(typeId != 0){
-        console.log('categoria = '+typeId);
-        params = params.set('type', typeId.toString());
+    if (categoryId != undefined || categoryId != null) {
+      if(categoryId != 0){
+        console.log('categoria = '+categoryId);
+        params = params.set('category', categoryId.toString());
       }
     }
+    
+    // if (type != undefined || type != null) {      
+    //   console.log('tipo = '+type);
+    //   params = params.set('type', type.valueOf());
+      
+    // }
     console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
     /*

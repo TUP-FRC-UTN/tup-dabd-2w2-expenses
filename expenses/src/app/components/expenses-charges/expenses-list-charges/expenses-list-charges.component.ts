@@ -7,7 +7,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Charge, ChargeFilters, Charges, PeriodCharge } from '../../../models/charge';
+import { Charge, ChargeFilters, Charges, ChargeType, PeriodCharge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
 import { ExpensesUpdateChargeComponent } from '../expenses-update-charge/expenses-update-charge.component';
@@ -43,6 +43,7 @@ import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { debounceTime, forkJoin, Subject } from 'rxjs';
 import autoTable from 'jspdf-autotable';
+import { ListChargesInfoComponent } from '../../modals/info/list-charges-info/list-charges-info.component';
 
 @Component({
   selector: 'app-expenses-list-charges',
@@ -75,17 +76,13 @@ addCharge() {
   this.router.navigate(['/cargos/nuevo'])
 }
 showInfo() {
-throw new Error('Method not implemented.');
-/*
-// 'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.'
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-
-    modalRef.componentInstance.alertMessage =
-      'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.';
-    modalRef.componentInstance.alertType = 'info';
-
-    this.idClosePeriod = null;
-*/
+  this.modalService.open(ListChargesInfoComponent, {
+    size: 'lg',
+    backdrop: 'static',
+    keyboard: false,
+    centered: true,
+    scrollable: true,
+  });
 }
   // Variables de Filtros y Paginación
   //#region FILTER VARIABLES
@@ -93,6 +90,7 @@ throw new Error('Method not implemented.');
   selectedLotId: number = 0;
   selectedCategoryId: number = 0;
   selectedPeriodId: number = 0;
+  TypeAmount : String = '';
 
   applyFilterWithNumber: boolean = false;
   applyFilterWithCombo: boolean = false;
@@ -112,6 +110,7 @@ throw new Error('Method not implemented.');
   //#region DATA VARIABLES
   charges: Charge[] = [];
   chargesCompleted : Charges[] = [];
+  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.PERCENTAGE,ChargeType.NEGATIVE];
   chargeId: number = 0;
   lots: Lots[] = [];
   categorias: CategoryCharge[] = [];
@@ -132,8 +131,14 @@ throw new Error('Method not implemented.');
   filter$ = this.filterSubject.asObservable();
   itemsList!: Charges[];
   filterConfig: Filter[] = [];
-  filterChange($event: Record<string, any>) {
-    console.log($event)
+  filterChange(event: Record<string, any>) {
+    
+    // Actualizar las variables de filtro
+    this.selectedPeriodId = event['period'] || null;
+    this.selectedLotId = event['lot'] || null;
+    this.selectedCategoryId = event['categoryCharge'] || null;
+    this.TypeAmount = event['chargeType'] || undefined;
+    this.cargarPaginado();
   }
   categoriasCargos :FilterOption[] = [];
   periodosFilters : FilterOption[]= [];
@@ -184,15 +189,14 @@ throw new Error('Method not implemented.');
     value: category.categoryChargeId.toString(),
     label: category.name
   })))
-  .selectFilter('Lote','lots','Seleccione un lote', this.lots.map(lot => ({
+  .selectFilter('Lote','lot','Seleccione un lote', this.lots.map(lot => ({
     value: lot.id.toString(),
     label: lot.plot_number.toString()
   })))
-  .selectFilter('Tipo de Cargo','chargeType','Seleccione un tipo',  [
-    { value: 'Positivo', label: 'Positivo' },
-    { value: 'Porcentaje', label: 'Porcentaje' },
-    { value: 'Negativo', label: 'Negativo' }
-  ])
+  .selectFilter('Tipo de Cargo','chargeType','Seleccione un tipo', this.chargeType.map(type => ({
+    value : type,
+    label : type.toString()
+  })))
   .build()
   }
 
@@ -271,13 +275,19 @@ throw new Error('Method not implemented.');
     });
   }
 
+  getChargeType(value: String): ChargeType | undefined {
+    const entry = Object.entries(ChargeType).find(([_, v]) => v === value);
+    return entry ? (ChargeType as any)[entry[0]] : undefined;
+}
+
   cargarPaginado() {
     const period = this.selectedPeriodId || undefined;
     const category = this.selectedCategoryId || undefined;
     const lot = this.selectedLotId || undefined;
-
+    const type = this.getChargeType(this.TypeAmount) || undefined;
+    
     this.chargeService
-      .getCharges(this.currentPage, this.pageSize, period, lot, category)
+      .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
       .subscribe((response) => {
         this.charges = response.content;
         this.charges = response.content.map(charge => {
@@ -511,55 +521,16 @@ throw new Error('Method not implemented.');
       return o.map((i) => {         return this.keysToCamel(i);       });
     }     return o;
   }
+
+  isFine(name :String){
+    return name.toLowerCase().includes("multa");
+  }
+
   //#endregion
 
-  //#region METODOS FILTER BUTTONS
-  filterTableByText(value: string) {
-    // const filterValue = value?.toLowerCase() || '';
-    // if(filterValue === '') {
-    //   this.billsFiltered = this.originalBills;
-    //   return;
-    // }
+  
 
-    // this.billsFiltered = this.originalBills.filter(bill =>
-    //   bill.category.name.toLowerCase().includes(filterValue) ||
-    //   bill.supplier.name.toLowerCase().includes(filterValue) ||
-    //   bill.amount.toString().toLowerCase().includes(filterValue) ||
-    //   bill.billType.name.toLowerCase().includes(filterValue) ||
-    //   bill.description.toLowerCase().includes(filterValue) ||
-    //   bill.date.toString().toLowerCase().includes(filterValue)
-    // );
-  }
-
-  filterTableBySelects(value: Record<string, any>) {
-    // this.filterCategory = value['category']?.toLowerCase() || null;
-    // this.filterSupplier = value['supplier']?.toLowerCase() || null;
-    // this.filterType = value['type']?.toLowerCase() || null;
-
-    // if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null) {
-    //   this.billsFiltered = this.originalBills;
-    //   this.totalItems = this.originalTotalItems
-    //   return;
-    // }
-
-    // this.chargeService
-    //   .getCharges(
-    //     this.pageSize,
-    //     this.cantPages,
-    //     this.selectedPeriodId,
-    //     this.categorias,
-    //     this.lots,
-    //   )
-    //   .subscribe((data) => {
-    //     data.content.subscribe(data => {
-    //       this.chargesFiltered = data
-    //       this.isFiltering = true;
-    //     })
-    //     data.pagination.subscribe(data => {
-    //       this.totalItems = data.totalElements
-    //     });
-    //   });
-  }
+  
   onFilterTextBoxChanged(event: Event){
     // const target = event.target as HTMLInputElement;
 

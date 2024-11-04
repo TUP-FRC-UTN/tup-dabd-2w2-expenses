@@ -20,7 +20,7 @@ export interface Charge {
     period: PeriodCharge;
     status: boolean;
     description: string;
-    amountSign: string;
+    amountSign: ChargeType;
     
 }
 
@@ -34,7 +34,7 @@ export interface Charges {
     period: PeriodCharge;
     status: boolean;
     description: string;
-    amountSign: string;
+    amountSign: ChargeType;
     plotNumber?: number;
 }
 
@@ -55,5 +55,12 @@ export enum ChargeFilters {
     NOTHING = 'NOTHING',
     PERIOD_ID = 'PERIOD_ID',
     LOT_NUMBER = 'LOT_NUMBER',
-    CATEGORY_CHARGE = 'CATEGORY_CHARGE'
+    CATEGORY_CHARGE = 'CATEGORY_CHARGE',
+    CHARGE_TYPE = 'CHARGE_TYPE'
+}
+
+export enum ChargeType {
+    ABSOLUTE = 'Positivo',
+    NEGATIVE = 'Negativo',
+    PERCENTAGE = 'Porcentaje'
 }
