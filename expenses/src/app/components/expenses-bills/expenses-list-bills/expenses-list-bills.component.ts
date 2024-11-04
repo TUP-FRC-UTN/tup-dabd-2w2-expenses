@@ -77,7 +77,7 @@ export class ExpensesListBillsComponent implements OnInit {
   typesList: { value: string; label: string }[] = [];
 
   totalItems = 0;
-  page = 1;
+  page = 0;
   size = 10;
   sortField = 'billType.name';
   sortDirection: 'asc' | 'desc' = 'asc';

@@ -19,6 +19,7 @@ import moment from 'moment';
 import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
+import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -380,9 +381,21 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
 
   //  Pther buttons
-  edit(id: number | null) {
-    if (id == null) return;
-    this.router.navigate([`gastos/modificar/${id}`]);
+  edit(bill: Bill) {
+    this.openEditModal(bill);
+  }
+
+  openEditModal(bill: Bill) {
+    const modalRef = this.modalService.open(EditBillModalComponent, {
+      size: 'lg',
+    });
+    modalRef.componentInstance.bill = bill;
+
+    modalRef.result.then((result) => {
+      if (result === 'updated') {
+        this.loadLiquidationExpenseDetails();
+      }
+    });
   }
 
 }
