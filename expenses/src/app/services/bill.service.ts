@@ -181,12 +181,10 @@ export class BillService {
   }
 
   updateBill(updatedBill: any, id: any): Observable<Bill> {
-
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });
-
-    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers });
+    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers })
   }
 
   formatBills(
