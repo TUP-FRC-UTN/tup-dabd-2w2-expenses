@@ -78,8 +78,10 @@ export class ChargeService {
   }
 
   updateCharge(charge: Charge): Observable<Charge> {
-    debugger
-    return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge);
+    const headers = new HttpHeaders({
+      'user_id': '1'
+    });
+    return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge, {headers});
   }  
 
   deleteCharge(charge: number): Observable<Boolean> {
