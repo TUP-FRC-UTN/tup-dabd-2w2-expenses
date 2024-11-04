@@ -63,6 +63,9 @@ export class ExpensesListComponent implements OnInit{
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
+
+  periodPath = this.route.snapshot.paramMap.get('period_id');
+
   ngOnInit(): void {
     this.currentPage = 0
     const periodPath = this.route.snapshot.paramMap.get('period_id');
@@ -73,6 +76,9 @@ export class ExpensesListComponent implements OnInit{
     this.loadExpenses()
   }
   loadExpenses(page: number = 0, size: number = 10): void {
+    if (this.periodPath != null) {
+      this.selectedPeriodId = Number(this.periodPath)
+    }
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
       console.log(data.content)
       this.expenses = data.content.map(expense => {
@@ -156,19 +162,19 @@ export class ExpensesListComponent implements OnInit{
   periods: FilterOption[] = [];
   lotss: FilterOption[] = []
   types: FilterOption[]= []
-  //carga el select de periodo y lote
+
   filterConfig: Filter[] = [
-    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods),
     new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types)
+    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types),
+    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
 
 
   loadSelect() {
-    const periodPath = this.route.snapshot.paramMap.get('period_id');
-    if (periodPath != null) {
-      console.log('Path: ' + periodPath);
-      this.periods.push({value: periodPath, label: 'Periodo Seleccionado'})
+
+    if (this.periodPath != null) {
+      console.log('Path: ' + this.periodPath);
+      this.filterConfig.pop();
     } else {
     this.periodService.get().subscribe((data) => {
       // @ts-ignore
@@ -194,6 +200,7 @@ export class ExpensesListComponent implements OnInit{
         this.types.push({value: item.bill_type_id, label: item.name})
       })
     })
+
   }
   getMonthName(month: number): string {
     const monthNames = [
@@ -236,7 +243,7 @@ export class ExpensesListComponent implements OnInit{
 
   downloadTable() {
     this.service.getWithoutFilters( this.selectedPeriodId, this.selectedLotId, this.selectedTypeId).subscribe(expenses => {
-      // Mapear los datos a un formato tabular adecuado
+
       const data = expenses.map(expense => ({
         'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
         'Monto Total': expense.totalAmount,
@@ -247,27 +254,29 @@ export class ExpensesListComponent implements OnInit{
         'Porcentaje': expense.percentage,
         'Tipo de expensa': expense.billType
       }));
-
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
       // Convertir los datos tabulares a una hoja de cálculo
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-      XLSX.writeFile(wb,  'Expensas ' + Date.now().toString() + '.xlsx');
+      XLSX.writeFile(wb,  'Expensas ' + formattedDate + '.xlsx');
     })}
 
   onFilterTextBoxChanged($event: Event) {
-
+    const inputElement = $event.target as HTMLInputElement;
+    this.searchTerm = inputElement.value;
   }
 
   filterChange(event: Record<string, any>) {
-    // Actualizar las variables de filtro con los valores seleccionados
+    // Actualizar las variables de filtro
     this.selectedPeriodId = event['period'] || null;
     this.selectedLotId = event['lot'] || null;
     this.selectedTypeId = event['type'] || null;
-    console.log(this.selectedPeriodId)
-    console.log(this.selectedLotId)
-    console.log(this.selectedTypeId)
-    // Llamar a loadExpenses para aplicar los filtros en el backend
     this.loadExpenses();
   }
 }

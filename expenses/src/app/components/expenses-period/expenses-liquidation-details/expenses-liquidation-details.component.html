@@ -17,6 +17,25 @@
   </td>
 </ng-template>
 
+<ng-template #statusTemplate let-item>
+  <td>
+    @if(item.status === 'Activo') {
+      <p class="badge border p-2 border-success text-success">
+        {{ item.status }}
+      </p>
+    } @else if (item.status === 'Cerrado') {
+      <p class="badge border p-2 border-danger text-danger">
+        {{ item.status }}
+      </p>
+    } @else {
+      <p class="badge border p-2 border-warning text-warning">
+        {{ item.status }}
+      </p>
+    }
+
+  </td>
+</ng-template>
+
 <ng-template #actionsTemplate let-item>
   <td style="display: flex; flex-direction: row; gap: 4px;">
     <button type="button" class="btn btn-primary" (click)="showPaidModal(item)">
@@ -48,6 +67,7 @@
   [showHeaderButton]="false"
   (excelButtonClick)="downloadTable()"
   (pdfButtonClick)="imprimir()"
+  [tableFilters]="filters"
   (searchValueChange)="filterTableByText($event)"
   (filterValueChange)="filterTableBySelects($event)"
   [pagination]="{

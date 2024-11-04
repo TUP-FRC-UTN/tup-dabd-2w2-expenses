@@ -137,7 +137,8 @@ export class BillService {
     period: number | null,
     category: number | null,
     type: number | null,
-    status: string | null
+    status: string | null,
+    supplier: number | null
   ): Observable<{
     pagination: Observable<PaginatedResponse<BillDto>>;
     bills: Observable<Bill[]>;
@@ -148,6 +149,7 @@ export class BillService {
     if (status != null) request = request + `&status=${status}`;
     if (category != null) request = request + `&category=${category}`;
     if (period != null) request = request + `&period=${period}`;
+    if (supplier != null) request = request + `&supplier=${supplier}`
 
     let data = this.http.get<PaginatedResponse<BillDto>>(request);
 
