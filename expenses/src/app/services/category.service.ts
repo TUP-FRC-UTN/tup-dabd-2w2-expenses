@@ -6,10 +6,9 @@ import { PORT } from '../const';
 import {PaginatedResponse} from "../models/paginatedResponse";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
-
   private http = inject(HttpClient);
   private url = `${PORT}categories`
 
@@ -43,20 +42,20 @@ export class CategoryService {
     }
   }
 
-  getAllCategories():Observable<Category[]>{
+  getAllCategories(): Observable<Category[]> {
     try {
-      const response = this.http.get<Category[]>(this.url)
-      return response
+      const response = this.http.get<Category[]>(this.url);
+      return response;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
   addCategory(newCategory: Category) {
     try {
-      return this.http.post<Category>(this.url, newCategory)
+      return this.http.post<Category>(this.url, newCategory);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 

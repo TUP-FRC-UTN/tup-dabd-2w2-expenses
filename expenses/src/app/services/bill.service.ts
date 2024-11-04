@@ -74,8 +74,8 @@ export class BillService {
   }
 
   getAllBillsAndPagination(
-    page?: number,
     size?: number,
+    page?: number,
     period?: number,
     category?: number,
     supplier?: number,
@@ -137,8 +137,7 @@ export class BillService {
     period: number | null,
     category: number | null,
     type: number | null,
-    status: string | null,
-    supplier: number | null
+    status: string | null
   ): Observable<{
     pagination: Observable<PaginatedResponse<BillDto>>;
     bills: Observable<Bill[]>;
@@ -149,7 +148,6 @@ export class BillService {
     if (status != null) request = request + `&status=${status}`;
     if (category != null) request = request + `&category=${category}`;
     if (period != null) request = request + `&period=${period}`;
-    if (supplier != null) request = request + `&supplier=${supplier}`
 
     let data = this.http.get<PaginatedResponse<BillDto>>(request);
 
@@ -174,19 +172,18 @@ export class BillService {
       period_id: Number(bill.periodId),
       link_pdf: '',
     };
+
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });
-    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, {headers});
+
+    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, {
+      headers,
+    });
   }
 
   updateBill(updatedBill: any, id: any): Observable<Bill> {
-
-    const headers = new HttpHeaders({
-      'x-user-id': '1',
-    });
-
-    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers });
+    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill);
   }
 
   private formatBills(
@@ -215,5 +212,14 @@ export class BillService {
         );
       })
     );
+  }
+
+  validateDate(date: string, periodId: number): Observable<boolean> {
+    const formattedDate = new Date(date).toISOString().replace('Z', '');
+    const params = new HttpParams()
+      .set('date', formattedDate)
+      .set('periodId', periodId.toString());
+
+    return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
 }
