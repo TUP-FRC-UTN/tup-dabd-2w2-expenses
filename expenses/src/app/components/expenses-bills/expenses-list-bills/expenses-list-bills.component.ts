@@ -192,7 +192,27 @@ export class ExpensesListBillsComponent implements OnInit {
   actionsTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [
-    { headerName: 'Tipo', accessorKey: 'billType.name' },
+    // { headerName: 'Tipo', accessorKey: 'billType.name' },
+    // { headerName: 'Proveedor', accessorKey: 'supplier.name' },
+    // {
+    //   headerName: 'Monto',
+    //   accessorKey: 'amount',
+    //   cellRenderer: this.amountTemplate,
+    // },
+    // { headerName: 'Periodo', accessorKey: 'period.end_date' },
+    // { headerName: 'Categoría', accessorKey: 'category.name' },
+    // { headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate },
+    // {
+    //   headerName: 'Acciones',
+    //   accessorKey: 'actions',
+    //   cellRenderer: this.actionsTemplate,
+    // },
+  ];
+
+  ngAfterViewInit(): void {
+    setTimeout(()=>{
+      this.columns = [
+        { headerName: 'Tipo', accessorKey: 'billType.name' },
     { headerName: 'Proveedor', accessorKey: 'supplier.name' },
     {
       headerName: 'Monto',
@@ -207,7 +227,10 @@ export class ExpensesListBillsComponent implements OnInit {
       accessorKey: 'actions',
       cellRenderer: this.actionsTemplate,
     },
-  ];
+      ];
+    })
+
+  }
 
   ngOnInit(): void {
     this.filteredBills = this.bills;
