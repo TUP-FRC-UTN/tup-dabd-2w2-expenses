@@ -40,7 +40,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
       lote: [{ value: '', disabled: true }, Validators.required],
       tipo: [{ value: '', disabled: true }, Validators.required],
       periodo: [{ value: '', disabled: true }, Validators.required],
-      monto: [{ value: '', disabled: true }, Validators.required],
+      amount: [{ value: '', disabled: true }, Validators.required],
       description: [{ value: '', disabled: true }],
     });
   }
@@ -74,7 +74,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
       lote: this.getPlotNumber(lotId),
       tipo: this.selectedCategoryId,
       periodo: this.selectedPeriodId,
-      monto: this.charge?.amount ?? 0,
+      amount: this.charge?.amount ?? 0,
       description: this.charge?.description ?? '',
     });
   }
@@ -127,6 +127,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
     this.chargeForm.get('fechaEmision')?.disable();
     this.chargeForm.get('lote')?.disable();
     this.chargeForm.get('periodo')?.disable();
+    this.chargeForm.get('tipo')?.disable();
 
   }
 

@@ -324,9 +324,11 @@ addCharge() {
         100000,
         this.selectedPeriodId,
         this.selectedLotId,
-        this.selectedCategoryId
+        this.selectedCategoryId,
+        this.getChargeType(this.TypeAmount) || undefined
       )
       .subscribe((charges) => {
+        charges.content  = this.keysToCamel(charges.content);
         autoTable(doc, {
           startY: 30,
           head: [

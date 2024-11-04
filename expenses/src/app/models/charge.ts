@@ -51,6 +51,15 @@ export interface PeriodCharge {
     id: number ;
 }
 
+export  class Periods {
+    month: number = 0;
+    year: number = 0;
+    id: number = 0;
+    state: string="";
+    start_date: Date = new Date();
+    end_date: Date = new Date();
+}
+
 export enum ChargeFilters {
     NOTHING = 'NOTHING',
     PERIOD_ID = 'PERIOD_ID',
