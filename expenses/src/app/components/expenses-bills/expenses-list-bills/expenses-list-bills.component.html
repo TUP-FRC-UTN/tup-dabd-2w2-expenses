@@ -1,12 +1,12 @@
 <ng-template #amountTemplate let-item>
   <td style="text-align: end">
     {{
-      item.amount?.toLocaleString("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })
+    item.amount?.toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+    })
     }}
   </td>
 </ng-template>
@@ -44,15 +44,8 @@
     size: size,
     onPageChange: onPageChange,
     onPageSizeChange: onPageSizeChange
-  }"
-  [showSearchBar]="true"
-  [isLoading]="isLoading"
-  (searchValueChange)="onSearchValueChange($event)"
-  (headerButtonClick)="nuevoGasto()"
-  [showHeaderButton]="true"
-  (filterValueChange)="onFilterValueChange($event)"
-  [tableFilters]="filterConfig"
-  (excelButtonClick)="downloadTable()"
-  (pdfButtonClick)="imprimir()">
-</app-table>
+  }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
+    (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="onFilterValueChange($event)"
+    [tableFilters]="filterConfig" (excelButtonClick)="downloadTable()" (pdfButtonClick)="imprimir()">
+  </app-table>
 </app-main-container>

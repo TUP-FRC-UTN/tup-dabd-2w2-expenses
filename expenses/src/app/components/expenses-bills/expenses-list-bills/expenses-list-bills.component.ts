@@ -39,6 +39,7 @@ import {
   TableFiltersComponent,
   TablePagination,
 } from 'ngx-dabd-grupo01';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -63,6 +64,11 @@ export class ExpensesListBillsComponent implements OnInit {
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
   updatedBill: Bill | undefined;
+  paginatedBills: Bill[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  // totalPages: number = 0;
+  sizeOptions: number[] = [10, 25, 50];
 
   filterConfig: Filter[] = [];
   categoryList: { value: string; label: string }[] = [];
@@ -73,7 +79,6 @@ export class ExpensesListBillsComponent implements OnInit {
   totalItems = 0;
   page = 1;
   size = 10;
-  sizeOptions: number[] = [10, 25, 50];
   sortField = 'billType.name';
   sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -81,10 +86,8 @@ export class ExpensesListBillsComponent implements OnInit {
   visiblePages: number[] = [];
   maxPagesToShow: number = 5;
 
-  currentPage: number = 1;
+  // currentPage: number = 1;
   pageSize: number = 10;
-  totalPages: number = 0;
-  totalElements: number = 0;
   cantPages: number[] = [];
   indexActive: number = 1;
   isLoading: boolean = false;
@@ -183,43 +186,58 @@ export class ExpensesListBillsComponent implements OnInit {
 
   //#endregion
 
-  @ViewChild('amountTemplate', { static: true }) amountTemplate!: TemplateRef<any>;
+  @ViewChild('amountTemplate', { static: true })
+  amountTemplate!: TemplateRef<any>;
   @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
-  @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
-  @ViewChild('periodTemplate', { static: true }) periodTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true })
+  actionsTemplate!: TemplateRef<any>;
+  @ViewChild('periodTemplate', { static: true })
+  periodTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
   ngAfterViewInit(): void {
-    setTimeout(()=>{
+    setTimeout(() => {
       this.columns = [
         { headerName: 'Tipo', accessorKey: 'billType.name' },
-    { headerName: 'Proveedor', accessorKey: 'supplier.name' },
-    {
-      headerName: 'Monto',
-      accessorKey: 'amount',
-      cellRenderer: this.amountTemplate,
-    },
-    { headerName: 'Periodo', accessorKey: 'period.end_date', cellRenderer: this.periodTemplate },
-    { headerName: 'Categoría', accessorKey: 'category.name' },
-    { headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate },
-    {
-      headerName: 'Acciones',
-      accessorKey: 'actions',
-      cellRenderer: this.actionsTemplate,
-    },
+        { headerName: 'Proveedor', accessorKey: 'supplier.name' },
+        {
+          headerName: 'Monto',
+          accessorKey: 'amount',
+          cellRenderer: this.amountTemplate,
+        },
+        {
+          headerName: 'Periodo',
+          accessorKey: 'period.end_date',
+          cellRenderer: this.periodTemplate,
+        },
+        { headerName: 'Categoría', accessorKey: 'category.name' },
+        {
+          headerName: 'Fecha',
+          accessorKey: 'date',
+          cellRenderer: this.dateTemplate,
+        },
+        {
+          headerName: 'Acciones',
+          accessorKey: 'actions',
+          cellRenderer: this.actionsTemplate,
+        },
       ];
-    })
+    });
   }
 
   ngOnInit(): void {
     this.filteredBills = this.bills;
+    this.getAllLists();
+    this.initializeFilters();
+  }
+
+  getAllLists() {
     this.getCategories();
     this.getProviders();
     this.getPeriods();
     this.getBillTypes();
     this.loadBills();
-    this.initializeFilters();
   }
 
   onSortChange(field: string) {
@@ -245,14 +263,14 @@ export class ExpensesListBillsComponent implements OnInit {
   //   `;
   // }
 
-  onPageChange = (newPage: number) => {
-    this.page = newPage;
+  onPageChange = (page: number) => {
+    this.page = page - 1;
     this.loadBills();
   };
 
-  onPageSizeChange = (newSize: number) => {
-    this.size = newSize;
-    this.page = 1; // Resetea a la primera página cuando cambias el tamaño
+  onPageSizeChange = (size: number) => {
+    this.size = size;
+    this.page = 0;
     this.loadBills();
   };
 
@@ -339,11 +357,11 @@ export class ExpensesListBillsComponent implements OnInit {
         'Seleccione una categoría',
         this.categoryList
       )
-      // .radioFilter('Activo', 'isActive', [
-      //   { value: 'true', label: 'Activo' },
-      //   { value: 'false', label: 'Inactivo' },
-      //   { value: 'undefined', label: 'Todo' },
-      // ])
+      .radioFilter('Activo', 'isActive', [
+        { value: 'true', label: 'Activo' },
+        { value: 'false', label: 'Inactivo' },
+        { value: 'undefined', label: 'Todo' },
+      ])
       .build();
   }
 
@@ -357,12 +375,11 @@ export class ExpensesListBillsComponent implements OnInit {
 
   // Load all bills with pagination and filters
   private loadBills(): void {
-    this.bills = [];
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
-        this.page - 1,
+        this.page,
         this.size,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
@@ -373,28 +390,20 @@ export class ExpensesListBillsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          console.log('Respuesta del servicio:', response);
-          this.totalElements = response.totalElements;
-          response.content.map((bill) => {
-            this.bills.push(
-              new Bill(
-                bill.expenditure_id,
-                bill.date,
-                bill.amount,
-                bill.description,
-                bill.supplier,
-                bill.period,
-                bill.category,
-                bill.bill_type,
-                bill.status
-              )
-            );
-            this.filteredBills = [...this.bills];
+          this.totalItems = response.totalElements;
+          //this.totalPages = Math.ceil(this.totalItems / this.size);
+          this.billService.formatBills(of(response)).subscribe((bills) => {
+            if (bills) {
+              this.bills = bills;
+              this.filteredBills = [...this.bills];
+            } else {
+              this.bills = [];
+              this.filteredBills = [];
+            }
           });
         },
         error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
-          console.log('Facturas cargadas:', this.bills);
           this.isLoading = false;
         },
       });
