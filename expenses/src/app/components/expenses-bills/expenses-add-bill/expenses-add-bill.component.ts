@@ -40,7 +40,7 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
     NgArrayPipesModule,
     MainContainerComponent,
     NgSelectComponent,
-    NgOptionComponent,
+    NgOptionComponent
   ],
   templateUrl: './expenses-add-bill.component.html',
   styleUrl: './expenses-add-bill.component.css',
