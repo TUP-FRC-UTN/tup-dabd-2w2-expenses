@@ -10,7 +10,7 @@ import {
 import { Charge, ChargeFilters, Charges, ChargeType, PeriodCharge } from '../../../models/charge';
 import { ChargeService } from '../../../services/charge.service';
 import { CategoryCharge } from '../../../models/charge';
-import { ExpensesUpdateChargeComponent } from '../expenses-update-charge/expenses-update-charge.component';
+import { ExpensesUpdateChargeComponent } from '../../modals/charges/expenses-update-charge/expenses-update-charge.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot, { Lots } from '../../../models/lot';
@@ -44,6 +44,7 @@ import { Router } from '@angular/router';
 import { debounceTime, forkJoin, Subject } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 import { ListChargesInfoComponent } from '../../modals/info/list-charges-info/list-charges-info.component';
+import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal/view-charge-modal.component';
 
 @Component({
   selector: 'app-expenses-list-charges',
@@ -75,15 +76,7 @@ export class ExpensesListChargesComponent implements OnInit {
 addCharge() {
   this.router.navigate(['/cargos/nuevo'])
 }
-showInfo() {
-  this.modalService.open(ListChargesInfoComponent, {
-    size: 'lg',
-    backdrop: 'static',
-    keyboard: false,
-    centered: true,
-    scrollable: true,
-  });
-}
+
   // Variables de Filtros y Paginación
   //#region FILTER VARIABLES
   searchTerm = '';
@@ -390,6 +383,15 @@ showInfo() {
 
   // Métodos de Modales
   //#region MODALS
+  showInfo() {
+    this.modalService.open(ListChargesInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
+  }
   open(content: TemplateRef<any>, id: number | null) {
     this.chargeId = id || 0;
     const modalRef = this.modalService.open(content);
@@ -399,19 +401,11 @@ showInfo() {
   }
 
   openViewModal(charge: Charge) {
-    const modalRef = this.modalService.open(ExpensesUpdateChargeComponent);
+    const modalRef = this.modalService.open(ViewChargeModalComponent, {
+      size: 'lg' // 'lg' para grande o 'xl' para extra grande
+    });
     modalRef.componentInstance.charge = charge;
-
-    modalRef.result.then(
-      (result) => {
-        if (result) {
-          this.toastService.sendSuccess('Se actualizó el cargo correctamente');
-          this.currentPage = 0;
-          this.cargarPaginado();
-        }
-      },
-      () => {}
-    );
+    
   }
 
   openDeleteModal(chargeId: number) {
@@ -430,7 +424,9 @@ showInfo() {
   }
 
   openUpdateModal(charge: Charge) {
-    const modalRef = this.modalService.open(ExpensesUpdateChargeComponent);
+    const modalRef = this.modalService.open(ExpensesUpdateChargeComponent, {
+      size: 'lg' // 'lg' para grande o 'xl' para extra grande
+    });
     modalRef.componentInstance.charge = charge;
     modalRef.componentInstance.isEditing = true;
 

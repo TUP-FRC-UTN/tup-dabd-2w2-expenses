@@ -1,5 +1,5 @@
 import { CategoryCharge, Charge, ChargeType } from './../models/charge';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { PORT } from '../const';
@@ -21,7 +21,10 @@ export class ChargeService {
   constructor() {}
 
   addCharge(charge: Charge): Observable<Charge> {
-    return this.http.post<Charge>(this.apiUrl, charge);
+    const headers = new HttpHeaders({
+      'user_id': '1'
+    });
+    return this.http.post<Charge>(this.apiUrl, charge, { headers });
   }
 
   getChargesAll(): Observable<Charge[]> {

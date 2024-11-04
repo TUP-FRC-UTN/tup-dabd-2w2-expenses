@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
-import { CategoryCharge, Charge } from '../../../models/charge';
+import { CategoryCharge, Charge, ChargeType } from '../../../models/charge';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import Lot from '../../../models/lot';
 import { PeriodService } from '../../../services/period.service';
@@ -93,8 +93,15 @@ export class ExpensesAddChargeComponent implements OnInit{
         ...formValue,
         date: new Date(formValue.date).toISOString(),
       };
+      if(this.chargeForm.get('categoryChargeId')?.value !=6){
+        charge.amountSign = ChargeType.ABSOLUTE;
+      } else{
+        charge.amountSign = ChargeType.NEGATIVE;
+      }
       console.log(charge);
-      this.chargeService.createCharge(charge).subscribe(
+      const charges = this.camelToSnake(charge) as Charge;
+      
+      this.chargeService.addCharge(charges).subscribe(
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
@@ -111,6 +118,19 @@ export class ExpensesAddChargeComponent implements OnInit{
     }
   }
 
-
+  camelToSnake(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.camelToSnake(item));
+    } else if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce((acc, key) => {
+        // Convierte la clave de camelCase a snake_case
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        // Aplica la conversión recursiva si el valor es un objeto o array
+        acc[snakeKey] = this.camelToSnake(obj[key]);
+        return acc;
+      }, {} as any);
+    }
+    return obj;
+  }
 
 }
