@@ -114,7 +114,7 @@ export class ExpensesListBillsComponent implements OnInit {
       this.filteredBills = this.bills;
       return;
     }
-
+  
     this.filteredBills = this.bills.filter(
       (bill) =>
         (bill.billType?.name
@@ -123,25 +123,9 @@ export class ExpensesListBillsComponent implements OnInit {
         (bill.supplier?.name
           ? bill.supplier.name.toLowerCase().includes(filterValue)
           : false) ||
-        (bill.amount
-          ? bill.amount.toString().toLowerCase().includes(filterValue)
-          : false) ||
-        (bill.period?.end_date
-          ? bill.period.end_date
-              .toISOString()
-              .toLowerCase()
-              .includes(filterValue)
-          : false) ||
         (bill.category?.name
           ? bill.category.name.toLowerCase().includes(filterValue)
-          : false) ||
-        (bill.date
-          ? bill.date.toString().toLowerCase().includes(filterValue)
-          : false) ||
-        (bill.description
-          ? bill.description.toLowerCase().includes(filterValue)
-          : false) ||
-        (bill.status ? bill.status.toLowerCase().includes(filterValue) : false)
+          : false)
     );
   }
 
@@ -249,19 +233,6 @@ export class ExpensesListBillsComponent implements OnInit {
     }
     this.loadBills();
   }
-
-  // actionsRenderer(params: any) {
-  //   return `
-  //     <div class="btn-group" role="group">
-  //       <button class="btn btn-sm btn-warning me-2" onclick="editBill(${params.data.id})">
-  //         <i class="bi bi-pencil"></i>
-  //       </button>
-  //       <button class="btn btn-sm btn-primary" onclick="viewBill(${params.data.id})">
-  //         <i class="bi bi-eye"></i>
-  //       </button>
-  //     </div>
-  //   `;
-  // }
 
   onPageChange = (page: number) => {
     this.page = page - 1;
