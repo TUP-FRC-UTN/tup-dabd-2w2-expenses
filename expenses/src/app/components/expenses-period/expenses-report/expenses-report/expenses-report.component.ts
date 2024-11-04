@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent} from "../../../selects/period-select/period-select.component";
 import {CommonModule, DatePipe} from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
+
 import {NgPipesModule} from "ngx-pipes";
 import {
   TableColumn, TableComponent, ConfirmAlertComponent,
@@ -19,7 +19,7 @@ import Expense from "../../../../models/expense";
   selector: 'app-expenses-report',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, FormsModule, PeriodSelectComponent, TableComponent, NgPipesModule, MainContainerComponent, TableFiltersComponent, BaseChartDirective
+    CommonModule, RouterModule, FormsModule, PeriodSelectComponent, TableComponent, NgPipesModule, MainContainerComponent, TableFiltersComponent
   ],
   providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-report.component.html',
