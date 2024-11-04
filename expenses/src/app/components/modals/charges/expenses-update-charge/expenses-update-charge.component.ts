@@ -111,6 +111,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
     this.chargeForm.enable();
     this.chargeForm.get('fechaEmision')?.disable();
     this.chargeForm.get('lote')?.disable();
+    this.chargeForm.get('periodo')?.disable();
 
   }
 
