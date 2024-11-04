@@ -19,7 +19,13 @@ import {
   ExpensesPeriodListComponent
 } from "./components/expenses-period/expenses-period-list/expenses-period-list.component";
 import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-period/expenses-period.component";
+
+import {
+  ExpensesReportComponent
+} from "./components/expenses-period/expenses-report/expenses-report/expenses-report.component";
+
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
+
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
 //import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
@@ -36,6 +42,7 @@ export const routes: Routes = [
 
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpensesListComponent },
+  {path: 'expenses/report', component: ExpensesReportComponent},
   { path: 'expenses/nuevo', component: ExpensesListChargesComponent },
   { path: 'expenses/modificar/:id', component: ExpensesListChargesComponent },
 
