@@ -55,7 +55,7 @@
 
 
 <app-main-container
-  [title]="'Liquidación de Expensas | ' + liquidationExpense.period?.month + ' / ' + liquidationExpense.period?.year"
+  [title]="'Liquidación de Expensas | ' + period.month + ' / ' + period.year"
   (infoButtonClick)="showModal()"
 >
 
@@ -67,6 +67,7 @@
   [showHeaderButton]="false"
   (excelButtonClick)="downloadTable()"
   (pdfButtonClick)="imprimir()"
+  [isLoading]="isLoading"
   [tableFilters]="filters"
   (searchValueChange)="filterTableByText($event)"
   (filterValueChange)="filterTableBySelects($event)"
