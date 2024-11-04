@@ -129,7 +129,7 @@
                   class="dropdown-item"
                   [routerLink]="['/periodo', period.id, 'gastos']"
                 >
-                  Liquidacion
+                  Liquidación
                 </button>
                 @if ( period.state == 'Liquidación Cerrada') {
                 <li>
@@ -147,7 +147,7 @@
                       class="dropdown-item btn btn-danger"
                       (click)="openLiquidationClose( period.id)"
                     >
-                      Cerrar Liquidacion
+                      Cerrar Liquidación
                     </button>
                   </li>
                  }
@@ -157,7 +157,7 @@
                       class="dropdown-item btn btn-danger"
                       (click)="openLiquidationOpen( period.id)"
                     >
-                      Abrir Liquidacion
+                      Abrir Liquidación
                     </button>
                   </li>
                  }

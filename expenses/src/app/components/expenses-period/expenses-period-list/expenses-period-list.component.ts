@@ -58,7 +58,7 @@ import { ExpenseServiceService } from '../../../services/expense.service';
   ],
   providers: [DatePipe, NgbActiveModal, NgbModule, NgbModal],
   templateUrl: './expenses-period-list.component.html',
-  styleUrls: ['./expenses-period-list.component.css'], 
+  styleUrls: ['./expenses-period-list.component.css'],
 })
 export class ExpensesPeriodListComponent implements OnInit {
   private readonly periodService: PeriodService = inject(PeriodService);
@@ -118,7 +118,7 @@ export class ExpensesPeriodListComponent implements OnInit {
     const modalRef = this.modalService.open(ConfirmAlertComponent);
 
     modalRef.componentInstance.alertMessage =
-      'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.';
+      'Se muestra una lista con todos los periodos, incluyendo su estado y los montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En cada fila del período se presentan distintas acciones para cerrar los periodos vigentes y visualizar detalles adicionales. El periodo podrá finalizarse después del día 24 del mes, siempre que cuente con gastos ordinarios y el área de tickets haya recibido el aviso correspondiente.';
     modalRef.componentInstance.alertType = 'info';
 
     this.idClosePeriod = null;
@@ -132,13 +132,13 @@ export class ExpensesPeriodListComponent implements OnInit {
       .subscribe((data) => {
         this.listPeriod = data.content;
         const listPeriodOpen = data.content.filter(
-          (p) => p.state == 'Obsoleto'|| p.state == 'Abierto'
+          (p) => p.state == 'Obsoleto' || p.state == 'Abierto'
         );
         if (listPeriodOpen.length > 0) {
           const liquidationRequests = listPeriodOpen.map((p) =>
-            this.liquidationService.get(p.id).pipe(
-              mergeMap(() => this.expensesService.getByPeriod(p.id))
-            )
+            this.liquidationService
+              .get(p.id)
+              .pipe(mergeMap(() => this.expensesService.getByPeriod(p.id)))
           );
 
           forkJoin(liquidationRequests).subscribe(() => {
@@ -171,8 +171,7 @@ export class ExpensesPeriodListComponent implements OnInit {
       console.log(result);
       if (result) {
         this.closePeriod();
-        this.loadPaged(this.currentPage)
-
+        this.loadPaged(this.currentPage);
       }
     });
   }
@@ -186,10 +185,12 @@ export class ExpensesPeriodListComponent implements OnInit {
     modalRef.result.then((result) => {
       console.log(result);
       if (result && this.idClosePeriod) {
-        this.liquidationService.putCloseLiquidationExpensesPeriod(this.idClosePeriod).subscribe(()=>{
-          this.idClosePeriod=null
-          this.loadPaged(this.currentPage)
-        });
+        this.liquidationService
+          .putCloseLiquidationExpensesPeriod(this.idClosePeriod)
+          .subscribe(() => {
+            this.idClosePeriod = null;
+            this.loadPaged(this.currentPage);
+          });
       }
     });
   }
@@ -203,11 +204,12 @@ export class ExpensesPeriodListComponent implements OnInit {
     modalRef.result.then((result) => {
       console.log(result);
       if (result && this.idClosePeriod) {
-        this.liquidationService.putCloseLiquidationExpensesPeriod(this.idClosePeriod).subscribe(()=>{
-          this.idClosePeriod=null
-          this.loadPaged(this.currentPage)
-
-        });
+        this.liquidationService
+          .putCloseLiquidationExpensesPeriod(this.idClosePeriod)
+          .subscribe(() => {
+            this.idClosePeriod = null;
+            this.loadPaged(this.currentPage);
+          });
       }
     });
   }
@@ -351,7 +353,5 @@ export class ExpensesPeriodListComponent implements OnInit {
       });
   }
 
-  onFilterTextBoxChanged($event: Event) {
-    
-  }
+  onFilterTextBoxChanged($event: Event) {}
 }
