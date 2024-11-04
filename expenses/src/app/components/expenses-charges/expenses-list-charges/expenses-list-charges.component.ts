@@ -280,7 +280,7 @@ addCharge() {
     const type = this.getChargeType(this.TypeAmount) || undefined;
     
     this.chargeService
-      .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
+      .getCharges(this.currentPage, this.pageSize, period, lot, category,type?.valueOf())
       .subscribe((response) => {
         this.charges = response.content;
         this.charges = response.content.map(charge => {

@@ -31,7 +31,7 @@ export class ChargeService {
     return this.http.get<Charge[]>(this.apiUrl);
   }
 
-  getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: ChargeType): Observable<Page<Charge>> {
+  getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: string): Observable<Page<Charge>> {
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);
@@ -56,11 +56,11 @@ export class ChargeService {
       }
     }
     
-    // if (type != undefined || type != null) {      
-    //   console.log('tipo = '+type);
-    //   params = params.set('type', type.valueOf());
+    if (type != undefined || type != null) {      
+      console.log('tipo = '+type);
+      params = params.set('type', type);
       
-    // }
+    }
     console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
     /*

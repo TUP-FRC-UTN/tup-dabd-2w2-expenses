@@ -137,7 +137,8 @@ export class BillService {
     period: number | null,
     category: number | null,
     type: number | null,
-    status: string | null
+    status: string | null,
+    typess : number | null
   ): Observable<{
     pagination: Observable<PaginatedResponse<BillDto>>;
     bills: Observable<Bill[]>;

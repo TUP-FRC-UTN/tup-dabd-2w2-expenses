@@ -94,6 +94,21 @@ export class ExpensesUpdateChargeComponent implements OnInit {
     );
   }
 
+  camelToSnake(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.camelToSnake(item));
+    } else if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce((acc, key) => {
+        // Convierte la clave de camelCase a snake_case
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        // Aplica la conversión recursiva si el valor es un objeto o array
+        acc[snakeKey] = this.camelToSnake(obj[key]);
+        return acc;
+      }, {} as any);
+    }
+    return obj;
+  }
+
   getPlotNumber(lotId : number){
     console.log(this.lots)
     const lot = this.lots.find(lot => lot.id === lotId);
@@ -122,7 +137,8 @@ export class ExpensesUpdateChargeComponent implements OnInit {
         ...this.charge,
         ...this.chargeForm.value,
       };
-      console.log(updatedCharge);
+      const charge = this.camelToSnake(updatedCharge);
+      console.log(charge);
       this.chargeService.updateCharge(updatedCharge).subscribe(
         (response) => {
           console.log('Cargo actualizado con éxito:', response);

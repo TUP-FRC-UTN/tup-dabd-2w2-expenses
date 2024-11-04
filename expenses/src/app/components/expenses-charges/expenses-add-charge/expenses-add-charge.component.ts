@@ -17,11 +17,12 @@ import { ModalService } from 'ngx-dabd-2w1-core';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
-import { ToastService } from 'ngx-dabd-grupo01';
+import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
+import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.component';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })
@@ -49,7 +50,13 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   showInfo(){
-
+    this.modalService.open(ChargeInfoComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
   }
   loadSelect() {
     this.periodService.get().subscribe((data=>{
