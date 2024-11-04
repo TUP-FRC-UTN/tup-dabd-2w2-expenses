@@ -67,6 +67,12 @@ export class ExpensesAddBillComponent implements OnInit {
 
   ngOnInit() {
     this.loadSelectOptions();
+    this.periods = this.periods?.pipe(
+      map(periods => periods.map(period => ({
+        ...period,
+        displayPeriod: `${period.month}/${period.year}`
+      })))
+    );
   }
 
   loadSelectOptions() {
@@ -74,6 +80,10 @@ export class ExpensesAddBillComponent implements OnInit {
     this.providers = this.providerService.getAllProviders();
     this.periods = this.periodService.get();
     this.types = this.billService.getBillTypes();
+  }
+
+  comparePeriodFn(period1: any, period2: any) {
+    return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
 
   onSubmit() {

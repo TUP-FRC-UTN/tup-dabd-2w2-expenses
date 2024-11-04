@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {Bill} from '../models/bill';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {map, Observable, of} from 'rxjs';
 import BillType from "../models/billType";
 import {BillPostRequest} from "../models/bill-post-request";
@@ -137,7 +137,7 @@ export class BillService {
       description: bill.description,
       amount: Number(bill.amount),
       date: bill.date,
-      status: 'ACTIVE',
+      status: 'Nuevo',
       category_id: Number(bill.categoryId),
       supplier_id: Number(bill.supplierId),
       supplier_employee_type: 'SUPPLIER',
@@ -146,7 +146,11 @@ export class BillService {
       link_pdf: ''
     };
 
-    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill);
+    const headers = new HttpHeaders({
+      'x-user-id': '1',
+    });
+
+    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, { headers });
   }
 
 

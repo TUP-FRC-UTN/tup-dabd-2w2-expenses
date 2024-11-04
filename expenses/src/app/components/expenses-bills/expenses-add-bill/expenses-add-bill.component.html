@@ -50,15 +50,24 @@
       <div class="d-flex align-items-center">
         <label for="periodId" class="col-sm-2 col-form-label">Periodo<span class="text-danger">*</span></label>
         <div class="col-sm-10">
-          <select id="periodId" formControlName="periodId" class="form-select"
-            [ngClass]="{'is-invalid': billForm.get('periodId')?.invalid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched)}">
-            <option value="">Seleccione un periodo</option>
-            @for (period of periods | async | orderBy: [ '-year','-month']; track period.id) {
-            <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
-            }
-          </select>
-          <div class="invalid-feedback">
-            El periodo es obligatorio.
+          <div class="input-group">
+            <ng-select [items]="periods | async | orderBy: ['-year','-month']"
+              formControlName="periodId"
+              [bindValue]="'id'"
+              [bindLabel]="'displayPeriod'"
+              [compareWith]="comparePeriodFn"
+              [placeholder]="billForm.get('periodId')?.value ? '' : 'Seleccione un periodo'"
+              [ngClass]="{'is-invalid': billForm.get('periodId')?.invalid && (billForm.get('periodId')?.dirty || billForm.get('periodId')?.touched)}"
+              [searchable]="true"
+              notFoundText="No se encontraron periodos"
+              class="form-select rounded-end-3">
+              <ng-template ng-option-tmp let-period="item">
+                {{ period.month + '/' + period.year }}
+              </ng-template>
+            </ng-select>
+            <div class="invalid-feedback">
+              El periodo es obligatorio.
+            </div>
           </div>
         </div>
       </div>
@@ -69,15 +78,20 @@
       <div class="d-flex align-items-center">
         <label for="typeId" class="col-sm-2 col-form-label">Tipo<span class="text-danger">*</span></label>
         <div class="col-sm-10">
-          <select id="typeId" formControlName="typeId" class="form-select"
-            [ngClass]="{'is-invalid': billForm.get('typeId')?.invalid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched)}">
-            <option value="">Seleccione un tipo</option>
-            @for (type of types | async | orderBy: 'name'; track type.bill_type_id) {
-            <option [value]="type.bill_type_id">{{ type.name }}</option>
-            }
-          </select>
-          <div class="invalid-feedback">
-            El tipo es obligatorio.
+          <div class="input-group">
+            <ng-select [items]="types | async | orderBy: 'name'" 
+              bindLabel="name"
+              bindValue="bill_type_id"
+              formControlName="typeId"
+              [placeholder]="billForm.get('typeId')?.value ? '' : 'Seleccione un tipo'"
+              [ngClass]="{'is-invalid': billForm.get('typeId')?.invalid && (billForm.get('typeId')?.dirty || billForm.get('typeId')?.touched)}"
+              [searchable]="true"
+              notFoundText="No se encontraron tipos"
+              class="form-select rounded-end-3">
+            </ng-select>
+            <div class="invalid-feedback">
+              El tipo es obligatorio.
+            </div>
           </div>
         </div>
       </div>
