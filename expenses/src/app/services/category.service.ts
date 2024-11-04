@@ -1,32 +1,31 @@
-import {HttpClient} from '@angular/common/http';
-import {inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import Category from '../models/category';
 import { PORT } from '../const';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoryService {
-
   private http = inject(HttpClient);
-  private url = `${PORT}categories`
-  constructor() { }
+  private url = `${PORT}categories`;
+  constructor() {}
 
-  getAllCategories():Observable<Category[]>{
+  getAllCategories(): Observable<Category[]> {
     try {
-      const response = this.http.get<Category[]>(this.url)
-      return response
+      const response = this.http.get<Category[]>(this.url);
+      return response;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
   addCategory(newCategory: Category) {
     try {
-      return this.http.post<Category>(this.url, newCategory)
+      return this.http.post<Category>(this.url, newCategory);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -35,7 +34,7 @@ export class CategoryService {
       const updateData = {
         name: category.name,
         description: category.description,
-        is_delete: category.is_delete
+        is_delete: category.is_delete,
       };
       return this.http.put<Category>(`${this.url}/${categoryId}`, updateData);
     } catch (error) {
