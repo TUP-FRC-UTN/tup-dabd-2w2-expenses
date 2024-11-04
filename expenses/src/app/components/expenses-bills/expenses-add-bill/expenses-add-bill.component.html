@@ -117,11 +117,32 @@
       <div class="d-flex align-items-center">
         <label for="date" class="col-sm-2 col-form-label">Fecha<span class="text-danger">*</span></label>
         <div class="col-sm-10">
-          <input type="date" id="date" formControlName="date" class="form-control"
-            [ngClass]="{'is-invalid': billForm.get('date')?.invalid && (billForm.get('date')?.dirty || billForm.get('date')?.touched)}">
-          <div class="invalid-feedback">
-            La fecha es obligatoria.
-          </div>
+          <input 
+            type="date" 
+            id="date" 
+            formControlName="date" 
+            class="form-control"
+            [ngClass]="{
+              'is-invalid': billForm.get('date')?.invalid && 
+                           (billForm.get('date')?.dirty || 
+                            billForm.get('date')?.touched)
+            }">
+          @if (billForm.get('date')?.errors?.['required'] && 
+               (billForm.get('date')?.dirty || billForm.get('date')?.touched)) {
+            <div class="invalid-feedback">
+              La fecha es obligatoria.
+            </div>
+          }
+          @if (billForm.get('date')?.errors?.['invalidDate']) {
+            <div class="invalid-feedback">
+              La fecha seleccionada es anterior a la fecha de inicio del período.
+            </div>
+          }
+          @if (billForm.get('date')?.pending) {
+            <div class="text-info">
+              <small>Validando fecha...</small>
+            </div>
+          }
         </div>
       </div>
     </div>
