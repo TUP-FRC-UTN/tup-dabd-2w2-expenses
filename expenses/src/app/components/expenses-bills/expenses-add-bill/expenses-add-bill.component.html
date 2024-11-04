@@ -7,7 +7,10 @@
         <label for="supplierId" class="col-sm-2 col-form-label">Proveedor<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
-            <ng-select [items]="providers | async | orderBy: 'name'" bindLabel="name" bindValue="id"
+            <ng-select id="supplierId"
+              [items]="providers | async | orderBy: 'name'"
+              bindLabel="name"
+              bindValue="id"
               formControlName="supplierId"
               [placeholder]="billForm.get('supplierId')?.value ? '' : 'Seleccione un proveedor'"
               [ngClass]="{'is-invalid': billForm.get('supplierId')?.invalid && (billForm.get('supplierId')?.dirty || billForm.get('supplierId')?.touched)}"
@@ -26,7 +29,10 @@
         <label for="categoryId" class="col-sm-2 col-form-label">Categoría<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
-            <ng-select [items]="categories | async | orderBy: 'name'" bindLabel="name" bindValue="category_id"
+            <ng-select id="categoryId"
+              [items]="categories | async | orderBy: 'name'"
+              bindLabel="name"
+              bindValue="category_id"
               formControlName="categoryId"
               [placeholder]="billForm.get('categoryId')?.value ? '' : 'Seleccione una categoría'"
               [ngClass]="{'is-invalid': billForm.get('categoryId')?.invalid && (billForm.get('categoryId')?.dirty || billForm.get('categoryId')?.touched)}"
@@ -51,7 +57,9 @@
         <label for="periodId" class="col-sm-2 col-form-label">Periodo<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
-            <ng-select [items]="periods | async | orderBy: ['-year','-month']"
+            <ng-select
+              id="periodId"
+              [items]="periods | async | orderBy: ['-year','-month']"
               formControlName="periodId"
               [bindValue]="'id'"
               [bindLabel]="'displayPeriod'"
@@ -79,7 +87,9 @@
         <label for="typeId" class="col-sm-2 col-form-label">Tipo<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
-            <ng-select [items]="types | async | orderBy: 'name'"
+            <ng-select
+              id="typeId"
+              [items]="types | async | orderBy: 'name'"
               bindLabel="name"
               bindValue="bill_type_id"
               formControlName="typeId"
