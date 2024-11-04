@@ -23,7 +23,7 @@ export class ChargeService {
 
   addCharge(charge: Charge): Observable<Charge> {
     const headers = new HttpHeaders({
-      'user_id': '1'
+      'x-user-id': '1'
     });
     return this.http.post<Charge>(this.apiUrl, charge, { headers });
   }
@@ -88,7 +88,7 @@ export class ChargeService {
 
   updateCharge(charge: Charge): Observable<Charge> {
     const headers = new HttpHeaders({
-      'user_id': '1'
+      'x-user-id': '1'
     });
     return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge, {headers});
   }  
