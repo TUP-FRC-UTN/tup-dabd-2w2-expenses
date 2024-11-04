@@ -31,7 +31,10 @@ import { NgPipesModule } from 'ngx-pipes';
 import {
   Filter,
   FilterConfigBuilder,
+  FilterOption,
   MainContainerComponent,
+  SelectFilter,
+  TableColumn,
   TableComponent,
   TableFiltersComponent,
   ToastService,
@@ -62,8 +65,14 @@ import autoTable from 'jspdf-autotable';
   providers: [DatePipe],
 })
 export class ExpensesListChargesComponent implements OnInit {
+
+  @ViewChild('amountTemplate', { static: true }) amountTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
+  @ViewChild('actionsTemplate', { static: true }) actionsTemplate!: TemplateRef<any>;
+  @ViewChild('paidPdf', { static: true }) paidPdf!: TemplateRef<any>;
+  @ViewChild('statusTemplate', { static: true }) statusTemplate!: TemplateRef<any>;
 addCharge() {
-throw new Error('Method not implemented.');
+  this.router.navigate(['/cargos/nuevo'])
 }
 showInfo() {
 throw new Error('Method not implemented.');
@@ -91,6 +100,9 @@ throw new Error('Method not implemented.');
   actualFilter: string | undefined = ChargeFilters.NOTHING;
   filterTypes = ChargeFilters;
   filterInput: string = '';
+  columns: TableColumn[] = [];
+  chargesFiltered : Charge[] = [];
+  chargesOriginal: Charge[] = [];
 
   
 
@@ -123,6 +135,16 @@ throw new Error('Method not implemented.');
   filterChange($event: Record<string, any>) {
     console.log($event)
   }
+  categoriasCargos :FilterOption[] = [];
+  periodosFilters : FilterOption[]= [];
+  lotsFilters : FilterOption[] = [];
+  filters : Filter[] = [
+    new SelectFilter('Categoria','category','Seleccione la categoria',this.categoriasCargos),
+    new SelectFilter('Lote','lot','Seleccione un lote',this.lotsFilters),
+    new SelectFilter('Periodo','period','Seleccione un periodo',this.periodosFilters)
+
+  ];
+
 
   //#endregion
 
@@ -154,7 +176,10 @@ throw new Error('Method not implemented.');
   createFilters() {
     this.filterConfig = new FilterConfigBuilder()
 
-  
+    .selectFilter('Periodo', 'period', 'Seleccione un periodo', this.periodos.map(periodo => ({
+      value: periodo.id.toString(),
+      label: (periodo.month +'/'+ periodo.year)
+    })))
   .selectFilter('Categoría', 'categoryCharge', 'Seleccione una categoría', this.categorias.map(category => ({
     value: category.categoryChargeId.toString(),
     label: category.name
@@ -167,11 +192,6 @@ throw new Error('Method not implemented.');
     { value: 'Positivo', label: 'Positivo' },
     { value: 'Porcentaje', label: 'Porcentaje' },
     { value: 'Negativo', label: 'Negativo' }
-  ])
-  .radioFilter('Activo', 'isActive', [
-    {value: 'true', label: 'Activo'},
-    {value: 'false', label: 'Inactivo'},
-    {value: 'undefined', label: 'Todo'},
   ])
   .build()
   }
@@ -186,6 +206,14 @@ throw new Error('Method not implemented.');
     this.loadSelect();
     //this.loadCategoryCharge();
     this.cargarPaginado();
+    this.columns = [
+      {headerName: 'Fecha', accessorKey: 'date', cellRenderer: this.dateTemplate},
+      {headerName: 'Número de lote', accessorKey: 'plotNumber'},
+      {headerName: 'Categoría', accessorKey: 'categoryCharge.name'},
+      {headerName: 'Descripción', accessorKey: 'description'},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
+    ];
   }
 
   loadSelect() {
@@ -196,8 +224,28 @@ throw new Error('Method not implemented.');
     }).subscribe({
       next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
+        periodos.forEach(periodo => {
+          this.periodosFilters.push({
+            value: periodo.id.toString(),
+            label: (periodo.month +'/'+ periodo.year),
+          });
+        });
+        
         this.lots = lots;
+        lots.forEach(lot => {
+          this.lotsFilters.push({
+            value: lot.id.toString(),
+            label: lot.plot_number.toString(),
+          });
+        });
+
         console.log('Lotes:', this.lots);
+        categories.forEach(category => {
+          this.categoriasCargos.push({
+            value: category.categoryChargeId.toString(),
+            label: category.name,
+          });
+        })
         this.categorias = categories;
         this.createFilters();
         this.cargarPaginado();
@@ -466,6 +514,52 @@ throw new Error('Method not implemented.');
   //#endregion
 
   //#region METODOS FILTER BUTTONS
+  filterTableByText(value: string) {
+    // const filterValue = value?.toLowerCase() || '';
+    // if(filterValue === '') {
+    //   this.billsFiltered = this.originalBills;
+    //   return;
+    // }
+
+    // this.billsFiltered = this.originalBills.filter(bill =>
+    //   bill.category.name.toLowerCase().includes(filterValue) ||
+    //   bill.supplier.name.toLowerCase().includes(filterValue) ||
+    //   bill.amount.toString().toLowerCase().includes(filterValue) ||
+    //   bill.billType.name.toLowerCase().includes(filterValue) ||
+    //   bill.description.toLowerCase().includes(filterValue) ||
+    //   bill.date.toString().toLowerCase().includes(filterValue)
+    // );
+  }
+
+  filterTableBySelects(value: Record<string, any>) {
+    // this.filterCategory = value['category']?.toLowerCase() || null;
+    // this.filterSupplier = value['supplier']?.toLowerCase() || null;
+    // this.filterType = value['type']?.toLowerCase() || null;
+
+    // if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null) {
+    //   this.billsFiltered = this.originalBills;
+    //   this.totalItems = this.originalTotalItems
+    //   return;
+    // }
+
+    // this.chargeService
+    //   .getCharges(
+    //     this.pageSize,
+    //     this.cantPages,
+    //     this.selectedPeriodId,
+    //     this.categorias,
+    //     this.lots,
+    //   )
+    //   .subscribe((data) => {
+    //     data.content.subscribe(data => {
+    //       this.chargesFiltered = data
+    //       this.isFiltering = true;
+    //     })
+    //     data.pagination.subscribe(data => {
+    //       this.totalItems = data.totalElements
+    //     });
+    //   });
+  }
   onFilterTextBoxChanged(event: Event){
     // const target = event.target as HTMLInputElement;
 
