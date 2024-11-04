@@ -70,7 +70,7 @@ export class ExpensesAddBillComponent implements OnInit {
       categoryId: ['', Validators.required],
       description: [''],
       amount: ['', [Validators.required, Validators.min(0.0001)]],
-      date: ['', 
+      date: ['',
         [Validators.required],
         [(control) => this.dateValidator(control)] // Pasar el control directamente
       ],
@@ -108,7 +108,7 @@ export class ExpensesAddBillComponent implements OnInit {
 
     // Obtener el periodId del formulario
     const periodId = this.billForm?.get('periodId')?.value;
-    
+
     if (!periodId) {
       return Promise.resolve(null);
     }

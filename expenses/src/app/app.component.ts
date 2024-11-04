@@ -1,7 +1,5 @@
-// import { AddChargeComponent } from './components/cargo/expenses-add-charge/add-charge.component';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-// import { ListChargesComponent } from './components/cargo/expenses-list-charges/list-charges.component';
 import {NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {MainLayoutComponent, NavbarComponent, NavbarItem, SidebarComponent, ToastsContainer} from 'ngx-dabd-grupo01';
 
@@ -27,19 +25,14 @@ export class AppComponent {
       sidebarMenu: [
         {
           label: 'Gastos',
-          // routerLink: '/gastos',
           subMenu: [
-            { label: 'Nuevo', routerLink: '/gastos/nuevo' },
             { label: 'Listado', routerLink: '/gastos' },
             { label: 'Categorias', routerLink: '/gastos/categorias' }
           ],
         },
         {
           label: 'Cargos',
-          subMenu: [
-            { label: 'Nuevo', routerLink: '/cargos/nuevo' },
-            { label: 'Listado', routerLink: '/cargos' }
-          ],
+          routerLink: '/cargos'
         },
         {
           label: 'Periodo',

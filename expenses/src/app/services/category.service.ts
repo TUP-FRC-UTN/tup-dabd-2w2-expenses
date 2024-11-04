@@ -1,16 +1,46 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
 import Category from '../models/category';
 import { PORT } from '../const';
+import {PaginatedResponse} from "../models/paginatedResponse";
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
   private http = inject(HttpClient);
-  private url = `${PORT}categories`;
-  constructor() {}
+  private url = `${PORT}categories`
+
+  getPaginatedCategories(
+    page: number,
+    size: number,
+    sortField: string,
+    direction: string,
+    searchParams: any = {}
+  ): Observable<PaginatedResponse<Category>> {
+    try {
+
+      let params = new HttpParams()
+        .set('page', page.toString())
+        .set('size', size.toString())
+        .set('sort', [`${sortField},${direction}`].toString())
+
+      Object.keys(searchParams).forEach((key) => {
+        if (searchParams[key]) {
+          params = params.set(key, searchParams[key]);
+        }
+      });
+
+      // console.log('Request URL:', `${this.url}/page`);
+      // console.log('Request params:', params.toString());
+
+      return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
+    } catch (error) {
+      console.error('Error en getPaginatedCategories:', error);
+      throw error;
+    }
+  }
 
   getAllCategories(): Observable<Category[]> {
     try {
@@ -34,11 +64,15 @@ export class CategoryService {
       const updateData = {
         name: category.name,
         description: category.description,
-        is_delete: category.is_delete,
+        is_delete: category.is_delete
       };
       return this.http.put<Category>(`${this.url}/${categoryId}`, updateData);
     } catch (error) {
       throw error;
     }
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.url}/valid-name?name=${encodeURIComponent(name)}`);
   }
 }
