@@ -5,7 +5,7 @@ import { CurrencyPipe } from '@angular/common';
 import { NgbActiveModal, NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import LiquidationExpense from '../../../models/liquidationExpense';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 import { InfoModalComponent } from '../../modals/info-modal/info-modal.component';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
 import { BillService } from '../../../services/bill.service';
@@ -18,6 +18,7 @@ import autoTable from 'jspdf-autotable';
 import moment from 'moment';
 import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
+import Period from '../../../models/period';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -34,7 +35,7 @@ import { ProviderService } from '../../../services/provider.service';
     TableComponent,
     TableFiltersComponent,
     MainContainerComponent,
-    ConfirmAlertComponent,
+    ConfirmAlertComponent
   ],
   providers: [DatePipe, NgbActiveModal],
   templateUrl: './expenses-liquidation-details.component.html',
@@ -45,7 +46,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //  Services
   //
 
-  private readonly service = inject(LiquidationExpenseService);
   private readonly billsService = inject(BillService);
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(ProviderService);
@@ -65,8 +65,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // Table
   //
 
-  // back data
-  liquidationExpense: LiquidationExpense = new LiquidationExpense();
+  isLoading: boolean = false;
 
   // items
 
@@ -78,6 +77,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   billsFiltered: Bill[] = [];
   originalBills: Bill[] = [];
+
+  period: Period = new Period();
 
   columns: TableColumn[] = [];
 
@@ -105,8 +106,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
   // other variables
 
-  id:number|null=null
-  period: number | null = null;
+  periodId: number | null = null;
 
   fileName = 'reporte-gastos-liquidación';
 
@@ -162,28 +162,18 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   private loadLiquidationExpenseDetails() {
     this.route.paramMap.subscribe((params) => {
       const periodId = params.get('period_id');
-      const id = params.get('id');
 
-      if (id && !isNaN(Number(id))) {
-        this.id = Number(params.get('id')) ;
-        this.service
-          .getById(Number(id))
-          .subscribe((data: LiquidationExpense) => {
-            this.liquidationExpense = data;
-
-            if (periodId && !isNaN(Number(periodId))) {
-              this.period = parseInt(periodId);
-            }
-            this.getBills(
-              this.size,
-              this.page -1,
-              this.period,
-              null,
-              null,
-              null
-            );
-          });
+      if (periodId && !isNaN(Number(periodId))) {
+        this.periodId = parseInt(periodId);
       }
+      this.getBills(
+        this.size,
+        this.page -1,
+        this.periodId,
+        null,
+        null,
+        null
+      );
     });
   }
 
@@ -209,6 +199,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         data.bills.subscribe(data => {
           this.billsFiltered = data
           this.originalBills = this.billsFiltered;
+          this.period = this.originalBills[0].period;
+          this.isLoading = false;
         })
         data.pagination.subscribe(data => {
           this.totalItems = data.totalElements
@@ -251,8 +243,8 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.billsService
       .getAllBillsPaged(
         this.size,
-        this.page,
-        this.period,
+        this.page -1,
+        this.periodId,
         this.filterCategory,
         this.filterType,
         null,

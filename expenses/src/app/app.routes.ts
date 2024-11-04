@@ -11,7 +11,6 @@ import {
 import {
   ExpensesAddChargeComponent
 } from "./components/expenses-charges/expenses-add-charge/expenses-add-charge.component";
-import {ExpensesListBillsComponent} from "./components/expenses-bills/list-bills/expenses-list-bills.component";
 import {ExpensesAddBillComponent} from "./components/expenses-bills/expenses-add-bill/expenses-add-bill.component";
 import {
   ExpensesCategoryBillComponent
@@ -20,6 +19,7 @@ import {
   ExpensesPeriodListComponent
 } from "./components/expenses-period/expenses-period-list/expenses-period-list.component";
 import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-period/expenses-period.component";
+import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
 //import { GetByPeriodComponent } from './components/expensas/getByPeriod/get-by-period/get-by-period.component';
@@ -32,7 +32,7 @@ export const routes: Routes = [
   { path: 'periodo', component: ExpensesPeriodListComponent },
   { path: 'periodo/:period_id/expensas', component: ExpensesListComponent },
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationComponent },
-  { path: 'periodo/:period_id/liquidacion/:id/:categoria', component: LiquidationExpenseDetailsComponent },
+  { path: 'periodo/:period_id/gastos', component: LiquidationExpenseDetailsComponent },
 
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpensesListComponent },
