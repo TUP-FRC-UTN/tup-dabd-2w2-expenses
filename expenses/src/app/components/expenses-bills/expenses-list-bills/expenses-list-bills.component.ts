@@ -335,19 +335,19 @@ export class ExpensesListBillsComponent implements OnInit {
         'Seleccione un proveedor',
         this.supplierList
       )
-      .numberFilter('Monto', 'amount', 'Ingrese el monto')
-      .dateFilter('Fecha', 'date', 'Seleccione una fecha')
+      // .numberFilter('Monto', 'amount', 'Ingrese el monto')
+      // .dateFilter('Fecha', 'date', 'Seleccione una fecha')
       .selectFilter(
         'Categoría',
         'category.name',
         'Seleccione una categoría',
         this.categoryList
       )
-      .radioFilter('Activo', 'isActive', [
-        { value: 'true', label: 'Activo' },
-        { value: 'false', label: 'Inactivo' },
-        { value: 'undefined', label: 'Todo' },
-      ])
+      // .radioFilter('Activo', 'isActive', [
+      //   { value: 'true', label: 'Activo' },
+      //   { value: 'false', label: 'Inactivo' },
+      //   { value: 'undefined', label: 'Todo' },
+      // ])
       .build();
   }
 
