@@ -14,7 +14,8 @@
                             type="text"
                             class="form-control"
                             id="filter-text-box"
-                            (input)="onFilterTextBoxChanged($event)"
+                            [(ngModel)]="searchTerm"
+                            (input)="searchTerm"
                             placeholder="Buscar..."
                     />
                     <app-table-filters [filters]="filterConfig" (filterValueChange)="filterChange($event)"></app-table-filters>

@@ -352,6 +352,4 @@ export class ExpensesPeriodListComponent implements OnInit {
         console.log('Impreso');
       });
   }
-
-  onFilterTextBoxChanged($event: Event) {}
 }

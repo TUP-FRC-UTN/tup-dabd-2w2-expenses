@@ -66,7 +66,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   // Table
   //
 
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   // items
 
@@ -80,6 +80,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   originalBills: Bill[] = [];
 
   period: Period = new Period();
+  fechaTitulo = '';
 
   columns: TableColumn[] = [];
 
@@ -117,6 +118,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
 
   ngOnInit(): void {
+    this.fechaTitulo = ''
 
     this.loadLiquidationExpenseDetails();
     this.loadCategories();
@@ -201,6 +203,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
           this.billsFiltered = data
           this.originalBills = this.billsFiltered;
           this.period = this.originalBills[0].period;
+          this.fechaTitulo = '| ' + this.period.month.toString() + '/' + this.period.year.toString()
           this.isLoading = false;
         })
         data.pagination.subscribe(data => {
