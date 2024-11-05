@@ -95,7 +95,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       this.lots = data;
     });
 
-    this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
+    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
       this.categoriaCargos = data;
     });
   }
@@ -112,7 +112,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       date: ['', Validators.required],
       periodId: ['', Validators.required],
       amount: ['', Validators.required],
-      categoryChargeId: ['', Validators.required],
+      categoryId: ['', Validators.required],
       description:['']
     });
   }

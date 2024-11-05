@@ -69,9 +69,11 @@
               class="form-select"
             >
             </ng-select>
-            <div *ngIf="chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')" class="invalid-feedback">
-              El lote es obligatorio.
-            </div>
+            @if(chargeForm.controls['lotId'].touched && chargeForm.controls['lotId'].hasError('required')){
+              <div class="invalid-feedback">
+                El lote es obligatorio.
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -110,13 +112,13 @@
               id="categoryId"
               [items]="categoriaCargos"
               bindLabel="name"
-              bindValue="category_id"
+              bindValue="categoryChargeId"
               formControlName="categoryId"
-              [placeholder]="chargeForm.get('categoryChargeId')?.value ? '' : 'Seleccione una categoría'"
+              [placeholder]="chargeForm.get('categoryId')?.value ? '' : 'Seleccione una categoría'"
               [appendTo]="'body'"
               [ngClass]="{
-                'is-invalid': chargeForm.get('categoryChargeId')?.invalid && (chargeForm.get('categoryChargeId')?.dirty || chargeForm.get('categoryChargeId')?.touched),
-                'is-valid': chargeForm.get('categoryChargeId')?.valid && (chargeForm.get('categoryChargeId')?.dirty || chargeForm.get('categoryChargeId')?.touched)
+                'is-invalid': chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.hasError('required'),
+                'is-valid': chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.valid
               }"
               [searchable]="true"
               notFoundText="No se encontraron categorías"
@@ -126,13 +128,18 @@
             <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button">
               <i class="bi bi-plus-lg"></i>
             </button>
-            <div *ngIf="chargeForm.get('categoryChargeId')?.touched && chargeForm.get('categoryChargeId')?.hasError('required')" class="invalid-feedback">
-              La categoría es obligatoria.
-            </div>
+            @if(chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.hasError('required')){
+              <div class="invalid-feedback">
+                La categoría es obligatoria.
+              </div>
+            }
           </div>
         </div>
       </div>
     </div>
+    
+    
+    
     
 
     <!-- <div class="col-md-6">
