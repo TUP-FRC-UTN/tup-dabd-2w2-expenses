@@ -176,7 +176,6 @@ export class ExpensesListBillsComponent implements OnInit {
   onFilterValueChange($event: Record<string, any>) {
     this.filterTableBySelects($event);
   }
-
   //#endregion
 
   @ViewChild('amountTemplate', { static: true })
@@ -288,17 +287,6 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-  /*
-  getCategories() {
-    this.categoryService.getAllCategories().subscribe((categories) => {
-      this.categoryList = categories.map((category: any) => ({
-        value: category.id,
-        label: category.name,
-      }));
-      this.initializeFilters(); // Actualiza el filtro después de obtener datos
-    });
-  }
-*/
   getProviders() {
     this.providerService.getAllProviders().subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
@@ -318,17 +306,6 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-/*
-  getBillTypes() {
-    this.billService.getBillTypes().subscribe((types) => {
-      this.typesList = types.map((type: any) => ({
-        value: type.id,
-        label: type.name,
-      }));
-      this.initializeFilters();
-    });
-  }
-*/
   // Initialize filter configurations
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()

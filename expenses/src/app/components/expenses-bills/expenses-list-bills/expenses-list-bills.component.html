@@ -48,6 +48,6 @@
     onPageSizeChange: onPageSizeChange
   }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="onFilterValueChange($event)"
-    [tableFilters]="filterConfig" (excelButtonClick)="downloadTable()" (pdfButtonClick)="imprimir()">
+    [tableFilters]="filterConfig" (excelButtonClick)="downloadTable()" (pdfButtonClick)="imprimir() "[headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''">
   </app-table>
 </app-main-container>
