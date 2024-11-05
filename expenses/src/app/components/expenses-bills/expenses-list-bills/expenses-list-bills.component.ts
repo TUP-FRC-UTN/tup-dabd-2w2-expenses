@@ -76,6 +76,7 @@ export class ExpensesListBillsComponent implements OnInit {
   periodsList: { value: string; label: string }[] = [];
   typesList: { value: string; label: string }[] = [];
 
+
   totalItems = 0;
   page = 0;
   size = 10;
@@ -134,8 +135,7 @@ export class ExpensesListBillsComponent implements OnInit {
     const filterSupplier = value['supplier.name'] || 0;
     const filterPeriod = value['period.id'] || 0;
     const filterType = value['billType.name'] || 0;
-    let filterStatus = '';
-    if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Inactivo';
+
 
     this.filteredBills = this.bills.filter((bill) => {
       const matchesCategory = filterCategory
@@ -150,6 +150,9 @@ export class ExpensesListBillsComponent implements OnInit {
       const matchesType = filterType
         ? bill.billType?.bill_type_id === filterType
         : true;
+      let filterStatus = '';
+      if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Inactivo';
+
       const matchesStatus = filterStatus
         ? bill.status === filterStatus
         : true;
@@ -173,7 +176,6 @@ export class ExpensesListBillsComponent implements OnInit {
   onFilterValueChange($event: Record<string, any>) {
     this.filterTableBySelects($event);
   }
-
   //#endregion
 
   @ViewChild('amountTemplate', { static: true })
@@ -275,6 +277,16 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
+
+  getBillTypes() {
+    this.billService.getBillTypes().subscribe((types) => {
+      this.typesList = types.map((type: any) => ({
+        value: type.bill_type_id,
+        label: type.name,
+      }));
+      this.initializeFilters();
+    });
+  }
   getProviders() {
     this.providerService.getAllProviders().subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
@@ -294,17 +306,6 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-
-  getBillTypes() {
-    this.billService.getBillTypes().subscribe((types) => {
-      this.typesList = types.map((type: any) => ({
-        value: type.bill_type_id,
-        label: type.name,
-      }));
-      this.initializeFilters();
-    });
-  }
-
   // Initialize filter configurations
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
@@ -371,7 +372,7 @@ export class ExpensesListBillsComponent implements OnInit {
           //this.totalPages = Math.ceil(this.totalItems / this.size);
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
-              this.bills = bills;
+              this.bills = this.sortBills(bills);
               this.filteredBills = [...this.bills];
             } else {
               this.bills = [];
@@ -384,6 +385,23 @@ export class ExpensesListBillsComponent implements OnInit {
           this.isLoading = false;
         },
       });
+  }
+
+  sortBills(bills: Bill[]): Bill[] {
+    return [...bills].sort((a, b) => {
+      // Primero ordenamos por categoría
+      const categoryComparison = a.category.name.localeCompare(b.category.name);
+      if (categoryComparison !== 0) return categoryComparison;
+
+      // Luego por proveedor
+      const supplierComparison = a.supplier.name.localeCompare(b.supplier.name);
+      if (supplierComparison !== 0) return supplierComparison;
+
+      // Finalmente por fecha (asumiendo que date es un string o Date)
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB.getTime() - dateA.getTime(); // Orden descendente por fecha
+    });
   }
   //#endregion
 
