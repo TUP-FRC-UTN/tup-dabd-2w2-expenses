@@ -2,11 +2,11 @@
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-  padding: 4px;
+  /* padding: 4px; */
 }
 
 ::ng-deep .ng-dropdown-panel .ng-option {
-  padding: 8px 12px;
+  padding: 4px 6px;
   margin: 2px 0;
   transition: background-color 0.2s ease;
 }

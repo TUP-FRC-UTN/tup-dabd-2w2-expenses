@@ -69,37 +69,47 @@ export class EditBillModalComponent implements OnInit {
     });
   }
   ngOnInit() {
-    this.loadLists().then(() => {
-      this.updateBill.patchValue({
-        expenditureId: this.bill?.expenditureId,
-        date: this.formatDate(this.bill?.date),
-        amount: this.bill?.amount,
-        description: this.bill?.description,
-        supplier: this.bill?.supplier.id,
-        period: this.bill?.period.id,
-        category: this.bill?.category.category_id,
-        billType: this.bill?.billType.bill_type_id,
-        status: this.bill?.status,
-      });
+    this.loadLists();
+    this.updateBill.patchValue({
+      expenditureId: this.bill?.expenditureId,
+      date: this.formatDate(this.bill?.date),
+      amount: this.bill?.amount,
+      description: this.bill?.description,
+      supplier: this.bill?.supplier.id,
+      category: this.bill?.category.category_id,
+      billType: this.bill?.billType.bill_type_id,
+      status: this.bill?.status
     });
   }
   async loadLists() {
     try {
       this.categoryService.getAllCategories().subscribe((categories) => {
-        this.categoriesList = categories;
+        this.categoriesList = this.sortCategoriesAlphabetically(categories);
       });
       this.supplierService.getAllProviders().subscribe((suppliers) => {
-        this.suppliersList = suppliers;
+        this.suppliersList = this.sortSuppliersAlphabetically(suppliers);
       });
       this.periodService.get().subscribe((periods) => {
         this.periodsList = periods;
       });
       this.billService.getBillTypes().subscribe((types) => {
-        this.billTypesList = types;
+        this.billTypesList = this.sortBillTypeAlphabetically(types);
       });
     } catch (error) {
       console.error('Error al cargar las listas', error);
     }
+  }
+
+  sortSuppliersAlphabetically(suppliers: Provider[]): Provider[] {
+    return suppliers.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sortCategoriesAlphabetically(categories: Category[]): Category[] {
+    return categories.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sortBillTypeAlphabetically(billType: BillType[]): BillType[] {
+    return billType.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   formatDate(date?: Date): string {
