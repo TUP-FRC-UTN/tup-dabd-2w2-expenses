@@ -17,10 +17,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
 import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.component';
+import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
+import { map } from 'rxjs';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
-  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent],
+  imports: [ReactiveFormsModule, PeriodSelectComponent,CommonModule,NgModalComponent, MainContainerComponent, NgSelectComponent,
+    NgOptionComponent],
   templateUrl: './expenses-add-charge.component.html',
   styleUrl: './expenses-add-charge.component.css',
 })
@@ -57,21 +60,50 @@ export class ExpensesAddChargeComponent implements OnInit{
       scrollable: true,
     });
   }
+  // loadSelect() {
+  //   this.periodService.get().subscribe((data=>{
+  //     data.forEach((period) => {
+  //       if(period.state != 'CLOSE'){
+  //         this.listPeriodo.push(period);
+  //       }
+  //     });
+  //   }))
+  //   this.lotsService.get().subscribe((data: Lot[]) => {
+  //     this.lots = data;
+  //   })
+  //   this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
+  //     this.categoriaCargos = data;
+  //   })
+  // }
+  formattedPeriods: any[] = [];
+
   loadSelect() {
-    this.periodService.get().subscribe((data=>{
-      data.forEach((period) => {
-        if(period.state != 'CLOSE'){
-          this.listPeriodo.push(period);
-        }
-      });
-    }))
+    this.periodService.get().pipe(
+      map((periods) =>
+        periods
+          .filter((period) => period.state !== 'CLOSE')
+          .map((period) => ({
+            ...period,
+            displayPeriod: `${period.month}/${period.year}`
+          }))
+      )
+    ).subscribe((formattedPeriods) => {
+      this.formattedPeriods = formattedPeriods;
+    });
+
     this.lotsService.get().subscribe((data: Lot[]) => {
       this.lots = data;
-    })
-    this.chargeService.getCategoriesExcFines().subscribe((data: CategoryCharge[]) => {
+    });
+
+    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
       this.categoriaCargos = data;
-    })
+    });
   }
+
+  comparePeriodFn(period1: any, period2: any) {
+    return period1 && period2 ? period1.id === period2.id : period1 === period2;
+  }
+
   chargeForm: FormGroup;
 
   constructor() {
@@ -80,7 +112,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       date: ['', Validators.required],
       periodId: ['', Validators.required],
       amount: ['', Validators.required],
-      categoryChargeId: ['', Validators.required],
+      categoryId: ['', Validators.required],
       description:['']
     });
   }
