@@ -130,10 +130,12 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   filterTableBySelects(value: Record<string, any>) {
-    const filterCategory = value['selectedCategory'] || 0;
-    const filterSupplier = value['selectedSupplier'] || 0;
-    const filterPeriod = value['selectedPeriod'] || 0;
-    const filterType = value['selectedType'] || 0;
+    const filterCategory = value['category.name'] || 0;
+    const filterSupplier = value['supplier.name'] || 0;
+    const filterPeriod = value['period.id'] || 0;
+    const filterType = value['billType.name'] || 0;
+    let filterStatus = '';
+    if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Inactivo';
 
     this.filteredBills = this.bills.filter((bill) => {
       const matchesCategory = filterCategory
@@ -148,8 +150,12 @@ export class ExpensesListBillsComponent implements OnInit {
       const matchesType = filterType
         ? bill.billType?.bill_type_id === filterType
         : true;
+      const matchesStatus = filterStatus
+        ? bill.status === filterStatus
+        : true;
 
-      return matchesCategory && matchesSupplier && matchesPeriod && matchesType;
+
+      return matchesCategory && matchesSupplier && matchesPeriod && matchesType && matchesStatus;
     });
   }
 
@@ -262,7 +268,7 @@ export class ExpensesListBillsComponent implements OnInit {
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
       this.categoryList = categories.map((category: any) => ({
-        value: category.id,
+        value: category.category_id,
         label: category.name,
       }));
       this.initializeFilters(); // Actualiza el filtro después de obtener datos
@@ -292,7 +298,7 @@ export class ExpensesListBillsComponent implements OnInit {
   getBillTypes() {
     this.billService.getBillTypes().subscribe((types) => {
       this.typesList = types.map((type: any) => ({
-        value: type.id,
+        value: type.bill_type_id,
         label: type.name,
       }));
       this.initializeFilters();
