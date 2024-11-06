@@ -23,7 +23,7 @@
               [ngClass]="{
             'is-valid': updateBill.get('supplier')?.valid && !updateBill.get('supplier')?.errors?.['required'],
             'is-invalid': updateBill.get('supplier')?.errors?.['required']
-          }" notFoundText="No se encontraron proveedores" [searchable]="true" class="form-select">
+          }" notFoundText="No se encontraron proveedores" [clearable]="false" [searchable]="true" class="form-select">
             </ng-select>
 
             <div class="invalid-feedback">
@@ -46,12 +46,12 @@
               <option [value]="category.category_id">{{ category.name }}</option>
               }
             </select> -->
-              <ng-select id="category" [items]="categoriesList" bindLabel="name" bindValue="category_id"
-                formControlName="category" [ngClass]="{
-                  'is-valid': updateBill.get('category')?.valid && !updateBill.get('category')?.errors?.['required'],
-                  'is-invalid': updateBill.get('category')?.errors?.['required']
-                }" notFoundText="No se encontraron categorías" [searchable]="true" class="form-select">
-              </ng-select>
+              <ng-select id="category" [items]="categoriesList" bindLabel="name" bindValue="category_id" formControlName="category"
+              [ngClass]="{
+            'is-valid': updateBill.get('category')?.valid && !updateBill.get('category')?.errors?.['required'],
+            'is-invalid': updateBill.get('category')?.errors?.['required']
+          }" notFoundText="No se encontraron proveedores" [clearable]="false" [searchable]="true" class="form-select">
+            </ng-select>
               <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button"
                 (click)="openNewCategoryModal()">
                 <i class="bi bi-plus-lg"></i>
@@ -102,7 +102,7 @@
               formControlName="billType" [ngClass]="{
                 'is-valid': updateBill.get('billType')?.valid && !updateBill.get('billType')?.errors?.['required'],
                 'is-invalid': updateBill.get('billType')?.errors?.['required']
-              }" notFoundText="No se encontraron tipos" [searchable]="true" class="form-select">
+              }" notFoundText="No se encontraron tipos" [clearable]="false" [searchable]="true" class="form-select">
             </ng-select>
             <div class="invalid-feedback">
               Por favor, seleccione un tipo.
@@ -112,25 +112,59 @@
       </div>
     </div>
 
-    <!-- Descripción (fila completa) -->
-    <div class="row mb-3">
-      <div class="col-12">
-        <div class="row align-items-center">
-          <label for="description" class="col-md-2 col-form-label">Descripción</label>
-          <div class="col-md-10">
-            <textarea id="description" formControlName="description" class="form-control" rows="3"
-              [ngClass]="{'is-invalid': updateBill.get('description')?.invalid && (updateBill.get('description')?.dirty || updateBill.get('description')?.touched)}"></textarea>
-            <div class="invalid-feedback">
-              Por favor, ingrese una descripción.
-            </div>
-          </div>
-        </div>
+    
+<div class="row g-3 m-2">
+
+
+<!-- Última fila con Monto y Fecha -->
+<div class="col-md-6">
+  <div class="d-flex align-items-center">
+    <label for="amount" class="col-sm-2 col-form-label">Monto<span class="text-danger">*</span></label>
+    <div class="col-sm-10">
+      <input placeholder="Ingrese un monto" type="number" id="amount" formControlName="amount" class="form-control"
+      [ngClass]="{
+        'is-valid': updateBill.get('amount')?.valid && !updateBill.get('amount')?.errors?.['required'],
+        'is-invalid': updateBill.get('amount')?.errors?.['required']
+      }">
+      <div class="invalid-feedback">
+        El monto es obligatorio.
       </div>
     </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="d-flex align-items-center">
+    <label for="date" class="col-sm-2 col-form-label">Fecha<span class="text-danger">*</span></label>
+    <div class="col-sm-10">
+      <input type="date" id="date" formControlName="date" class="form-control" [ngClass]="{
+        'is-valid': updateBill.get('date')?.valid && !updateBill.get('date')?.errors?.['required'],
+        'is-invalid': updateBill.get('date')?.errors?.['required']
+      }">
+      @if (updateBill.get('date')?.errors?.['required'] &&
+      (updateBill.get('date')?.dirty || updateBill.get('date')?.touched)) {
+      <div class="invalid-feedback">
+        La fecha es obligatoria.
+      </div>
+      }
+      @if (updateBill.get('date')?.errors?.['invalidDate']) {
+      <div class="invalid-feedback">
+        La fecha seleccionada es anterior a la fecha de inicio del período.
+      </div>
+      }
+      <!-- @if (billForm.get('date')?.pending) {
+        <div class="text-info">
+          <small>Validando fecha...</small>
+        </div>
+      } -->
+    </div>
+  </div>
+</div>
+</div>
+
 
     <!-- Cuarta fila: Monto y Fecha -->
-    <div class="row mb-3">
-      <!-- Monto -->
+    <!-- <div class="row g-3 m-2">
       <div class="col-md-6">
         <div class="row align-items-center">
           <label for="amount" class="col-md-4 col-form-label">Monto</label>
@@ -148,9 +182,8 @@
         </div>
       </div>
 
-      <!-- Fecha -->
       <div class="col-md-6">
-        <div class="row align-items-center">
+        <div class="d-flex align-items-center">
           <label for="date" class="col-md-4 col-form-label">Fecha</label>
           <div class="col-md-8">
             <div class="input-group">
@@ -161,6 +194,22 @@
               <div class="invalid-feedback">
                 Por favor, seleccione una fecha válida.
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Descripción (fila completa) -->
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="row align-items-center">
+          <label for="description" class="col-md-2 col-form-label">Descripción</label>
+          <div class="col-md-10">
+            <textarea id="description" formControlName="description" class="form-control" rows="3"
+              [ngClass]="{'is-invalid': updateBill.get('description')?.invalid && (updateBill.get('description')?.dirty || updateBill.get('description')?.touched)}"></textarea>
+            <div class="invalid-feedback">
+              Por favor, ingrese una descripción.
             </div>
           </div>
         </div>
