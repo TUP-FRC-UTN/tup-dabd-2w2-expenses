@@ -2,6 +2,8 @@ import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Bill } from '../../../../models/bill';
 import {
+  AbstractControl,
+  AsyncValidatorFn,
   FormControl,
   FormGroup,
   FormsModule,
@@ -20,6 +22,7 @@ import { CommonModule } from '@angular/common';
 import { NgModalComponent } from '../../ng-modal/ng-modal.component';
 import { ToastService } from 'ngx-dabd-grupo01';
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -49,7 +52,10 @@ export class EditBillModalComponent implements OnInit {
   @Input() bill?: Bill;
   updateBill: FormGroup = new FormGroup({
     expenditureId: new FormControl(''),
-    date: new FormControl(null, Validators.required),
+    date: new FormControl(null, {
+      validators: Validators.required,
+      asyncValidators: this.dateValidator.bind(this), 
+    }),
     amount: new FormControl(null, Validators.required),
     description: new FormControl(''),
     supplier: new FormControl(null, Validators.required),
@@ -58,6 +64,7 @@ export class EditBillModalComponent implements OnInit {
     billType: new FormControl(null, Validators.required),
     status: new FormControl(''),
   });
+  
   suppliersList: Provider[] = [];
   categoriesList: Category[] = [];
   periodsList: Period[] = [];
@@ -77,10 +84,13 @@ export class EditBillModalComponent implements OnInit {
       amount: this.bill?.amount,
       description: this.bill?.description,
       supplier: this.bill?.supplier.id,
+      period: this.bill?.period.id,
       category: this.bill?.category.category_id,
       billType: this.bill?.billType.bill_type_id,
       status: this.bill?.status
     });
+
+    console.log(this.bill?.period);
   }
   async loadLists() {
     try {
@@ -96,7 +106,9 @@ export class EditBillModalComponent implements OnInit {
           displayPeriod: `${period.month}/${period.year}` 
         }));
       });
-      
+      this.updateBill.patchValue({
+        period: this.bill?.period.id,
+      });
       this.billService.getBillTypes().subscribe((types) => {
         this.billTypesList = this.sortBillTypeAlphabetically(types);
       });
@@ -136,6 +148,25 @@ export class EditBillModalComponent implements OnInit {
     const day = ('0' + d.getDate()).slice(-2);
     const year = d.getFullYear();
     return `${year}-${month}-${day}`;
+  }
+
+  dateValidator(control: AbstractControl): ReturnType<AsyncValidatorFn> {
+    if (!control.value) {
+      return Promise.resolve(null);
+    }
+    const periodId = this.updateBill?.get('period')?.value;
+
+    if (!periodId) {
+      return Promise.resolve(null);
+    }
+    const numericPeriodId = parseInt(periodId?.toString().split('/')[0]);
+
+    return this.billService.validateDate(control.value, numericPeriodId).pipe(
+      map(isValid => {
+
+        return !isValid ? { invalidDate: true } : null;
+      })
+    );
   }
 
   onSubmit() {

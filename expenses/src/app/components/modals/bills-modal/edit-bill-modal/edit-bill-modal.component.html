@@ -77,12 +77,11 @@
               <option [value]="period.id">{{ period.month + '/' + period.year }}</option>
               }
             </select> -->
-            <ng-select id="period" [items]="periodsList" bindLabel="displayPeriod" bindValue="id"
-              formControlName="period" [ngClass]="{
-             'is-invalid': updateBill.get('period')?.invalid && (updateBill.get('period')?.dirty || updateBill.get('period')?.touched),
-             'is-valid': updateBill.get('period')?.valid && (updateBill.get('period')?.dirty || updateBill.get('period')?.touched)
-           }" notFoundText="No se encontraron periodos" [compareWith]="comparePeriodFn"
- [clearable]="false" [searchable]="true" class="form-select">
+            <ng-select id="period" [items]="periodsList" bindLabel="displayPeriod"
+              bindValue="id" formControlName="period" [ngClass]="{
+                'is-valid': updateBill.get('period')?.valid && !updateBill.get('period')?.errors?.['required'],
+                'is-invalid': updateBill.get('period')?.errors?.['required']
+              }" notFoundText="No se encontraron periodos" [clearable]="false" [searchable]="true" class="form-select">
             </ng-select>
 
             <div class="invalid-feedback">
@@ -139,12 +138,23 @@
               'is-valid': updateBill.get('date')?.valid && !updateBill.get('date')?.errors?.['required'],
               'is-invalid': updateBill.get('date')?.errors?.['required']
             }">
-            <div class="invalid-feedback" *ngIf="updateBill.get('date')?.errors?.['required']">
+            <!-- <div class="invalid-feedback" *ngIf="updateBill.get('date')?.errors?.['required']">
               La fecha es obligatoria.
             </div>
             <div class="invalid-feedback" *ngIf="updateBill.get('date')?.errors?.['invalidDate']">
               La fecha seleccionada es anterior a la fecha de inicio del período.
-            </div>
+            </div>             -->
+            @if (updateBill.get('date')?.errors?.['required'] &&
+          (updateBill.get('date')?.dirty || updateBill.get('date')?.touched)) {
+          <div class="invalid-feedback">
+            La fecha es obligatoria.
+          </div>
+          }
+          @if (updateBill.get('date')?.errors?.['invalidDate']) {
+          <div class="invalid-feedback">
+            La fecha seleccionada es anterior a la fecha de inicio del período.
+          </div>
+          }
           </div>
         </div>
       </div>
@@ -156,8 +166,7 @@
         <div class="d-flex align-items-center">
           <label for="description" class="col-sm-2 col-form-label">Descripción</label>
           <div class="col-sm-10">
-            <textarea id="description" formControlName="description" class="form-control" rows="3"
-              [ngClass]="{'is-invalid': updateBill.get('description')?.invalid && (updateBill.get('description')?.dirty || updateBill.get('description')?.touched)}"></textarea>
+            <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
             <div class="invalid-feedback">
               Por favor, ingrese una descripción.
             </div>
