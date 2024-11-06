@@ -364,7 +364,7 @@ export class ExpensesListBillsComponent implements OnInit {
         filters.selectedSupplier?.valueOf(),
         filters.selectedType?.valueOf(),
         filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString(),
+        //filters.selectedStatus?.valueOf().toString(),
       )
       .subscribe({
         next: (response) => {

@@ -180,14 +180,14 @@ export class BillService {
       link_pdf: '',
     };
     const headers = new HttpHeaders({
-      'idUser': '1', //CAMBIAR ACA
+      'x-user-id': '1',
     });
     return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, { headers });
   }
 
   updateBill(updatedBill: any, id: any): Observable<Bill> {
     const headers = new HttpHeaders({
-      'idUser': '1', //CAMBIAR ACA
+      'x-user-id': '1',
     });
     return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers });
   }
