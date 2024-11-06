@@ -175,14 +175,14 @@ export class BillService {
       link_pdf: '',
     };
     const headers = new HttpHeaders({
-      'x-user-id': '1',
+      'x-user-id': '1', //para back desactualizado: idUser
     });
     return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, {headers});
   }
 
   updateBill(updatedBill: any, id: any): Observable<Bill> {
     const headers = new HttpHeaders({
-      'x-user-id': '1',
+      'x-user-id': '1', //para back desactualizado: idUser
     });
     return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers })
   }

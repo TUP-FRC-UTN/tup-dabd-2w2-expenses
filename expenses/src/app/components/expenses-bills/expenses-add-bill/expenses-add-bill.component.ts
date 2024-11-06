@@ -73,7 +73,7 @@ export class ExpensesAddBillComponent implements OnInit {
       date: [
         '',
         [Validators.required],
-        [(control) => this.dateValidator(control)], // Pasar el control directamente
+        [(control) => this.dateValidator(control)],
       ],
       supplierId: ['', [Validators.required]],
       typeId: ['', [Validators.required]],
@@ -107,7 +107,6 @@ export class ExpensesAddBillComponent implements OnInit {
       return Promise.resolve(null);
     }
 
-    // Obtener el periodId del formulario
     const periodId = this.billForm?.get('periodId')?.value;
 
     if (!periodId) {
@@ -159,7 +158,7 @@ export class ExpensesAddBillComponent implements OnInit {
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
-            // this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
+            
             this.resetForm();
           },
           error: (error: any) => {
@@ -168,10 +167,8 @@ export class ExpensesAddBillComponent implements OnInit {
               this.toastService.sendError(
                 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'
               );
-              // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
             } else {
               this.toastService.sendError(error.error.message);
-              // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
             }
           },
         });
@@ -180,7 +177,6 @@ export class ExpensesAddBillComponent implements OnInit {
       this.toastService.sendError(
         'Por favor, complete todos los campos requeridos correctamente.'
       );
-      // this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
   }
 
@@ -207,7 +203,6 @@ export class ExpensesAddBillComponent implements OnInit {
           this.loadSelectOptions();
         } else {
           this.toastService.sendError(result.message);
-          // this.showModal('Error', result.message);
         }
       }
     });
