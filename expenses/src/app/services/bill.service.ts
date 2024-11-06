@@ -19,6 +19,7 @@ export class BillService {
 
   constructor() {}
 
+  //#region Get Bills Methods
   getAllBills(
     size?: number,
     page?: number,
@@ -111,10 +112,8 @@ export class BillService {
       params = params.set('status', status);
     }
     console.log(`${this.url}/bills`, { params });
-    // Realiza la solicitud HTTP con los parámetros construidos
-    let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, {
-      params,
-    });
+
+    let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
     result.subscribe({
       next: (data) => {
         console.log('Response data:', data);
@@ -126,11 +125,15 @@ export class BillService {
     });
     return result;
   }
+  //#endregion
 
+  //#region Bill Type Methods
   getBillTypes(): Observable<BillType[]> {
     return this.http.get<BillType[]>(`${this.url}bill-type`);
   }
+  //#endregion
 
+  //#region Additional Bill Retrieval Methods
   getAllBillsPaged(
     size: number,
     page: number,
@@ -160,7 +163,9 @@ export class BillService {
       throw e;
     }
   }
+  //#endregion
 
+  //#region Add and Update Bill Methods
   addBill(bill: BillPostRequest): Observable<BillPostRequest> {
     const snakeCaseBill = {
       description: bill.description,
@@ -177,16 +182,18 @@ export class BillService {
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });
-    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, {headers});
+    return this.http.post<BillPostRequest>(this.url + 'bills', snakeCaseBill, { headers });
   }
 
   updateBill(updatedBill: any, id: any): Observable<Bill> {
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });
-    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers })
+    return this.http.put<Bill>(`${this.url}bills/${id}`, updatedBill, { headers });
   }
+  //#endregion
 
+  //#region Utility Methods
   formatBills(
     billsDto$: Observable<PaginatedResponse<BillDto>>
   ): Observable<Bill[]> {
@@ -223,4 +230,6 @@ export class BillService {
 
     return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
+  //#endregion
 }
+
