@@ -6,6 +6,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { ProviderService } from '../../../../services/provider.service';
 import { CategoryService } from '../../../../services/category.service';
@@ -48,13 +49,13 @@ export class EditBillModalComponent implements OnInit {
   @Input() bill?: Bill;
   updateBill: FormGroup = new FormGroup({
     expenditureId: new FormControl(''),
-    date: new FormControl(''),
-    amount: new FormControl(''),
+    date: new FormControl(null, Validators.required),
+    amount: new FormControl(null, Validators.required),
     description: new FormControl(''),
-    supplier: new FormControl(''),
+    supplier: new FormControl(null, Validators.required),
     period: new FormControl(''),
-    category: new FormControl(''),
-    billType: new FormControl(''),
+    category: new FormControl(null, Validators.required),
+    billType: new FormControl(null, Validators.required),
     status: new FormControl(''),
   });
   suppliersList: Provider[] = [];

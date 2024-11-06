@@ -21,14 +21,14 @@
             </select> -->
             <ng-select id="supplier" [items]="suppliersList" bindLabel="name" bindValue="id" formControlName="supplier"
               [ngClass]="{
-          'is-invalid': updateBill.get('supplier')?.invalid && (updateBill.get('supplier')?.dirty || updateBill.get('supplier')?.touched),
-          'is-valid': updateBill.get('supplier')?.valid && (updateBill.get('supplier')?.dirty || updateBill.get('supplier')?.touched)
-        }" notFoundText="No se encontraron proveedores" [searchable]="true" class="form-select">
+            'is-valid': updateBill.get('supplier')?.valid && !updateBill.get('supplier')?.errors?.['required'],
+            'is-invalid': updateBill.get('supplier')?.errors?.['required']
+          }" notFoundText="No se encontraron proveedores" [searchable]="true" class="form-select">
             </ng-select>
+
             <div class="invalid-feedback">
               Por favor, seleccione un proveedor.
             </div>
-
           </div>
         </div>
       </div>
@@ -48,9 +48,9 @@
             </select> -->
               <ng-select id="category" [items]="categoriesList" bindLabel="name" bindValue="category_id"
                 formControlName="category" [ngClass]="{
-      'is-invalid': updateBill.get('category')?.invalid && (updateBill.get('category')?.dirty || updateBill.get('category')?.touched),
-      'is-valid': updateBill.get('category')?.valid && (updateBill.get('category')?.dirty || updateBill.get('category')?.touched)
-    }" notFoundText="No se encontraron categorías" [searchable]="true" class="form-select">
+                  'is-valid': updateBill.get('category')?.valid && !updateBill.get('category')?.errors?.['required'],
+                  'is-invalid': updateBill.get('category')?.errors?.['required']
+                }" notFoundText="No se encontraron categorías" [searchable]="true" class="form-select">
               </ng-select>
               <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button"
                 (click)="openNewCategoryModal()">
@@ -100,9 +100,9 @@
             </select> -->
             <ng-select id="billType" [items]="billTypesList" bindLabel="name" bindValue="bill_type_id"
               formControlName="billType" [ngClass]="{
-      'is-invalid': updateBill.get('billType')?.invalid && (updateBill.get('billType')?.dirty || updateBill.get('billType')?.touched),
-      'is-valid': updateBill.get('billType')?.valid && (updateBill.get('billType')?.dirty || updateBill.get('billType')?.touched)
-    }" notFoundText="No se encontraron proveedores" [searchable]="true" class="form-select">
+                'is-valid': updateBill.get('billType')?.valid && !updateBill.get('billType')?.errors?.['required'],
+                'is-invalid': updateBill.get('billType')?.errors?.['required']
+              }" notFoundText="No se encontraron tipos" [searchable]="true" class="form-select">
             </ng-select>
             <div class="invalid-feedback">
               Por favor, seleccione un tipo.
@@ -137,9 +137,9 @@
           <div class="col-md-8">
             <div class="input-group">
               <input type="number" id="amount" formControlName="amount" class="form-control" [ngClass]="{
-                  'is-invalid': updateBill.get('amount')?.invalid && (updateBill.get('amount')?.dirty || updateBill.get('amount')?.touched),
-                  'is-valid': updateBill.get('amount')?.valid && (updateBill.get('amount')?.dirty || updateBill.get('amount')?.touched)
-                }">
+                'is-valid': updateBill.get('amount')?.valid && !updateBill.get('amount')?.errors?.['required'],
+                'is-invalid': updateBill.get('amount')?.errors?.['required']
+              }">
               <div class="invalid-feedback">
                 Por favor, ingrese un monto válido.
               </div>
@@ -155,9 +155,9 @@
           <div class="col-md-8">
             <div class="input-group">
               <input type="date" id="date" formControlName="date" class="form-control" [ngClass]="{
-                  'is-invalid': updateBill.get('date')?.invalid && (updateBill.get('date')?.dirty || updateBill.get('date')?.touched),
-                  'is-valid': updateBill.get('date')?.valid && (updateBill.get('date')?.dirty || updateBill.get('date')?.touched)
-                }">
+                'is-valid': updateBill.get('date')?.valid && !updateBill.get('date')?.errors?.['required'],
+                'is-invalid': updateBill.get('date')?.errors?.['required']
+              }">
               <div class="invalid-feedback">
                 Por favor, seleccione una fecha válida.
               </div>
