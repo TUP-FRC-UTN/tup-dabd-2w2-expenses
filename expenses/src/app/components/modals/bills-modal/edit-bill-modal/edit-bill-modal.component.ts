@@ -24,6 +24,7 @@ import { NgModalComponent } from '../../ng-modal/ng-modal.component';
 import { ToastService } from 'ngx-dabd-grupo01';
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
+import { NewCategoryModalComponent } from '../../bills/new-category-modal/new-category-modal.component';
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -209,9 +210,27 @@ export class EditBillModalComponent implements OnInit {
     this.activeModal.dismiss();
   }
 
+  // openNewCategoryModal() {
+  //   this.modalService.open(this.newCategoryModal, {
+  //     ariaLabelledBy: 'modal-basic-title',
+  //   });
+  // }
+
   openNewCategoryModal() {
-    this.modalService.open(this.newCategoryModal, {
+    const modalRef = this.modalService.open(NewCategoryModalComponent, {
       ariaLabelledBy: 'modal-basic-title',
+    });
+
+    modalRef.result.then((result) => {
+      if (result) {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message);
+          // this.loadSelectOptions();
+        } else {
+          this.toastService.sendError(result.message);
+          // this.showModal('Error', result.message);
+        }
+      }
     });
   }
 

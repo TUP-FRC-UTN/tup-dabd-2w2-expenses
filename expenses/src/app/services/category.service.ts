@@ -1,6 +1,6 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {map, Observable} from 'rxjs';
 import Category from '../models/category';
 import { PORT } from '../const';
 import {PaginatedResponse} from "../models/paginatedResponse";
@@ -73,6 +73,8 @@ export class CategoryService {
   }
 
   validateCategoryName(name: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.url}/valid-name?name=${encodeURIComponent(name)}`);
+    return this.getAllCategories().pipe(
+      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase()))
+    );
   }
 }
