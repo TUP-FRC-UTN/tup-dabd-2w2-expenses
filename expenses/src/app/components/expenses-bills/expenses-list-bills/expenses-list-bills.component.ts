@@ -359,11 +359,11 @@ export class ExpensesListBillsComponent implements OnInit {
       .getAllBillsAndPagination(
         this.page,
         this.size,
-        filters.selectedPeriod?.valueOf(),
-        filters.selectedCategory?.valueOf(),
-        filters.selectedSupplier?.valueOf(),
-        filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf().toString(),
+        // filters.selectedPeriod?.valueOf(),
+        // filters.selectedCategory?.valueOf(),
+        // filters.selectedSupplier?.valueOf(),
+        // filters.selectedType?.valueOf(),
+        // filters.selectedProvider?.valueOf().toString(),
         //filters.selectedStatus?.valueOf().toString(),
       )
       .subscribe({
