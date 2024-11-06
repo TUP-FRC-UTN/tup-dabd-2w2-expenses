@@ -53,7 +53,7 @@ export class EditBillModalComponent implements OnInit {
     amount: new FormControl(null, Validators.required),
     description: new FormControl(''),
     supplier: new FormControl(null, Validators.required),
-    period: new FormControl(''),
+    period: new FormControl(null, Validators.required),
     category: new FormControl(null, Validators.required),
     billType: new FormControl(null, Validators.required),
     status: new FormControl(''),
@@ -91,7 +91,10 @@ export class EditBillModalComponent implements OnInit {
         this.suppliersList = this.sortSuppliersAlphabetically(suppliers);
       });
       this.periodService.get().subscribe((periods) => {
-        this.periodsList = periods;
+        this.periodsList = periods.map(period => ({
+          ...period,
+          displayPeriod: this.formatDate(period.end_date)  // Suponiendo que `date` es el campo con la fecha
+        }));
       });
       this.billService.getBillTypes().subscribe((types) => {
         this.billTypesList = this.sortBillTypeAlphabetically(types);
@@ -99,6 +102,13 @@ export class EditBillModalComponent implements OnInit {
     } catch (error) {
       console.error('Error al cargar las listas', error);
     }
+  }
+
+  formatPeriod(date: string): string {
+    const d = new Date(date);  // Si el valor de `date` es un string
+    const month = d.toLocaleString('default', { month: 'long' });  // Obtener el mes en formato largo
+    const year = d.getFullYear();  // Obtener el año
+    return `${month} ${year}`;  // Ejemplo: "Enero 2024"
   }
 
   sortSuppliersAlphabetically(suppliers: Provider[]): Provider[] {
