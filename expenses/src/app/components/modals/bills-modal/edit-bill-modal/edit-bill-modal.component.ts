@@ -4,6 +4,7 @@ import { Bill } from '../../../../models/bill';
 import {
   AbstractControl,
   AsyncValidatorFn,
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -39,6 +40,7 @@ import { map } from 'rxjs';
 })
 export class EditBillModalComponent implements OnInit {
   private activeModal = inject(NgbActiveModal);
+  private fb = inject(FormBuilder); // Usamos FormBuilder en lugar de new FormGroup
   private supplierService = inject(ProviderService);
   private categoryService = inject(CategoryService);
   private periodService = inject(PeriodService);
@@ -50,32 +52,36 @@ export class EditBillModalComponent implements OnInit {
   @ViewChild('newCategoryModal') newCategoryModal: any;
 
   @Input() bill?: Bill;
-  updateBill: FormGroup = new FormGroup({
-    expenditureId: new FormControl(''),
-    date: new FormControl(null, {
-      validators: Validators.required,
-      asyncValidators: this.dateValidator.bind(this), 
-    }),
-    amount: new FormControl(null, Validators.required),
-    description: new FormControl(''),
-    supplier: new FormControl(null, Validators.required),
-    period: new FormControl(null, Validators.required),
-    category: new FormControl(null, Validators.required),
-    billType: new FormControl(null, Validators.required),
-    status: new FormControl(''),
-  });
-  
+  updateBill: FormGroup;
+
   suppliersList: Provider[] = [];
   categoriesList: Category[] = [];
   periodsList: Period[] = [];
   billTypesList: BillType[] = [];
 
   constructor() {
-    this.newCategoryForm = new FormGroup({
-      name: new FormControl(''),
-      description: new FormControl(''),
+    // Inicializamos el Formulario usando FormBuilder
+    this.updateBill = this.fb.group({
+      expenditureId: [''],
+      date: [null, {
+        validators: Validators.required,
+        asyncValidators: this.dateValidator.bind(this),
+      }],
+      amount: [null, Validators.required],
+      description: [''],
+      supplier: [null, Validators.required],
+      period: [null, Validators.required],
+      category: [null, Validators.required],
+      billType: [null, Validators.required],
+      status: ['']
+    });
+
+    this.newCategoryForm = this.fb.group({
+      name: [''],
+      description: ['']
     });
   }
+
   ngOnInit() {
     this.loadLists();
     this.updateBill.patchValue({
@@ -92,6 +98,7 @@ export class EditBillModalComponent implements OnInit {
 
     console.log(this.bill?.period);
   }
+
   async loadLists() {
     try {
       this.categoryService.getAllCategories().subscribe((categories) => {
@@ -120,13 +127,12 @@ export class EditBillModalComponent implements OnInit {
   comparePeriodFn(period1: any, period2: any) {
     return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
-  
 
   formatPeriod(date: string): string {
-    const d = new Date(date);  // Si el valor de `date` es un string
-    const month = d.toLocaleString('default', { month: 'long' });  // Obtener el mes en formato largo
-    const year = d.getFullYear();  // Obtener el año
-    return `${month} ${year}`;  // Ejemplo: "Enero 2024"
+    const d = new Date(date);
+    const month = d.toLocaleString('default', { month: 'long' });
+    const year = d.getFullYear();
+    return `${month} ${year}`;
   }
 
   sortSuppliersAlphabetically(suppliers: Provider[]): Provider[] {
@@ -163,21 +169,15 @@ export class EditBillModalComponent implements OnInit {
 
     return this.billService.validateDate(control.value, numericPeriodId).pipe(
       map(isValid => {
-
         return !isValid ? { invalidDate: true } : null;
       })
     );
   }
 
   onSubmit() {
-    // Perform validation and saving logic here if necessary
     if (this.updateBill.valid) {
-      console.log(
-        `Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`
-      );
-      console.log(
-        `Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`
-      );
+      console.log(`Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`);
+      console.log(`Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`);
       const requestBill = {
         description: this.updateBill.value.description,
         amount: this.updateBill.value.amount,
@@ -188,41 +188,20 @@ export class EditBillModalComponent implements OnInit {
         supplier_employee_type: 'SUPPLIER',
         type_id: this.updateBill.value.billType,
         period_id: this.updateBill.value.period,
-        link_pdf: 'string',
-
-        /*
-          {
-          "description": "string",
-          "amount": 0,
-          "date": "2024-10-27T22:49:25.482Z",
-          "status": "ACTIVE",
-          "category_id": 0,
-          "supplier_id": 0,
-          "supplier_employee_type": "SUPPLIER",
-          "type_id": 0,
-          "period_id": 0,
-          "link_pdf": "string"
-        }
-         */
+        link_pdf: 'string'
       };
 
-      this.billService
-        .updateBill(requestBill, this.bill?.expenditureId)
-        .subscribe({
-          next: (response: any) => {
-            console.log('Actualizado correctamente', response);
-            this.toastService.sendSuccess(
-              'El gasto se ha actualizado correctamente.'
-            );
-            this.activeModal.close('updated');
-          },
-          error: (error: any) => {
-            console.error('Error en el post', error);
-            this.toastService.sendError(
-              'Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.'
-            );
-          },
-        });
+      this.billService.updateBill(requestBill, this.bill?.expenditureId).subscribe({
+        next: (response: any) => {
+          console.log('Actualizado correctamente', response);
+          this.toastService.sendSuccess('El gasto se ha actualizado correctamente.');
+          this.activeModal.close('updated');
+        },
+        error: (error: any) => {
+          console.error('Error en el post', error);
+          this.toastService.sendError('Ha ocurrido un error al actualizar el gasto. Por favor, inténtelo de nuevo.');
+        },
+      });
     }
   }
 
@@ -235,14 +214,17 @@ export class EditBillModalComponent implements OnInit {
       ariaLabelledBy: 'modal-basic-title',
     });
   }
+
   resetForm() {
     this.loadLists();
   }
+
   showModal(title: string, message: string) {
     const modalRef = this.modalService.open(NgModalComponent);
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.message = message;
   }
+
   saveNewCategory() {
     if (this.newCategoryForm.valid) {
       let newCategory: Category = this.newCategoryForm.value;
@@ -260,24 +242,15 @@ export class EditBillModalComponent implements OnInit {
         error: (error: any) => {
           console.error('Error en el post', error);
           if (error.status === 409) {
-            this.showModal(
-              'Error',
-              'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.'
-            );
+            this.showModal('Error', 'Ya existe una categoría con este nombre. Por favor, elija un nombre diferente.');
           } else {
-            this.showModal(
-              'Error',
-              'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.'
-            );
+            this.showModal('Error', 'Ha ocurrido un error al añadir la categoría. Por favor, inténtelo de nuevo.');
           }
         },
       });
     } else {
       console.log('Formulario inválido');
-      this.showModal(
-        'Error',
-        'Por favor, complete todos los campos requeridos correctamente.'
-      );
+      this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
     this.modalService.dismissAll();
     this.newCategoryForm.reset();
