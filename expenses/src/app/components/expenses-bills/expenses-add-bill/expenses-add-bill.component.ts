@@ -40,7 +40,7 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
     NgArrayPipesModule,
     MainContainerComponent,
     NgSelectComponent,
-    NgOptionComponent
+    NgOptionComponent,
   ],
   templateUrl: './expenses-add-bill.component.html',
   styleUrl: './expenses-add-bill.component.css',
@@ -70,9 +70,10 @@ export class ExpensesAddBillComponent implements OnInit {
       categoryId: ['', Validators.required],
       description: [''],
       amount: ['', [Validators.required, Validators.min(0.0001)]],
-      date: ['',
+      date: [
+        '',
         [Validators.required],
-        [(control) => this.dateValidator(control)] // Pasar el control directamente
+        [(control) => this.dateValidator(control)], // Pasar el control directamente
       ],
       supplierId: ['', [Validators.required]],
       typeId: ['', [Validators.required]],
@@ -115,7 +116,7 @@ export class ExpensesAddBillComponent implements OnInit {
     const numericPeriodId = parseInt(periodId?.toString().split('/')[0]);
 
     return this.billService.validateDate(control.value, numericPeriodId).pipe(
-      map(isValid => {
+      map((isValid) => {
         return !isValid ? { invalidDate: true } : null;
       })
     );
@@ -134,40 +135,46 @@ export class ExpensesAddBillComponent implements OnInit {
 
   onSubmit() {
     if (this.billForm.valid) {
-      of(this.billForm.value).pipe(
-        map(formValue => {
-          const billRequest = new BillPostRequest();
-          billRequest.categoryId = Number(formValue.categoryId);
-          billRequest.description = formValue.description;
-          billRequest.amount = Number(formValue.amount);
-          billRequest.date = `${formValue.date}T00:00:00Z`;
-          billRequest.status = 'Nuevo';
-          billRequest.supplierId = Number(formValue.supplierId);
-          billRequest.supplierEmployeeType = 'SUPPLIER';
-          billRequest.typeId = Number(formValue.typeId);
-          billRequest.periodId = Number(formValue.periodId);
-          billRequest.linkPdf = '';
-          return billRequest;
-        }),
-        switchMap(billRequest => this.billService.addBill(billRequest))
-      ).subscribe({
-        next: (response: any) => {
-          console.log('Añadido correctamente', response);
-          this.toastService.sendSuccess('El gasto se ha añadido correctamente.');
-          // this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
-          this.resetForm();
-        },
-        error: (error: any) => {
-          console.error('Error en el post', error);
-          if (error.status === 409) {
-            this.toastService.sendError('Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.')
-            // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
-          } else {
-            this.toastService.sendError(error.error.message)
-            // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
-          }
-        }
-      });
+      of(this.billForm.value)
+        .pipe(
+          map((formValue) => {
+            const billRequest = new BillPostRequest();
+            billRequest.categoryId = Number(formValue.categoryId);
+            billRequest.description = formValue.description;
+            billRequest.amount = Number(formValue.amount);
+            billRequest.date = `${formValue.date}T00:00:00Z`;
+            billRequest.status = 'Nuevo';
+            billRequest.supplierId = Number(formValue.supplierId);
+            billRequest.supplierEmployeeType = 'SUPPLIER';
+            billRequest.typeId = Number(formValue.typeId);
+            billRequest.periodId = Number(formValue.periodId);
+            billRequest.linkPdf = '';
+            return billRequest;
+          }),
+          switchMap((billRequest) => this.billService.addBill(billRequest))
+        )
+        .subscribe({
+          next: (response: any) => {
+            console.log('Añadido correctamente', response);
+            this.toastService.sendSuccess(
+              'El gasto se ha añadido correctamente.'
+            );
+            // this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
+            this.resetForm();
+          },
+          error: (error: any) => {
+            console.error('Error en el post', error);
+            if (error.status === 409) {
+              this.toastService.sendError(
+                'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'
+              );
+              // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
+            } else {
+              this.toastService.sendError(error.error.message);
+              // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
+            }
+          },
+        });
     } else {
       console.log('Formulario inválido');
       this.toastService.sendError(

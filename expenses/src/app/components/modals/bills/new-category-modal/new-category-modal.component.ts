@@ -50,12 +50,13 @@ export class NewCategoryModalComponent {
           observer.complete();
         });
       }
-
+  
       return this.categoryService.validateCategoryName(name).pipe(
-        map(isValid => !isValid ? { nameExists: true } : null)
+        map(exists => (exists ? { nameExists: true } : null))
       );
     };
   }
+  
 
   saveNewCategory() {
     if (this.newCategoryForm.valid) {
