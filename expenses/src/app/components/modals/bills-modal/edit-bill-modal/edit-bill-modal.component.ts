@@ -93,9 +93,10 @@ export class EditBillModalComponent implements OnInit {
       this.periodService.get().subscribe((periods) => {
         this.periodsList = periods.map(period => ({
           ...period,
-          displayPeriod: this.formatDate(period.end_date)  // Suponiendo que `date` es el campo con la fecha
+          displayPeriod: `${period.month}/${period.year}` 
         }));
       });
+      
       this.billService.getBillTypes().subscribe((types) => {
         this.billTypesList = this.sortBillTypeAlphabetically(types);
       });
@@ -103,6 +104,11 @@ export class EditBillModalComponent implements OnInit {
       console.error('Error al cargar las listas', error);
     }
   }
+
+  comparePeriodFn(period1: any, period2: any) {
+    return period1 && period2 ? period1.id === period2.id : period1 === period2;
+  }
+  
 
   formatPeriod(date: string): string {
     const d = new Date(date);  // Si el valor de `date` es un string
