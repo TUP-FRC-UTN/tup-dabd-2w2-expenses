@@ -63,3 +63,79 @@
     </div>
   </div>
 </app-main-container>
+
+
+
+
+
+<app-main-container title="Reporte de Expensas">
+  <div class="row">
+    <!-- Título dinámico -->
+    <div class="col-12 text-center my-3">
+      <h2>Resumen Mensual de Expensas</h2>
+      <p>Visualiza el desglose de tus expensas y toma decisiones informadas</p>
+    </div>
+
+    <!-- Gráfico de Barras -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Expensas por Tipo de Lote</h5>
+        </div>
+        <div class="card-body">
+          <canvas baseChart
+            [data]="barChartData"
+            [type]="'bar'"
+            [options]="{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Torta -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">Distribución de Expensas</h5>
+        </div>
+        <div class="card-body">
+          <canvas baseChart
+            [data]="pieChartData"
+            [type]="'pie'"
+            [options]="{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Resumen de Expensas</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <p><strong>Total:</strong></p>
+              <h4 class="text-primary">{{ totalAmount | currency:'ARS':'symbol':'1.0-0' }}</h4>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Promedio:</strong></p>
+              <h4 class="text-info">{{ averageAmount | currency:'ARS':'symbol':'1.0-0' }}</h4>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Cantidad:</strong></p>
+              <h4 class="text-warning">{{ expenses.length }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje final -->
+    <div class="col-12 text-center mt-4">
+      <p>💡 Usa esta información para optimizar tus gastos y planificar mejor tus finanzas 💡</p>
+    </div>
+  </div>
+</app-main-container>
