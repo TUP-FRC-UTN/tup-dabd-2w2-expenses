@@ -64,13 +64,15 @@ export class ExpensesReportComponent implements OnInit{
   ngOnInit(): void {
     this.loadReportPeriod([1, 2]).subscribe(
       (data) => {
-        console.log(data); // Aquí podrás ver el resultado del reporte
+        console.log(data); // Ver los datos del reporte
+        this.createPieChart(data);
       },
       (error) => {
         console.error('Error al cargar el reporte', error);
       }
     );
   }
+
 
 
 
@@ -82,7 +84,53 @@ export class ExpensesReportComponent implements OnInit{
   }
 
 
+  /**
+   * idea para graficos:
+   *
+   *  T O R T A
+   * - que muestre la distribucion porcentual
+   * de los gastos ordinarios y extraordinarios.
+   *
+   *  B A R R A
+   *  - que muestre los montos de cada periodo selecionado.
+   */
 
+  createPieChart(data: ReportPeriod){
+    const ordinaryData = data.resume.ordinary.map(o =>({
+      category: o.category,
+      percentage: o.data.percentage
+    }));
+    const extraordinaryData = data.resume.extraordinary.map(e => ({
+      category: e.category,
+      percentage: e.data.percentage
+    }));
 
+    // Combine both arrays para un solo gráfico
+    const allData = [...ordinaryData, ...extraordinaryData];
+    const labels = allData.map(item => `${item.category} (${item.percentage.toFixed(2)}%)`);
+    const percentages = allData.map(item => item.percentage);
 
+    // Crear gráfico de torta
+    new Chart('myPieChart', {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Distribución porcentual de gastos',
+          data: percentages,
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        }
+      }
+    });
+  }
 }
