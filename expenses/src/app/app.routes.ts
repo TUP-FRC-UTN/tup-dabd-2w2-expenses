@@ -21,9 +21,11 @@ import {
 import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-period/expenses-period.component";
 
 import {
-  ExpensesPeriodReportComponent} from "./components/expenses-period/expenses-period-report/expenses-period-report.component";
+  ExpensesPeriodReportComponent
+} from "./components/expenses-period/expenses-period-report/expenses-period-report.component";
 
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
+import { ExpensesReportComponent } from './components/expenses-period/expenses-report/expenses-report/expenses-report.component';
 
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
@@ -42,6 +44,7 @@ export const routes: Routes = [
 
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpensesListComponent },
+  {path: 'expenses/report', component: ExpensesReportComponent},
   { path: 'expenses/nuevo', component: ExpensesListChargesComponent },
   { path: 'expenses/modificar/:id', component: ExpensesListChargesComponent },
 
@@ -56,7 +59,6 @@ export const routes: Routes = [
   { path: 'gastos/modificar/:id', component: ExpensesAddBillComponent },
   { path: 'gastos/categorias', component: ExpensesCategoryBillComponent },
   { path: 'gastos/report', component: ExpensesPeriodReportComponent },
-
 
   // Ruta por defecto o de redirección (opcional)
   // { path: '', redirectTo: '', pathMatch: 'full' },
