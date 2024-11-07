@@ -10,7 +10,6 @@ import { BillService } from '../../../services/bill.service';
 import { CategoryService } from '../../../services/category.service';
 import { ProviderService } from '../../../services/provider.service';
 import {
-  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
@@ -18,7 +17,6 @@ import {
 } from '@angular/forms';
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import BillType from '../../../models/billType';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import * as XLSX from 'xlsx';
@@ -37,7 +35,6 @@ import {
   TableColumn,
   TableComponent,
   TableFiltersComponent,
-  TablePagination,
 } from 'ngx-dabd-grupo01';
 import { of } from 'rxjs';
 
@@ -263,7 +260,6 @@ export class ExpensesListBillsComponent implements OnInit {
   periodService = inject(PeriodService);
   providerService = inject(ProviderService);
   modalService = inject(NgbModal);
-  private fb = inject(FormBuilder);
   private router = inject(Router);
   //#endregion
 
@@ -354,7 +350,7 @@ export class ExpensesListBillsComponent implements OnInit {
   // Load all bills with pagination and filters
   private loadBills(): void {
     this.isLoading = true;
-    const filters = this.filters.value;
+    // const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
         this.page,
@@ -419,9 +415,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
-  filterChange($event: Record<string, any>) {
-    throw new Error('Method not implemented.');
-  }
   //#endregion
 
   //#region PAGINATION AND PAGE SIZE
