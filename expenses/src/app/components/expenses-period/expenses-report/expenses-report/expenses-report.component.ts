@@ -32,7 +32,7 @@ import {ReportPeriod} from "../../../../models/report-period/report-period";
   templateUrl: './expenses-report.component.html',
   styleUrl: './expenses-report.component.css'
 })
-export class ExpensesReportComponent {
+export class ExpensesReportComponent implements OnInit{
   private reportPeriodService = inject(ReportPeriodService);
   reportPeriod: Observable<ReportPeriod> | undefined
   idsTosearch: number[] = []
@@ -53,11 +53,23 @@ export class ExpensesReportComponent {
   constructor() {
 
   }
-  
 
 
-  loadReportPeriod(ids: number[]){
-    this.reportPeriod = this.reportPeriodService.getReportPeriods(ids)
+
+  loadReportPeriod(ids: number[]): Observable<ReportPeriod> {
+    return this.reportPeriodService.getReportPeriods(ids);
+  }
+
+
+  ngOnInit(): void {
+    this.loadReportPeriod([1, 2]).subscribe(
+      (data) => {
+        console.log(data); // Aquí podrás ver el resultado del reporte
+      },
+      (error) => {
+        console.error('Error al cargar el reporte', error);
+      }
+    );
   }
 
 
