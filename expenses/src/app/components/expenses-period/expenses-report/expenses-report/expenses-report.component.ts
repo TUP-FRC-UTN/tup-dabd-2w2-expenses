@@ -34,6 +34,9 @@ Chart.register(BarController, PieController, RadarController, LineController, Po
   styleUrl: './expenses-report.component.css'
 })
 export class ExpensesReportComponent {
+
+
+
   public barChartType: ChartType = 'bar';
   public barChartData: ChartData<'bar'> = {
     labels: [],
