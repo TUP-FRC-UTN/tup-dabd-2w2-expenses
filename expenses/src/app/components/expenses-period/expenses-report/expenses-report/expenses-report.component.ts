@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { PeriodSelectComponent} from "../../../selects/period-select/period-select.component";
 import {CommonModule, DatePipe} from '@angular/common';
 
+import {Chart, registerables} from 'chart.js';
+Chart.register(...registerables)
+
+
 import {NgPipesModule} from "ngx-pipes";
 import {
   TableColumn, TableComponent, ConfirmAlertComponent,
@@ -14,6 +18,9 @@ import {
 } from "ngx-dabd-grupo01" ;
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import Expense from "../../../../models/expense";
+import {ReportPeriodService} from "../../../../services/report-period/report-period.service";
+import {Observable} from "rxjs";
+import {ReportPeriod} from "../../../../models/report-period/report-period";
 
 @Component({
   selector: 'app-expenses-report',
@@ -26,6 +33,10 @@ import Expense from "../../../../models/expense";
   styleUrl: './expenses-report.component.css'
 })
 export class ExpensesReportComponent {
+  private reportPeriodService = inject(ReportPeriodService);
+  reportPeriod: Observable<ReportPeriod> | undefined
+  idsTosearch: number[] = []
+
   periods: FilterOption[] = [];
   lotss: FilterOption[] = []
   types: FilterOption[]= []
@@ -36,6 +47,20 @@ export class ExpensesReportComponent {
   ]
   expenses: Expense[] = [];
   searchTerm: string = "";
+
+
+
+  constructor() {
+
+  }
+  
+
+
+  loadReportPeriod(ids: number[]){
+    this.reportPeriod = this.reportPeriodService.getReportPeriods(ids)
+  }
+
+
 
   onFilterTextBoxChanged($event: Event) {
 
