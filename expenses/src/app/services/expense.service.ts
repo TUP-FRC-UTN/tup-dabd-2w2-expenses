@@ -77,4 +77,11 @@ export class ExpenseServiceService {
     }
     return this.http.get<Expense[]>(this.apiUrl + 'all', { params })
   }
+
+  getExpensesByLot() : Observable<Expense[]> {
+    return this.http.get<Expense[]>("http://localhost:8088/report/expense")
+  }
+  getLotPercentage() : Observable<number[]> {
+    return this.http.get<number[]>(`http://localhost:8088/report/lot`)
+  }
 }
