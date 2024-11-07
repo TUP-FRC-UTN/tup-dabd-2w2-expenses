@@ -95,7 +95,7 @@ addCharge() {
   chargesFiltered : Charge[] = [];
   chargesOriginal: Charge[] = [];
 
-  
+
 
   //#endregion
 
@@ -124,8 +124,9 @@ addCharge() {
   filter$ = this.filterSubject.asObservable();
   itemsList!: Charges[];
   filterConfig: Filter[] = [];
+
   filterChange(event: Record<string, any>) {
-    
+
     // Actualizar las variables de filtro
     this.selectedPeriodId = event['period'] || null;
     this.selectedLotId = event['lot'] || null;
@@ -194,7 +195,7 @@ addCharge() {
   .build()
   }
 
-  
+
 
   //#endregion
 
@@ -228,7 +229,7 @@ addCharge() {
             label: (periodo.month +'/'+ periodo.year),
           });
         });
-        
+
         this.lots = lots;
         lots.forEach(lot => {
           this.lotsFilters.push({
@@ -269,7 +270,7 @@ addCharge() {
     });
   }
 
-  getChargeType(value: string): ChargeType | undefined { 
+  getChargeType(value: string): ChargeType | undefined {
     const entry = Object.entries(ChargeType).find(([_, v]) => v === value);
     return entry ? ChargeType[entry[0] as keyof typeof ChargeType] : undefined;
 }
@@ -279,7 +280,7 @@ addCharge() {
     const category = this.selectedCategoryId || undefined;
     const lot = this.selectedLotId || undefined;
     const type = this.getChargeType(this.TypeAmount) || undefined;
-    
+
     console.log('El tipo es ' + type)
     this.chargeService
       .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
@@ -291,7 +292,7 @@ addCharge() {
             ...charges,
             plotNumber: this.getPlotNumber(charge.lotId), //
           };
-  
+
         });
         this.loadChargesCompleted();
         this.totalPages = response.totalPages;
@@ -409,7 +410,7 @@ addCharge() {
       size: 'lg' // 'lg' para grande o 'xl' para extra grande
     });
     modalRef.componentInstance.charge = charge;
-    
+
   }
 
   openDeleteModal(chargeId: number) {
@@ -497,7 +498,7 @@ addCharge() {
 
   getPlotNumber(lotId: number) {
     const lot = this.lots.find((lot) => lot.id === lotId);
-    return lot ? lot.plot_number : undefined;     
+    return lot ? lot.plot_number : undefined;
   }
 
   isClosed(period: PeriodCharge): boolean {
@@ -528,9 +529,9 @@ addCharge() {
 
   //#endregion
 
-  
 
-  
+
+
   onFilterTextBoxChanged(event: Event){
     // const target = event.target as HTMLInputElement;
 
