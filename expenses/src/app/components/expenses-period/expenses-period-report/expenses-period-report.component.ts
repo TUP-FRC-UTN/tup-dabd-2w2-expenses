@@ -259,19 +259,41 @@ export class ExpensesPeriodReportComponent implements OnInit {
     const labels = periods[0].ordinary.map((item) => item.category);
 
     // Crear los datos para las barras "Ordinarias"
-    const ordinaryDatasets = periods.map((periodData, index) => {
+    const ordinaryDatasets = periods.map((periodData, index) => { 
+      let data:number[] = []
+      if(this.typeFilter=="Monto"){
+          data = periodData.ordinary.map((item) => item.data.totalAmount)
+      }
+      if(this.typeFilter=="Porcentaje"){
+        data = periodData.ordinary.map((item) => item.data.percentage)
+      }
+      if(this.typeFilter=="Promedio"){
+        data = periodData.ordinary.map((item) => item.data.average)
+      }
+
       return {
+        Title: 'Ordinarias',
         label: `${periodData.period.month}/${periodData.period.year} `,
-        data: periodData.ordinary.map((item) => item.data.totalAmount),
+        data: data
       };
     });
 
     // Crear los datos para las barras "Extraordinarias"
     const extraordinaryDatasets = periods.map((periodData, index) => {
+        let data:number[]=[]
+      if(this.typeFilter=="Monto"){
+          data = periodData.ordinary.map((item) => item.data.totalAmount)
+      }
+      if(this.typeFilter=="Porcentaje"){
+        data = periodData.ordinary.map((item) => item.data.percentage)
+      }
+      if(this.typeFilter=="Promedio"){
+        data = periodData.ordinary.map((item) => item.data.average)
+      }
       return {
         Title: 'Extraordinarias',
         label: `${periodData.period.month}/${periodData.period.year} `,
-        data: periodData.extraordinary.map((item) => item.data.totalAmount),
+        data: data
       };
     });
 
@@ -289,6 +311,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
     const ordinaryChartOptions: ChartOptions = {
       responsive: true,
+      indexAxis: 'y',  // Cambia la orientación a horizontal
       plugins: {
         title: {
           display: true,
@@ -310,6 +333,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     // Opciones del gráfico "Extraordinarias"
     const extraordinaryChartOptions: ChartOptions = {
       responsive: true,
+      indexAxis: 'y',  // Cambia la orientación a horizontal
       plugins: {
         title: {
           display: true,
@@ -330,34 +354,45 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
     try {
       // Crear un nuevo canvas para cada gráfico
-      const ordinaryCanvas = document.createElement('canvas');
-      ordinaryCanvas.id = `${chartId}-ordinary`;
-      document.getElementById(element)?.appendChild(ordinaryCanvas);
+      const parentElement = document.getElementById(element);
 
-      const extraordinaryCanvas = document.createElement('canvas');
-      extraordinaryCanvas.id = `${chartId}-extraordinary`;
-      document.getElementById(element)?.appendChild(extraordinaryCanvas);
-
-      // Crear el gráfico de barras "Ordinarias"
-      const ordinaryCtx = ordinaryCanvas.getContext('2d');
-      if (ordinaryCtx) {
-        const ordinaryChart = new Chart(ordinaryCtx, {
-          type: 'bar',
-          data: ordinaryChartData,
-          options: ordinaryChartOptions,
-        });
-        this.chartInstances.push(ordinaryChart);
-      }
-
-      // Crear el gráfico de barras "Extraordinarias"
-      const extraordinaryCtx = extraordinaryCanvas.getContext('2d');
-      if (extraordinaryCtx) {
-        const extraordinaryChart = new Chart(extraordinaryCtx, {
-          type: 'bar',
-          data: extraordinaryChartData,
-          options: extraordinaryChartOptions,
-        });
-        this.chartInstances.push(extraordinaryChart);
+      // Verificar que el contenedor existe
+      if (parentElement) {
+        // Eliminar todos los hijos del contenedor
+        while (parentElement.firstChild) {
+          parentElement.removeChild(parentElement.firstChild);
+        }
+      
+        // Crear un nuevo canvas para cada gráfico
+        const ordinaryCanvas = document.createElement('canvas');
+        ordinaryCanvas.id = `${chartId}-ordinary`;
+        parentElement.appendChild(ordinaryCanvas);
+      
+        const extraordinaryCanvas = document.createElement('canvas');
+        extraordinaryCanvas.id = `${chartId}-extraordinary`;
+        parentElement.appendChild(extraordinaryCanvas);
+      
+        // Crear el gráfico de barras "Ordinarias"
+        const ordinaryCtx = ordinaryCanvas.getContext('2d');
+        if (ordinaryCtx) {
+          const ordinaryChart = new Chart(ordinaryCtx, {
+            type: 'bar',
+            data: ordinaryChartData,
+            options: ordinaryChartOptions,
+          });
+          this.chartInstances.push(ordinaryChart);
+        }
+      
+        // Crear el gráfico de barras "Extraordinarias"
+        const extraordinaryCtx = extraordinaryCanvas.getContext('2d');
+        if (extraordinaryCtx) {
+          const extraordinaryChart = new Chart(extraordinaryCtx, {
+            type: 'bar',
+            data: extraordinaryChartData,
+            options: extraordinaryChartOptions,
+          });
+          this.chartInstances.push(extraordinaryChart);
+        }
       }
 
       return null;
