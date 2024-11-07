@@ -108,10 +108,10 @@ export class BillService {
     if (provider) {
       params = params.set('provider', provider);
     }
-    if (status) {
+    if (status && status !== 'undefined') {
       params = params.set('status', status);
     }
-    console.log(`${this.url}/bills`, { params });
+    console.log(`${this.url}bills?${params.toString()}` );
 
     let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
     result.subscribe({
