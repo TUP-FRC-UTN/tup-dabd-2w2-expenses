@@ -18,7 +18,7 @@ export interface Page<T> {
 export class ExpenseServiceService {
 
 
-  
+
 
   constructor() { }
   private readonly http = inject(HttpClient)
