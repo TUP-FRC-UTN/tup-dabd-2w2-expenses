@@ -37,6 +37,10 @@ export class ExpensesReportComponent implements OnInit{
   reportPeriod: Observable<ReportPeriod> | undefined
   idsTosearch: number[] = []
 
+  
+  ordinaryData: { category: string, percentage: number }[] = [];
+  extraordinaryData: { category: string, percentage: number }[] = [];
+
   periods: FilterOption[] = [];
   lotss: FilterOption[] = []
   types: FilterOption[] = []
@@ -151,31 +155,31 @@ export class ExpensesReportComponent implements OnInit{
     );
     this.averageAmount = this.totalAmount / this.expenses.length;
     // Combine both arrays para un solo gráfico
-    // const allData = [...ordinaryData, ...extraordinaryData];
-    // const labels = allData.map(item => `${item.category} (${item.percentage.toFixed(2)}%)`);
-    // const percentages = allData.map(item => item.percentage);
+    const allData = [...this.ordinaryData, ...this.extraordinaryData];
+    const labels = allData.map(item => `${item.category} (${item.percentage.toFixed(2)}%)`);
+    const percentages = allData.map(item => item.percentage);
 
     // Crear gráfico de torta
-    // new Chart('myPieChart', {
-    //   type: 'pie',
-    //   data: {
-    //     labels: labels,
-    //     datasets: [{
-    //       label: 'Distribución porcentual de gastos',
-    //       data: percentages,
-    //       backgroundColor: [
-    //         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-    //       ]
-    //     }]
-    //   },
-    //   options: {
-    //     responsive: true,
-    //     plugins: {
-    //       legend: {
-    //         position: 'top'
-    //       }
-    //     }
-    //   }
-    // });
+    new Chart('myPieChart', {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Distribución porcentual de gastos',
+          data: percentages,
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        }
+      }
+    });
   }
 }
