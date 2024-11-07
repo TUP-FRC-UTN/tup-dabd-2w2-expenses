@@ -19,8 +19,10 @@ import {
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import Expense from "../../../../models/expense";
 import {ReportPeriodService} from "../../../../services/report-period/report-period.service";
-import {Observable} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {ReportPeriod} from "../../../../models/report-period/report-period";
+import Period from "../../../../models/period";
+import {PeriodService} from "../../../../services/period.service";
 
 @Component({
   selector: 'app-expenses-report',
@@ -34,24 +36,35 @@ import {ReportPeriod} from "../../../../models/report-period/report-period";
 })
 export class ExpensesReportComponent implements OnInit{
   private reportPeriodService = inject(ReportPeriodService);
+  private periodService = inject(PeriodService);
   reportPeriod: Observable<ReportPeriod> | undefined
-  idsTosearch: number[] = []
+  idsTosearch: number[]= []
 
+  periodos: Period[] = []
+  periodosFilters : FilterOption[]= [];
   periods: FilterOption[] = [];
-  lotss: FilterOption[] = []
-  types: FilterOption[]= []
-  filterConfig: Filter[] = [
-    new SelectFilter('Lote','lot','Seleccione un lote',this.lotss),
-    new SelectFilter('Tipo de lote','type','Seleccione un tipo de lote',this.types),
-    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
-  ]
+
+
+
+
+  filters: Filter[] = [];
+  filterConfigPeriodReport: Filter[] = [];
+
+
   expenses: Expense[] = [];
   searchTerm: string = "";
 
 
 
-  constructor() {
+  constructor() {}
 
+  createFilter() {
+    this.filterConfigPeriodReport = new FilterConfigBuilder()
+      .checkboxFilter('Periodo', 'period', this.periodos.map(periodo => ({
+        value: periodo.id.toString(),
+        label: `${periodo.month}/${periodo.year}`
+      })))
+      .build();
   }
 
 
@@ -60,10 +73,29 @@ export class ExpensesReportComponent implements OnInit{
     return this.reportPeriodService.getReportPeriods(ids);
   }
 
+  loadSelect() {
+    forkJoin({
+      periodos: this.periodService.get()
+    }).subscribe({
+      next: ({ periodos }) => {
+        this.periodos = periodos;
+        this.periodosFilters = periodos.map(periodo => ({
+          value: periodo.id.toString(),
+          label: `${periodo.month}/${periodo.year}`
+        }));
+      }
+    });
+  }
 
+  /**
+   * esto está "mockeado" para devolver los del periodo de id 1
+   */
   ngOnInit(): void {
-    this.loadReportPeriod([1, 2]).subscribe(
+    this.loadSelect();
+    //aqui
+    this.loadReportPeriod([1]).subscribe(
       (data) => {
+        this.createFilter();
         console.log(data); // Ver los datos del reporte
         this.createPieChart(data);
       },
@@ -75,13 +107,16 @@ export class ExpensesReportComponent implements OnInit{
 
 
 
-
   onFilterTextBoxChanged($event: Event) {
 
   }
   filterChange($event: Record<string, any>) {
+    // Aquí puedes obtener los IDs seleccionados
+    this.idsTosearch = $event['period'] || []; // 'period' es el nombre del filtro que hemos usado en el checkbox
+    console.log(this.idsTosearch);
 
   }
+
 
 
   /**
