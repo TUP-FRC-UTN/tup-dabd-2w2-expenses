@@ -42,6 +42,7 @@ export interface CategoryCharge {
     categoryChargeId: number;
     description: string;
     name: string;
+    active: boolean;
 }
 
 export interface PeriodCharge {

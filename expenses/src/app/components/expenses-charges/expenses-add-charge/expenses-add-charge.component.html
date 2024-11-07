@@ -105,30 +105,30 @@
 
     <div class="col-md-6">
       <div class="d-flex align-items-center">
-        <label for="categoryId" class="col-sm-2 col-form-label">Categoría<span class="text-danger">*</span></label>
+        <label for="categoryChargeId" class="col-sm-2 col-form-label">Categoría<span class="text-danger">*</span></label>
         <div class="col-sm-10">
           <div class="input-group">
             <ng-select
-              id="categoryId"
+              id="categoryChargeId"
               [items]="categoriaCargos"
               bindLabel="name"
               bindValue="categoryChargeId"
-              formControlName="categoryId"
-              [placeholder]="chargeForm.get('categoryId')?.value ? '' : 'Seleccione una categoría'"
+              formControlName="categoryChargeId"
+              [placeholder]="chargeForm.get('categoryChargeId')?.value ? '' : 'Seleccione una categoría'"
               [appendTo]="'body'"
               [ngClass]="{
-                'is-invalid': chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.hasError('required'),
-                'is-valid': chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.valid
+                'is-invalid': chargeForm.get('categoryChargeId')?.touched && chargeForm.get('categoryChargeId')?.hasError('required'),
+                'is-valid': chargeForm.get('categoryChargeId')?.touched && chargeForm.get('categoryChargeId')?.valid
               }"
               [searchable]="true"
               notFoundText="No se encontraron categorías"
               class="form-select"
             >
             </ng-select>
-            <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button">
+            <button class="btn form-control-sm border rounded-end-3 btn-outline-secondary" type="button" (click)="openNewCategoryModal()">
               <i class="bi bi-plus-lg"></i>
             </button>
-            @if(chargeForm.get('categoryId')?.touched && chargeForm.get('categoryId')?.hasError('required')){
+            @if(chargeForm.get('categoryChargeId')?.touched && chargeForm.get('categoryChargeId')?.hasError('required')){
               <div class="invalid-feedback">
                 La categoría es obligatoria.
               </div>
