@@ -30,7 +30,9 @@ export class AppComponent {
           label: 'Gastos',
           subMenu: [
             { label: 'Lista', routerLink: '/gastos' },
-            { label: 'Categorias', routerLink: '/gastos/categorias' }
+            { label: 'Categorias', routerLink: '/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: '/gastos/report' },
+
           ],
         },
         {

@@ -8,10 +8,10 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { ExpenseServiceService } from '../../../../services/expense.service';
+import { ExpenseServiceService } from '../../../services/expense.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PeriodSelectComponent } from '../../../selects/period-select/period-select.component';
+import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   ChartConfiguration,
@@ -37,16 +37,16 @@ import {
   SelectFilter,
 } from 'ngx-dabd-grupo01';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import Expense from '../../../../models/expense';
+import Expense from '../../../models/expense';
 import { BaseChartDirective } from 'ng2-charts';
-import { ReportPeriodService } from '../../../../services/report-period/report-period.service';
+import { ReportPeriodService } from '../../../services/report-period/report-period.service';
 import { forkJoin, Observable } from 'rxjs';
-import { ReportPeriod } from '../../../../models/report-period/report-period';
-import Period from '../../../../models/period';
-import { PeriodService } from '../../../../services/period.service';
-import { CategoryData } from '../../../../models/report-period/category-data';
-import { Periods } from '../../../../models/charge';
-import { Resume } from '../../../../models/report-period/resume';
+import { ReportPeriod } from '../../../models/report-period/report-period';
+import Period from '../../../models/period';
+import { PeriodService } from '../../../services/period.service';
+import { CategoryData } from '../../../models/report-period/category-data';
+import { Periods } from '../../../models/charge';
+import { Resume } from '../../../models/report-period/resume';
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -62,10 +62,10 @@ import { Resume } from '../../../../models/report-period/resume';
     BaseChartDirective,
   ],
   providers: [DatePipe, NgbActiveModal],
-  templateUrl: './expenses-report.component.html',
-  styleUrl: './expenses-report.component.css',
+  templateUrl: './expenses-period-report.component.html',
+  styleUrl: './expenses-period-report.component.css',
 })
-export class ExpensesReportComponent implements OnInit {
+export class ExpensesPeriodReportComponent implements OnInit {
   private reportPeriodService = inject(ReportPeriodService);
   private periodService = inject(PeriodService);
 
@@ -222,7 +222,7 @@ export class ExpensesReportComponent implements OnInit {
 
     try {
       let canvas
-       const parentElement = document.getElementById(element); // Obtén el elemento padre
+            const parentElement = document.getElementById(element); // Obtén el elemento padre
 
       if (parentElement) {
         // Elimina todos los hijos del contenedor

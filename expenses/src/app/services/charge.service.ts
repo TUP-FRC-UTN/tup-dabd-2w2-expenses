@@ -117,5 +117,28 @@ export class ChargeService {
     return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/exceptFines`);
   }
 
+  addCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+    return this.http.post<CategoryCharge>(this.categoryChargeUrl, categoryCharge, { headers });
+  }
+
+  updateCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+    return this.http.put<CategoryCharge>(`${this.categoryChargeUrl}/${categoryCharge.categoryChargeId}`, categoryCharge, { headers });
+  }
+
+  deleteCategoryCharge(category: number): Observable<Boolean> {
+    return this.http.delete<Boolean>(this.apiUrl + '/' + category);
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.getCategoryCharges().pipe(
+      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase() ))
+    );
+  }
 
 }

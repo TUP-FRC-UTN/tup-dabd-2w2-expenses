@@ -333,11 +333,11 @@ addCharge() {
         autoTable(doc, {
           startY: 30,
           head: [
-            ['Fecha', 'Periodo', 'Lote', 'Categoría', 'Descripción', 'Monto'],
+            [ 'Periodo','Fecha', 'Lote', 'Categoría', 'Descripción', 'Monto'],
           ],
           body: charges.content.map((charge) => [
-            moment(charge.date).format('DD/MM/YYYY'),
             `${charge.period.month}/${charge.period.year}`,
+            moment(charge.date).format('DD/MM/YYYY'),
             this.getPlotNumber(charge.lotId) || 'N/A',
             charge.categoryCharge.name,
             charge.description,
@@ -364,8 +364,8 @@ addCharge() {
       )
       .subscribe((charges) => {
         const data = charges.content.map((charge) => ({
-          'Fecha de Carga': moment(charge.date).format('DD/MM/YYYY'),
           Periodo: `${charge.period.month}/${charge.period.year}`,
+          'Fecha de Carga': moment(charge.date).format('DD/MM/YYYY'),
           'Número de lote': this.getPlotNumber(charge.lotId),
           Categoría: charge.categoryCharge.name,
           Descripción: charge.description,

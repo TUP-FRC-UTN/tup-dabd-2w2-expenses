@@ -42,16 +42,18 @@
     <table class="table table-striped fixed-table" style="border: 1px solid rgba(0, 0, 0, 0.150); border-collapse: collapse;">
       <thead>
         <tr>
-          <th scope="col" style="text-align:center;" >Fecha</th>
-          <th scope="col" style="text-align: center;">Número de lote</th>
-          <th scope="col" style="text-align: center;">Categoría</th>
-          <th scope="col" style="text-align: center;">Descripción</th>
-          <th scope="col" style="text-align: center;">Monto</th>
-          <th scope="col" style="text-align: center;">Acciones</th>
+          <th scope="col" style="text-align:left;" >Periodo</th>
+          <th scope="col" style="text-align:left;" >Fecha</th>
+          <th scope="col" style="text-align: left;">Número de lote</th>
+          <th scope="col" style="text-align: left;">Categoría</th>
+          <th scope="col" style="text-align: left;">Descripción</th>
+          <th scope="col" style="text-align: right;">Monto</th>
+          <th scope="col" style="text-align: left;">Acciones</th>
         </tr>
       </thead>
       <tbody>
         @for (charge of chargesCompleted | filterBy: ['plotNumber', 'amount','description','categoryCharge.name','amountSign','date']: searchTerm; track $index) {<tr>
+          <td style="text-align: center;" >{{charge.period.month }}/{{charge.period.year}}</td>
           <td style="text-align: center;" >{{charge.date | date:'MMM d, yyyy'}}</td>
           <td style="text-align: center;">{{charge.plotNumber}}</td>
           <td>{{charge.categoryCharge.name}}</td>
@@ -191,6 +193,7 @@
 
 <ng-template #modalTemplate let-modal >
   <app-expenses-modal
+
     [title]="'Eliminar Cargo'"
     [paragraph]="'¿Desea eliminar el cargo registrado al lote?'"
     (onAccept)="deleteCharge2()"
