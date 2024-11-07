@@ -7,6 +7,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 
 import { NgPipesModule } from "ngx-pipes";
+import {Chart, registerables} from 'chart.js';
+Chart.register(...registerables)
 import {
   TableColumn, TableComponent, ConfirmAlertComponent,
 
@@ -16,6 +18,9 @@ import {
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import Expense from "../../../../models/expense";
 import { BaseChartDirective } from 'ng2-charts';
+import {ReportPeriodService} from "../../../../services/report-period/report-period.service";
+import {Observable} from "rxjs";
+import {ReportPeriod} from "../../../../models/report-period/report-period";
 
 @Component({
   selector: 'app-expenses-report',
@@ -27,7 +32,11 @@ import { BaseChartDirective } from 'ng2-charts';
   templateUrl: './expenses-report.component.html',
   styleUrl: './expenses-report.component.css'
 })
-export class ExpensesReportComponent {
+export class ExpensesReportComponent implements OnInit{
+  private reportPeriodService = inject(ReportPeriodService);
+  reportPeriod: Observable<ReportPeriod> | undefined
+  idsTosearch: number[] = []
+
   periods: FilterOption[] = [];
   lotss: FilterOption[] = []
   types: FilterOption[] = []
@@ -38,6 +47,34 @@ export class ExpensesReportComponent {
   ]
   expenses: Expense[] = [];
   searchTerm: string = "";
+
+
+
+  constructor() {
+
+  }
+
+
+
+  loadReportPeriod(ids: number[]): Observable<ReportPeriod> {
+    return this.reportPeriodService.getReportPeriods(ids);
+  }
+
+
+  ngOnInit(): void {
+    this.loadReportPeriod([1, 2]).subscribe(
+      (data) => {
+        console.log(data); // Ver los datos del reporte
+        this.createPieChart(data);
+      },
+      (error) => {
+        console.error('Error al cargar el reporte', error);
+      }
+    );
+  }
+
+
+
 
   onFilterTextBoxChanged($event: Event) {
 
@@ -67,7 +104,26 @@ export class ExpensesReportComponent {
       backgroundColor: ['#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#dc3545']
     }]
   };
+  /**
+   * idea para graficos:
+   *
+   *  T O R T A
+   * - que muestre la distribucion porcentual
+   * de los gastos ordinarios y extraordinarios.
+   *
+   *  B A R R A
+   *  - que muestre los montos de cada periodo selecionado.
+   */
 
+  createPieChart(data: ReportPeriod){
+    const ordinaryData = data.resume.ordinary.map(o =>({
+      category: o.category,
+      percentage: o.data.percentage
+    }));
+    const extraordinaryData = data.resume.extraordinary.map(e => ({
+      category: e.category,
+      percentage: e.data.percentage
+    }));}
 
   updateCharts() {
     // Procesar datos para gráfico de barras (por tipo de lote)
@@ -94,5 +150,32 @@ export class ExpensesReportComponent {
       sum + expense.totalAmount, 0
     );
     this.averageAmount = this.totalAmount / this.expenses.length;
+    // Combine both arrays para un solo gráfico
+    // const allData = [...ordinaryData, ...extraordinaryData];
+    // const labels = allData.map(item => `${item.category} (${item.percentage.toFixed(2)}%)`);
+    // const percentages = allData.map(item => item.percentage);
+
+    // Crear gráfico de torta
+    // new Chart('myPieChart', {
+    //   type: 'pie',
+    //   data: {
+    //     labels: labels,
+    //     datasets: [{
+    //       label: 'Distribución porcentual de gastos',
+    //       data: percentages,
+    //       backgroundColor: [
+    //         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+    //       ]
+    //     }]
+    //   },
+    //   options: {
+    //     responsive: true,
+    //     plugins: {
+    //       legend: {
+    //         position: 'top'
+    //       }
+    //     }
+    //   }
+    // });
   }
 }
