@@ -162,30 +162,91 @@ export class ExpensesPeriodReportComponent implements OnInit {
     extraordinary: CategoryData[],
     element: string
   ): any {
-    const labels = ordinary.map((item) => item.category); // Obtener las categorías
 
-    // Obtener los valores de `totalAmount` de los datos ordinarios y extraordinarios
+    let reportMap = new Map<string, Report>();
+
+    ordinary.map((ord) => {
+      let category = ord.category;
+      let amount = 0;
+      if (this.typeFilter == 'Monto'){
+        amount=ord.data.totalAmount
+      }
+      if (this.typeFilter == 'Porcentaje'){
+        amount=ord.data.percentage
+      }
+      if (this.typeFilter == 'Promedio'){
+        amount=ord.data.average
+      }
+      if (reportMap.has(category)) {
+        let existingReport = reportMap.get(category);
+        if (existingReport) {
+          existingReport.ordinary = amount;
+        }
+      } else {
+        reportMap.set(category, {
+          label: category,
+          ordinary: amount, 
+          extraordinary: 0, 
+        });
+      }
+    });
+
+    extraordinary.map((extr) => {
+      let category = extr.category;
+      let amount = 0
+      if (this.typeFilter == 'Monto'){
+        amount=extr.data.totalAmount
+      }
+      if (this.typeFilter == 'Porcentaje'){
+        amount=extr.data.percentage
+      }
+      if (this.typeFilter == 'Promedio'){
+        amount=extr.data.average
+      }
+      if (reportMap.has(category)) {
+        let existingReport = reportMap.get(category);
+        if (existingReport) {
+          existingReport.extraordinary = amount;
+        }
+      } else {
+        reportMap.set(category, {
+          label: category,
+          ordinary: 0, 
+          extraordinary: amount, 
+        });
+      }
+    });
+
+    
+    let labels:string[] = []
     let ordinaryValues: number[] = [];
     let extraordinaryValues: number[] = [];
-    if (this.typeFilter == 'Monto') {
-      ordinaryValues = ordinary.map((item) => item.data.totalAmount);
-      extraordinaryValues = extraordinary.map((item) => item.data.totalAmount);
-    }
-    if (this.typeFilter == 'Porcentaje') {
-      ordinaryValues = ordinary.map((item) => item.data.percentage);
-      extraordinaryValues = extraordinary.map((item) => item.data.percentage);
-    }
-    if (this.typeFilter == 'Promedio') {
-      ordinaryValues = ordinary.map((item) => item.data.average);
-      extraordinaryValues = extraordinary.map((item) => item.data.average);
-    }
-    // Datos del gráfico
+    reportMap.forEach((value,key)=>{
+      labels=[...labels,key]
+      ordinaryValues=[...ordinaryValues, value.ordinary ]
+      extraordinaryValues=[...extraordinaryValues, value.extraordinary] 
+    })
+    console.log(reportMap)
+
+    // if (this.typeFilter == 'Monto') {
+    //   ordinaryValues = ordinary.map((item) => item.data.totalAmount);
+    //   extraordinaryValues = extraordinary.map((item) => item.data.totalAmount);
+    // }
+    // if (this.typeFilter == 'Porcentaje') {
+    //   ordinaryValues = ordinary.map((item) => item.data.percentage);
+    //   extraordinaryValues = extraordinary.map((item) => item.data.percentage);
+    // }
+    // if (this.typeFilter == 'Promedio') {
+    //   ordinaryValues = ordinary.map((item) => item.data.average);
+    //   extraordinaryValues = extraordinary.map((item) => item.data.average);
+    // }
+
     const chartData: ChartData<'radar'> = {
       labels: labels,
       datasets: [
         {
           label: 'Ordinarias ', // Etiqueta para las datos ordinarios
-          data: ordinaryValues ,
+          data: ordinaryValues,
           borderColor: '#33FF57', // Color de las líneas para los datos ordinarios
           backgroundColor: 'rgba(51, 255, 87, 0.2)', // Color de fondo para las áreas ordinarias
           borderWidth: 2,
@@ -194,7 +255,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         },
         {
           label: 'Extraordinarias ', // Etiqueta para los datos extraordinarios
-          data: extraordinaryValues ,
+          data: extraordinaryValues,
           borderColor: '#FF5733', // Color de las líneas para los datos extraordinarios
           backgroundColor: 'rgba(255, 87, 51, 0.2)', // Color de fondo para las áreas extraordinarias
           borderWidth: 2,
@@ -221,17 +282,17 @@ export class ExpensesPeriodReportComponent implements OnInit {
     };
 
     try {
-      let canvas
-            const parentElement = document.getElementById(element); // Obtén el elemento padre
+      let canvas;
+      const parentElement = document.getElementById(element); // Obtén el elemento padre
 
       if (parentElement) {
         // Elimina todos los hijos del contenedor
         while (parentElement.firstChild) {
           parentElement.removeChild(parentElement.firstChild);
         }
-      
+
         // Crea el canvas y añádelo
-         canvas= document.createElement('canvas');
+        canvas = document.createElement('canvas');
         canvas.id = chartId; // Asigna un ID único para cada gráfico
         parentElement.appendChild(canvas); // Añade el canvas al contenedor
       }
@@ -259,41 +320,41 @@ export class ExpensesPeriodReportComponent implements OnInit {
     const labels = periods[0].ordinary.map((item) => item.category);
 
     // Crear los datos para las barras "Ordinarias"
-    const ordinaryDatasets = periods.map((periodData, index) => { 
-      let data:number[] = []
-      if(this.typeFilter=="Monto"){
-          data = periodData.ordinary.map((item) => item.data.totalAmount)
+    const ordinaryDatasets = periods.map((periodData, index) => {
+      let data: number[] = [];
+      if (this.typeFilter == 'Monto') {
+        data = periodData.ordinary.map((item) => item.data.totalAmount);
       }
-      if(this.typeFilter=="Porcentaje"){
-        data = periodData.ordinary.map((item) => item.data.percentage)
+      if (this.typeFilter == 'Porcentaje') {
+        data = periodData.ordinary.map((item) => item.data.percentage);
       }
-      if(this.typeFilter=="Promedio"){
-        data = periodData.ordinary.map((item) => item.data.average)
+      if (this.typeFilter == 'Promedio') {
+        data = periodData.ordinary.map((item) => item.data.average);
       }
 
       return {
         Title: 'Ordinarias',
         label: `${periodData.period.month}/${periodData.period.year} `,
-        data: data
+        data: data,
       };
     });
 
     // Crear los datos para las barras "Extraordinarias"
     const extraordinaryDatasets = periods.map((periodData, index) => {
-        let data:number[]=[]
-      if(this.typeFilter=="Monto"){
-          data = periodData.ordinary.map((item) => item.data.totalAmount)
+      let data: number[] = [];
+      if (this.typeFilter == 'Monto') {
+        data = periodData.ordinary.map((item) => item.data.totalAmount);
       }
-      if(this.typeFilter=="Porcentaje"){
-        data = periodData.ordinary.map((item) => item.data.percentage)
+      if (this.typeFilter == 'Porcentaje') {
+        data = periodData.ordinary.map((item) => item.data.percentage);
       }
-      if(this.typeFilter=="Promedio"){
-        data = periodData.ordinary.map((item) => item.data.average)
+      if (this.typeFilter == 'Promedio') {
+        data = periodData.ordinary.map((item) => item.data.average);
       }
       return {
         Title: 'Extraordinarias',
         label: `${periodData.period.month}/${periodData.period.year} `,
-        data: data
+        data: data,
       };
     });
 
@@ -311,7 +372,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
     const ordinaryChartOptions: ChartOptions = {
       responsive: true,
-      indexAxis: 'y',  // Cambia la orientación a horizontal
+      indexAxis: 'y', // Cambia la orientación a horizontal
       plugins: {
         title: {
           display: true,
@@ -333,7 +394,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     // Opciones del gráfico "Extraordinarias"
     const extraordinaryChartOptions: ChartOptions = {
       responsive: true,
-      indexAxis: 'y',  // Cambia la orientación a horizontal
+      indexAxis: 'y', // Cambia la orientación a horizontal
       plugins: {
         title: {
           display: true,
@@ -362,16 +423,16 @@ export class ExpensesPeriodReportComponent implements OnInit {
         while (parentElement.firstChild) {
           parentElement.removeChild(parentElement.firstChild);
         }
-      
+
         // Crear un nuevo canvas para cada gráfico
         const ordinaryCanvas = document.createElement('canvas');
         ordinaryCanvas.id = `${chartId}-ordinary`;
         parentElement.appendChild(ordinaryCanvas);
-      
+
         const extraordinaryCanvas = document.createElement('canvas');
         extraordinaryCanvas.id = `${chartId}-extraordinary`;
         parentElement.appendChild(extraordinaryCanvas);
-      
+
         // Crear el gráfico de barras "Ordinarias"
         const ordinaryCtx = ordinaryCanvas.getContext('2d');
         if (ordinaryCtx) {
@@ -382,7 +443,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
           });
           this.chartInstances.push(ordinaryChart);
         }
-      
+
         // Crear el gráfico de barras "Extraordinarias"
         const extraordinaryCtx = extraordinaryCanvas.getContext('2d');
         if (extraordinaryCtx) {
@@ -542,4 +603,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
   //     },
   //   });
   // }
+}
+interface Report {
+  label: string;
+  ordinary: number;
+  extraordinary: number;
 }
