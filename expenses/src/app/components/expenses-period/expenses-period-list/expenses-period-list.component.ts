@@ -225,9 +225,32 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.loadPaged(this.indexActive);
   };
 
-  newPeriod(id: number | null ) {
-    const modalRef = this.modalService.open(DatePeriodModalComponent)
-    modalRef.componentInstance.id = id;
+  newPeriod(id: number | null, date: string | null) {
+    if (id == null) {
+      this.periodService.getFuture().subscribe(
+        next => {
+          const modalRef = this.modalService.open(DatePeriodModalComponent)
+          modalRef.componentInstance.id = id;
+          modalRef.componentInstance.nextDate = next.period;
+        },
+        error => {
+          if (error) {
+            console.log(error);
+
+            this.toastService.sendError(error.error.message);
+          } else {
+            this.toastService.sendError('Ocurrio un error');
+          }
+        }
+      )
+    } else {
+      if(date !== null) {
+        const modalRef = this.modalService.open(DatePeriodModalComponent)
+        modalRef.componentInstance.id = id;
+        modalRef.componentInstance.nextDate = date;
+      }
+    }
+
   }
   openErrorModal(err: any) {
     const modalRef = this.modalService.open(NgModalComponent);

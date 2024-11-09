@@ -1,33 +1,35 @@
 import { NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PeriodService } from '../../../../services/period.service';
-import { Observable, of } from 'rxjs';
+import { ToastService } from 'ngx-dabd-grupo01';
 
-function periodValidator(): ValidatorFn {
-  return (control: AbstractControl) => {
+function periodValidator(nextDate: string): ValidatorFn {
+  return (control) => {
     const fecha = new Date(control.value);
     if (isNaN(fecha.getTime())) {
       return { fechaInvalida: true };
     }
 
-    const año = fecha.getFullYear();
-    const mes = fecha.getMonth();
-    const dia = fecha.getDate();
+    if (!nextDate || !/^\d{2}\/\d{4}$/.test(nextDate)) {
+      return { nextDateInvalido: true };
+    }
 
-    const inicioMes = new Date(año, mes, 15);
+    const [mesString, añoString] = nextDate.split('/');
+    const añoNext = parseInt(añoString, 10);
+    const mesNext = parseInt(mesString, 10) - 1;
 
-    const finMes = new Date(año, mes + 1, 0);
+    const inicioNextDate = new Date(añoNext, mesNext, 15);
+    const finNextDate = new Date(añoNext, mesNext + 1, 0);
 
-    if (fecha >= inicioMes && fecha <= finMes) {
+    if (fecha >= inicioNextDate && fecha <= finNextDate) {
       return null;
     }
 
     return { periodValidatorError: true };
   };
 }
-
 
 @Component({
   selector: 'app-date-period-modal',
@@ -37,11 +39,14 @@ function periodValidator(): ValidatorFn {
     NgClass
   ],
   templateUrl: './date-period-modal.component.html',
-  styleUrl: './date-period-modal.component.css'
+  styleUrls: ['./date-period-modal.component.css']
 })
-export class DatePeriodModalComponent {
-  period: FormGroup;
+export class DatePeriodModalComponent implements OnInit {
+  @Input() nextDate?: string;
   @Input() id?: number;
+  period: FormGroup;
+
+  private readonly toastService = inject(ToastService);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -50,39 +55,49 @@ export class DatePeriodModalComponent {
   ) {
     this.period = this.formBuilder.group({
       endDate: ['', {
-        validators: [Validators.required, periodValidator()],
+        validators: [Validators.required],
         updateOn: 'blur'
       }],
     });
   }
 
-
+  ngOnInit(): void {
+    if (this.nextDate) {
+      this.period.get('endDate')?.setValidators([
+        Validators.required,
+        periodValidator(this.nextDate)
+      ]);
+      this.period.get('endDate')?.updateValueAndValidity();
+    }
+  }
 
   savePeriod() {
     if (this.period.valid) {
-      let period: {end_date: string} = this.period.value;
+      const period = { end_date: new Date(this.period.value.endDate).toISOString() };
 
-      if (this.id == null) {
-        this.periodService.new(period).subscribe({
-          next: (response: any) => {
-            this.activeModal.close({
-              success: true,
-              message: 'El periodo se ha añadido correctamente.',
-              data: response
-            });
-          },
-          error: (error: any) => {
-            let errorMessage = 'Ha ocurrido un error al añadir el periodo. Por favor, inténtelo de nuevo.';
-            this.activeModal.close({
-              success: false,
-              message: errorMessage,
-              error: error
-            });
-          }
-        });
+      let saveObservable;
+
+      if (this.id != null) {
+        saveObservable = this.id == null
+          ? this.periodService.new(period)
+          : this.periodService.updatePeriod(this.id, period);
       } else {
-
+        saveObservable = this.id == null
+          ? this.periodService.new(period)
+          : this.periodService.new(period);
       }
+
+      saveObservable.subscribe({
+        next: (response: any) => {
+          this.toastService.sendSuccess('La operación ha sido con éxito')
+          this.activeModal.close({
+            success: true
+          })
+        },
+        error: (error: any) => {
+          this.toastService.sendError(error)
+        }
+      });
     } else {
       this.activeModal.close({
         success: false,

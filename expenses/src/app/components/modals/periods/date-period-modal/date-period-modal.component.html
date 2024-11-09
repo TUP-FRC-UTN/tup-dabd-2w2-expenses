@@ -6,7 +6,8 @@
   <div class="col-10">
     <form [formGroup]="period">
       <div class="row mb-3">
-        <p>La Fecha mínima de cierre es el 15</p>
+        <p><b>Periodo: {{nextDate}}</b></p>
+        <p>La Fecha mínima de cierre es después del 15 de este mes y antes que el primero del próximo.</p>
         <label for="endDate" class="text-start">Fecha de fin</label>
         <div class="col">
           <input type="date" class="form-control" id="endDate" formControlName="endDate" [ngClass]="{
@@ -19,6 +20,12 @@
           @if(period.get('endDate')?.errors?.['required'] && period.get('endDate')?.touched){
           <div class="invalid-feedback">
             Por favor, ingrese una fecha final para el periodo.
+          </div>
+          }
+
+          @if(period.get('endDate')?.errors?.['fechaInvalida']){
+          <div class="invalid-feedback">
+            La fecha es invalida.
           </div>
           }
 
