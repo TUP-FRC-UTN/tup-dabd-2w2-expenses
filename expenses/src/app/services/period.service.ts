@@ -63,8 +63,12 @@ export class PeriodService {
 
   }
 
-  new():Observable<void>{
-      return this.http.post<void>(this.apiUrl, null)
+  new(data: {end_date: string}):Observable<void>{
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+
+    return this.http.post<void>(this.apiUrl, data, { headers })
 
   }
 

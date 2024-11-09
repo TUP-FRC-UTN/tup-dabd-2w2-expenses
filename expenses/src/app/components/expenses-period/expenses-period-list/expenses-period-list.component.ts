@@ -37,6 +37,7 @@ import { RouterModule } from '@angular/router';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import { forkJoin, mergeMap } from 'rxjs';
 import { ExpenseServiceService } from '../../../services/expense.service';
+import { DatePeriodModalComponent } from '../../modals/periods/date-period-modal/date-period-modal.component';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -224,10 +225,9 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.loadPaged(this.indexActive);
   };
 
-  newPeriod() {
-    this.periodService.new().subscribe((data) => {
-      this.ngOnInit();
-    });
+  newPeriod(id: number | null ) {
+    const modalRef = this.modalService.open(DatePeriodModalComponent)
+    modalRef.componentInstance.id = id;
   }
   openErrorModal(err: any) {
     const modalRef = this.modalService.open(NgModalComponent);
