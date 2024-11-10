@@ -23,6 +23,18 @@
     {{ item.date | date: 'dd/MM/yyyy' }}
   </td>
 </ng-template>
+<ng-template #statusTemplate let-item>
+  <div class="d-flex">
+    @if(item.status == 'Activo'){
+      <i class="bi bi-check2-circle text-success fs-3"></i>
+    } @else if(item.status == 'Cancelado'){
+      <i class="bi bi-x-circle text-danger fs-4"></i>
+    } @else {
+      <i class="bi bi-exclamation-circle text-primary fs-4"></i>
+
+    }
+  </div>
+</ng-template>
 
 <ng-template #actionsTemplate let-bill>
   <td style="display: flex; flex-direction: row; gap: 4px;">
