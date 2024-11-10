@@ -25,18 +25,20 @@
       <div class="justify-content-lg-start">
         <div class="card-header">Top de Proveedores</div>
           <div class="card-boddy">
-            <div *ngIf="filteredSuppliers.length > 0; else noSuppliers">
+            @if (filteredSuppliers.length > 0){
+            <div>
               <h3>Top Suppliers</h3>
               <ul>
-                <li *ngFor="let supplier of filteredSuppliers">
+                @for (supplier of filteredSuppliers; track $index){
+                <li>
                   {{ supplier.name }} - Total Amount: {{ supplier.totalAmount | currency }}
                 </li>
+                }
               </ul>
             </div>
-
-            <ng-template #noSuppliers>
-              <p>No suppliers found.</p>
-            </ng-template>
+            } @else {
+              <p>No se han encontrado proveedores.</p>
+            }
           </div>
       </div>
     </div>
