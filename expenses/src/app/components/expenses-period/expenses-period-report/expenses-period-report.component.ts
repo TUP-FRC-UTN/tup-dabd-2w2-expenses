@@ -83,8 +83,12 @@ export class ExpensesPeriodReportComponent implements OnInit {
   periodsFilter: FilterOption[] = [];
   lotss: FilterOption[] = [];
   types: FilterOption[] = [];
+
+  //lista principal del select
   periodsList: FilterOption[] = [];
   filterConfig: Filter[] = [];
+
+  //copia para las cards
   listPeriodFind:FilterOption[]=[]
 
   filterChange($event: Record<string, any>) {
@@ -100,8 +104,11 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
     console.log(this.listPeriodFind)
     console.log(this.typeFilter)
+
+
     this.loadReportPeriod(this.listPeriodFind.map((p)=>Number(p.value)));
   }
+
   expenses: Expense[] = [];
   searchTerm: string = '';
 
@@ -146,7 +153,6 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
 
   createFilter(){
-    console.log(this.periodsList)
    this.filterConfig= [
       new RadioFilter('Monto total', 'typeFilter', [
         { value: 'Monto', label: 'Monto total' },
@@ -161,6 +167,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
       ),
     ];
   }
+
+
 
   loadResume() {
     // Crea los gráficos para las expensas ordinarias y extraordinarias
@@ -212,6 +220,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
     this.router.navigate(['/gastos/top-proveedores']);
   }
 
+  //De aca para abajo son los metodos que crean los graficos
+  //grafico ordinarias/extraordinarias
   createChartResume(
     chartId: string,
     ordinary: CategoryData[],
@@ -350,6 +360,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
   }
 
+  //filtro de por categoria (el de abajo)
   createChartPeriods(chartId: string, periods: Resume[], element: string): any {
     // Obtener las categorías comunes de todos los períodos (suponiendo que las categorías no cambian entre períodos)
     const labels = periods[0].ordinary.map((item) => item.category);
@@ -547,6 +558,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
   }
 
+  //grafico proveedores
   createSuppliersChart(
     chartId: string,
     suppliers: SupplierAmount[],
