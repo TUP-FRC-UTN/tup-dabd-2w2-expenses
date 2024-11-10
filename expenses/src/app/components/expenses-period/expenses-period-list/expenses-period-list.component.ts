@@ -37,6 +37,7 @@ import { RouterModule } from '@angular/router';
 import { LiquidationExpenseService } from '../../../services/liquidation-expense.service';
 import { forkJoin, mergeMap } from 'rxjs';
 import { ExpenseServiceService } from '../../../services/expense.service';
+import { DatePeriodModalComponent } from '../../modals/periods/date-period-modal/date-period-modal.component';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -224,10 +225,32 @@ export class ExpensesPeriodListComponent implements OnInit {
     this.loadPaged(this.indexActive);
   };
 
-  newPeriod() {
-    this.periodService.new().subscribe((data) => {
-      this.ngOnInit();
-    });
+  newPeriod(id: number | null, date: string | null) {
+    if (id == null) {
+      this.periodService.getFuture().subscribe(
+        next => {
+          const modalRef = this.modalService.open(DatePeriodModalComponent)
+          modalRef.componentInstance.id = id;
+          modalRef.componentInstance.nextDate = next.period;
+        },
+        error => {
+          if (error) {
+            console.log(error);
+
+            this.toastService.sendError(error.error.message);
+          } else {
+            this.toastService.sendError('Ocurrio un error');
+          }
+        }
+      )
+    } else {
+      if(date !== null) {
+        const modalRef = this.modalService.open(DatePeriodModalComponent)
+        modalRef.componentInstance.id = id;
+        modalRef.componentInstance.nextDate = date;
+      }
+    }
+
   }
   openErrorModal(err: any) {
     const modalRef = this.modalService.open(NgModalComponent);
