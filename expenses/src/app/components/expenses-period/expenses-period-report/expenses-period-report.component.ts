@@ -120,7 +120,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadReportPeriod([1, 2, 3]);
+    this.loadReportPeriod([18, 17, 3]);
   }
 
   loadReportPeriod(ids: number[]) {
@@ -156,6 +156,19 @@ export class ExpensesPeriodReportComponent implements OnInit {
     );
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+  
   createChartResume(
     chartId: string,
     ordinary: CategoryData[],
