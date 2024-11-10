@@ -131,6 +131,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     this.reportPeriodService.getReportPeriods(ids).subscribe({
       next: (data) => {
         this.reportPeriod = data;
+        this.getTopOneSupplier();
         this.loadResume();
       },
       error: (error) => {
@@ -155,6 +156,54 @@ export class ExpensesPeriodReportComponent implements OnInit {
       'chart-container-periods'
     );
   }
+
+
+  /**
+   *
+   */
+  topSupplier: any;
+
+  getTopOneSupplier() {
+    const suppliers = this.reportPeriod?.resume.supplier_ordinary;
+
+    if (suppliers && suppliers.length > 0) {
+      this.topSupplier = suppliers.reduce((top, current) => {
+        return current.totalAmount > top.totalAmount ? current : top;
+      });
+    }else {
+      this.topSupplier = null;
+    }
+  }
+
+
+
+
+
+
+
+  private router = inject(Router)
+
+  navigateToTopSuppliers() {
+    this.router.navigate(['/gastos/top-proveedores']);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   createChartResume(
     chartId: string,
@@ -185,8 +234,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
       } else {
         reportMap.set(category, {
           label: category,
-          ordinary: amount, 
-          extraordinary: 0, 
+          ordinary: amount,
+          extraordinary: 0,
         });
       }
     });
@@ -211,20 +260,20 @@ export class ExpensesPeriodReportComponent implements OnInit {
       } else {
         reportMap.set(category, {
           label: category,
-          ordinary: 0, 
-          extraordinary: amount, 
+          ordinary: 0,
+          extraordinary: amount,
         });
       }
     });
 
-    
+
     let labels:string[] = []
     let ordinaryValues: number[] = [];
     let extraordinaryValues: number[] = [];
     reportMap.forEach((value,key)=>{
       labels=[...labels,key]
       ordinaryValues=[...ordinaryValues, value.ordinary ]
-      extraordinaryValues=[...extraordinaryValues, value.extraordinary] 
+      extraordinaryValues=[...extraordinaryValues, value.extraordinary]
     })
     console.log(reportMap)
 

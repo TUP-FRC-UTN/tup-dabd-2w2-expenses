@@ -4,12 +4,14 @@
       <button class="btn btn-primary" (click)="type('Monto')">Monto</button>
     </div>
     <div>
-      <button  class="btn btn-primary" (click)="type('Porcentaje')">Porcentaje</button>
+      <button class="btn btn-primary" (click)="type('Porcentaje')">Porcentaje</button>
     </div>
     <div>
       <button class="btn btn-primary" (click)="type('Promedio')">Promedio</button>
     </div>
   </div>
+
+  <!-- Comment out this section to see if it causes the error -->
   <div class="row" style="align-items: end">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <!-- Sección de búsqueda y filtros -->
@@ -33,16 +35,32 @@
     </div>
 
     <div class="card mb-3">
-      <div class="card-header">Distribución Porcentual de Gastos</div>
+      <div class="justify-content-lg-start">
+        <div class="card-header">Distribución Porcentual de Gastos</div>
         <div class="container" style="display: flex; flex-direction: row; justify-content: center; align-items: center;" >
           <div class="col-12">
             <div id="chart-container-ordinary" class="col-10"></div>
-
           </div>
+        </div>
+        <div class="container d-flex" style="width: 100%;" >
+          <div id="chart-container-periods" style="display: flex; flex-direction: row; max-width: 50%;" ></div>
+        </div>
       </div>
-      <div class="container d-flex" style="width: 100%;" >
-        <div id="chart-container-periods" style="display: flex; flex-direction: row; max-width: 50%;" ></div>
 
+      <div class="top-supplier-card" (click)="navigateToTopSuppliers()" style="cursor: pointer;">
+        <h3>Top Supplier</h3>
+        <ng-container *ngIf="topSupplier; else noSupplier">
+          <p>
+            <strong>Nombre:</strong> {{ topSupplier.supplierDTO.name }}<br />
+            <strong>Cuil:</strong> {{ topSupplier.supplierDTO.cuil }}<br />
+            <strong>Monto Total:</strong> {{ topSupplier.totalAmount | currency }}
+          </p>
+        </ng-container>
+        <ng-template #noSupplier>
+          <p>
+            <strong>No hay proveedores para mostrar</strong>
+          </p>
+        </ng-template>
       </div>
     </div>
   </div>
