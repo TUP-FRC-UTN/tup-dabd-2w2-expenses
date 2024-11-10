@@ -37,7 +37,6 @@ import {
   TableColumn,
   TableComponent,
   TableFiltersComponent,
-  TablePagination,
 } from 'ngx-dabd-grupo01';
 import { of } from 'rxjs';
 
@@ -180,6 +179,7 @@ export class ExpensesListBillsComponent implements OnInit {
           headerName: 'Monto',
           accessorKey: 'amount',
           cellRenderer: this.amountTemplate,
+          align: 'right'
         },
         {
           headerName: 'Periodo',
