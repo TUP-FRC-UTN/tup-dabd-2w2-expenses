@@ -50,15 +50,10 @@ import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal
   selector: 'app-expenses-list-charges',
   standalone: true,
   imports: [
-    ExpensesUpdateChargeComponent,
     CommonModule,
-    PeriodSelectComponent,
     FormsModule,
-    ReactiveFormsModule,
     NgPipesModule,
-    TableComponent,
-    ExpensesModalComponent,
-    NgbModule,
+    ExpensesModalComponent,    
     MainContainerComponent,
     TableFiltersComponent
   ],
