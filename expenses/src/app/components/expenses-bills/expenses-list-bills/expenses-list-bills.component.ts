@@ -486,7 +486,7 @@ export class ExpensesListBillsComponent implements OnInit {
   // downloadTable() {
   //   const filters = this.filters.value;
   //   this.billService
-  //     .getAllBillsAndPagination(
+  //     .getAllBillsAndPaginationAny(
   //       this.page,
   //       this.size,
   //       filters.selectedPeriod?.valueOf(),
@@ -518,8 +518,9 @@ export class ExpensesListBillsComponent implements OnInit {
 
 
   getAllItems = () => {
+    console.log('Calling getAllItems');
     return this.billService.getAllBillsAndPaginationAny(
-      this.page,
+      0,
       5000,
       this.filters.get('selectedPeriod')?.value as number,
       this.filters.get('selectedCategory')?.value as number,
@@ -529,6 +530,7 @@ export class ExpensesListBillsComponent implements OnInit {
       this.filters.get('selectedStatus')?.value as string
     ).pipe(
       map((response) => {
+        console.log('Response from billService:', response);
         const data = response.content.map((bill) => ({
           Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
           'Monto Total': `$ ${bill.amount}`,
@@ -539,14 +541,18 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
+        console.log('Formatted data for Excel:', data);
+  
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+        console.log('Attempting to write Excel file:', this.fileName);
         XLSX.writeFile(wb, this.fileName);
         return response.content;
       })
     );
   };
+  
 
   //#endregion
 
