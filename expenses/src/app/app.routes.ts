@@ -25,6 +25,7 @@ import {
 } from "./components/expenses-period/expenses-report/expenses-report/expenses-report.component";
 
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
+import { ExpensesListCategoryChargesComponent } from './components/expenses-charges/expenses-list-category-charges/expenses-list-categorycharge.component';
 
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
@@ -50,6 +51,7 @@ export const routes: Routes = [
   { path: 'cargos', component: ExpensesListChargesComponent },
   { path: 'cargos/nuevo', component: ExpensesAddChargeComponent },
   { path: 'cargos/modificar/:id', component: LiquidationExpenseDetailsComponent },
+  { path: 'cargos/categorias', component: ExpensesListCategoryChargesComponent },
 
   // Ruta bills - CRUD de gastos
   { path: 'gastos', component: ExpensesListBillsComponent },

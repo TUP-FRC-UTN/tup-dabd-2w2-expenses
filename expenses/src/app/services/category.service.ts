@@ -1,6 +1,6 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {map, Observable} from 'rxjs';
 import Category from '../models/category';
 import { PORT } from '../const';
 import {PaginatedResponse} from "../models/paginatedResponse";
@@ -20,7 +20,7 @@ export class CategoryService {
     searchParams: any = {}
   ): Observable<PaginatedResponse<Category>> {
     try {
-
+      page--
       let params = new HttpParams()
         .set('page', page.toString())
         .set('size', size.toString())
@@ -31,9 +31,6 @@ export class CategoryService {
           params = params.set(key, searchParams[key]);
         }
       });
-
-      // console.log('Request URL:', `${this.url}/page`);
-      // console.log('Request params:', params.toString());
 
       return this.http.get<PaginatedResponse<Category>>(`${this.url}/page`, { params });
     } catch (error) {
@@ -73,6 +70,12 @@ export class CategoryService {
   }
 
   validateCategoryName(name: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.url}/valid-name?name=${encodeURIComponent(name)}`);
+    return this.getAllCategories().pipe(
+      map(categories =>
+        categories.some(category =>
+          category.name.toLowerCase().trim() === name.toLowerCase().trim()
+        )
+      )
+    );
   }
 }

@@ -40,13 +40,14 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
     NgArrayPipesModule,
     MainContainerComponent,
     NgSelectComponent,
-    NgOptionComponent
+    NgOptionComponent,
   ],
   templateUrl: './expenses-add-bill.component.html',
   styleUrl: './expenses-add-bill.component.css',
   providers: [DatePipe],
 })
 export class ExpensesAddBillComponent implements OnInit {
+  // #region Dependencies
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
   private providerService = inject(ProviderService);
@@ -54,25 +55,33 @@ export class ExpensesAddBillComponent implements OnInit {
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  // #endregion
+
+  // #region Form Groups and ViewChild
   billForm: FormGroup;
   newCategoryForm: FormGroup;
   @ViewChild('newCategoryModal') newCategoryModal: any;
+  // #endregion
+
+  // #region Properties
   searchTerm: any;
   periodId: number = 0;
-
   categories: Observable<Category[]> | undefined;
   providers: Observable<Provider[]> | undefined;
   periods: Observable<Period[]> | undefined;
   types: Observable<BillType[]> | undefined;
+  // #endregion
 
   constructor() {
+    // #region Initialize Forms
     this.billForm = this.fb.group({
       categoryId: ['', Validators.required],
       description: [''],
       amount: ['', [Validators.required, Validators.min(0.0001)]],
-      date: ['',
+      date: [
+        '',
         [Validators.required],
-        [(control) => this.dateValidator(control)] // Pasar el control directamente
+        [(control) => this.dateValidator(control)],
       ],
       supplierId: ['', [Validators.required]],
       typeId: ['', [Validators.required]],
@@ -87,8 +96,10 @@ export class ExpensesAddBillComponent implements OnInit {
     this.billForm.get('period')?.valueChanges.subscribe(() => {
       this.billForm.get('date')?.updateValueAndValidity();
     });
+    // #endregion
   }
 
+  // #region Lifecycle Hooks
   ngOnInit() {
     this.loadSelectOptions();
     this.periods = this.periods?.pipe(
@@ -100,94 +111,94 @@ export class ExpensesAddBillComponent implements OnInit {
       )
     );
   }
+  // #endregion
 
+  // #region Validators
   dateValidator(control: AbstractControl): ReturnType<AsyncValidatorFn> {
-    if (!control.value) {
-      return Promise.resolve(null);
-    }
+    if (!control.value) return Promise.resolve(null);
 
-    // Obtener el periodId del formulario
     const periodId = this.billForm?.get('periodId')?.value;
+    if (!periodId) return Promise.resolve(null);
 
-    if (!periodId) {
-      return Promise.resolve(null);
-    }
     const numericPeriodId = parseInt(periodId?.toString().split('/')[0]);
-
-    return this.billService.validateDate(control.value, numericPeriodId).pipe(
-      map(isValid => {
-        return !isValid ? { invalidDate: true } : null;
-      })
-    );
+    return this.billService
+      .validateDate(control.value, numericPeriodId)
+      .pipe(map((isValid) => (!isValid ? { invalidDate: true } : null)));
   }
+  // #endregion
 
+  // #region Data Loading
   loadSelectOptions() {
     this.categories = this.categoryService.getAllCategories();
     this.providers = this.providerService.getAllProviders();
     this.periods = this.periodService.get();
     this.types = this.billService.getBillTypes();
   }
+  // #endregion
 
+  // #region Utility Functions
   comparePeriodFn(period1: any, period2: any) {
     return period1 && period2 ? period1.id === period2.id : period1 === period2;
   }
+  // #endregion
 
+  // #region Form Submission
   onSubmit() {
     if (this.billForm.valid) {
-      of(this.billForm.value).pipe(
-        map(formValue => {
-          const billRequest = new BillPostRequest();
-          billRequest.categoryId = Number(formValue.categoryId);
-          billRequest.description = formValue.description;
-          billRequest.amount = Number(formValue.amount);
-          billRequest.date = `${formValue.date}T00:00:00Z`;
-          billRequest.status = 'Nuevo';
-          billRequest.supplierId = Number(formValue.supplierId);
-          billRequest.supplierEmployeeType = 'SUPPLIER';
-          billRequest.typeId = Number(formValue.typeId);
-          billRequest.periodId = Number(formValue.periodId);
-          billRequest.linkPdf = '';
-          return billRequest;
-        }),
-        switchMap(billRequest => this.billService.addBill(billRequest))
-      ).subscribe({
-        next: (response: any) => {
-          console.log('Añadido correctamente', response);
-          this.toastService.sendSuccess('El gasto se ha añadido correctamente.');
-          // this.showModal('Éxito', 'El gasto se ha añadido correctamente.');
-          this.resetForm();
-        },
-        error: (error: any) => {
-          console.error('Error en el post', error);
-          if (error.status === 409) {
-            this.toastService.sendError('Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.')
-            // this.showModal('Error', 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.');
-          } else {
-            this.toastService.sendError(error.error.message)
-            // this.showModal('Error', 'Ha ocurrido un error al añadir el gasto. Por favor, inténtelo de nuevo.');
-          }
-        }
-      });
+      of(this.billForm.value)
+        .pipe(
+          map((formValue) => {
+            const billRequest = new BillPostRequest();
+            billRequest.categoryId = Number(formValue.categoryId);
+            billRequest.description = formValue.description;
+            billRequest.amount = Number(formValue.amount);
+            billRequest.date = `${formValue.date}T00:00:00Z`;
+            //billRequest.status = 'Nuevo';
+            billRequest.supplierId = Number(formValue.supplierId);
+            billRequest.supplierEmployeeType = 'SUPPLIER';
+            billRequest.typeId = Number(formValue.typeId);
+            billRequest.periodId = Number(formValue.periodId);
+            billRequest.linkPdf = '';
+            return billRequest;
+          }),
+          switchMap((billRequest) => this.billService.addBill(billRequest))
+        )
+        .subscribe({
+          next: (response: any) => {
+            console.log('Añadido correctamente', response);
+            this.toastService.sendSuccess(
+              'El gasto se ha añadido correctamente.'
+            );
+            this.resetForm();
+          },
+          error: (error: any) => {
+            console.error('Error en el post', error);
+            if (error.status === 409) {
+              this.toastService.sendError(
+                'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'
+              );
+            } else {
+              this.toastService.sendError(error.error.message);
+            }
+          },
+        });
     } else {
       console.log('Formulario inválido');
       this.toastService.sendError(
         'Por favor, complete todos los campos requeridos correctamente.'
       );
-      // this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
   }
+  // #endregion
 
+  // #region Form Utilities
   resetForm() {
     this.billForm.reset();
     this.loadSelectOptions();
   }
+  // #endregion
 
-  /*showModal(title: string, message: string) {
-    const modalRef = this.modalService.open(NgModalComponent);
-    modalRef.componentInstance.title = title;
-    modalRef.componentInstance.message = message;
-  }*/
-
+  // #region Modal Handling
   openNewCategoryModal() {
     const modalRef = this.modalService.open(NewCategoryModalComponent, {
       ariaLabelledBy: 'modal-basic-title',
@@ -200,7 +211,6 @@ export class ExpensesAddBillComponent implements OnInit {
           this.loadSelectOptions();
         } else {
           this.toastService.sendError(result.message);
-          // this.showModal('Error', result.message);
         }
       }
     });
@@ -215,4 +225,5 @@ export class ExpensesAddBillComponent implements OnInit {
       scrollable: true,
     });
   }
+  // #endregion
 }

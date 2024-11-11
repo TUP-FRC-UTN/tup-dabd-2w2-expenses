@@ -37,7 +37,6 @@ import {
   TableColumn,
   TableComponent,
   TableFiltersComponent,
-  TablePagination,
 } from 'ngx-dabd-grupo01';
 import { of } from 'rxjs';
 
@@ -63,18 +62,14 @@ export class ExpensesListBillsComponent implements OnInit {
   //#region VARIABLES
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
-  updatedBill: Bill | undefined;
-  paginatedBills: Bill[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 10;
-  // totalPages: number = 0;
-  sizeOptions: number[] = [10, 25, 50];
 
   filterConfig: Filter[] = [];
   categoryList: { value: string; label: string }[] = [];
   supplierList: { value: string; label: string }[] = [];
   periodsList: { value: string; label: string }[] = [];
   typesList: { value: string; label: string }[] = [];
+
 
   totalItems = 0;
   page = 0;
@@ -83,20 +78,9 @@ export class ExpensesListBillsComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'asc';
 
   searchTerm: string = '';
-  visiblePages: number[] = [];
-  maxPagesToShow: number = 5;
-
-  // currentPage: number = 1;
-  pageSize: number = 10;
-  cantPages: number[] = [];
-  indexActive: number = 1;
   isLoading: boolean = false;
-
-  viewList: boolean = true;
   today: Date = new Date();
   fileName: string = `Gastos_${this.today.toLocaleDateString()}.xlsx`;
-
-  selectedBill: Bill | undefined;
 
   // FormGroup for filters
   filters = new FormGroup({
@@ -130,10 +114,15 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   filterTableBySelects(value: Record<string, any>) {
-    const filterCategory = value['selectedCategory'] || 0;
-    const filterSupplier = value['selectedSupplier'] || 0;
-    const filterPeriod = value['selectedPeriod'] || 0;
-    const filterType = value['selectedType'] || 0;
+    const filterCategory = value['category.name'] || 0;
+    const filterSupplier = value['supplier.name'] || 0;
+    const filterPeriod = value['period.id'] || 0;
+    const filterType = value['billType.name'] || 0;
+    let filterStatus = '';
+    if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
+
+
+
 
     this.filteredBills = this.bills.filter((bill) => {
       const matchesCategory = filterCategory
@@ -149,7 +138,13 @@ export class ExpensesListBillsComponent implements OnInit {
         ? bill.billType?.bill_type_id === filterType
         : true;
 
-      return matchesCategory && matchesSupplier && matchesPeriod && matchesType;
+
+      const matchesStatus = filterStatus
+        ? bill.status === filterStatus
+        : true;
+
+
+      return matchesCategory && matchesSupplier && matchesPeriod && matchesType && matchesStatus;
     });
   }
 
@@ -159,14 +154,7 @@ export class ExpensesListBillsComponent implements OnInit {
     this.filterTableByText(searchTerm);
   }
 
-  onFilterChange() {
-    const filters = this.filters.value;
-    this.filterTableBySelects(filters);
-  }
 
-  onFilterValueChange($event: Record<string, any>) {
-    this.filterTableBySelects($event);
-  }
 
   //#endregion
 
@@ -177,6 +165,8 @@ export class ExpensesListBillsComponent implements OnInit {
   actionsTemplate!: TemplateRef<any>;
   @ViewChild('periodTemplate', { static: true })
   periodTemplate!: TemplateRef<any>;
+  @ViewChild('statusTemplate', { static: true })
+  statusTemplate!: TemplateRef<any>;
 
   columns: TableColumn[] = [];
 
@@ -189,6 +179,7 @@ export class ExpensesListBillsComponent implements OnInit {
           headerName: 'Monto',
           accessorKey: 'amount',
           cellRenderer: this.amountTemplate,
+          align: 'right'
         },
         {
           headerName: 'Periodo',
@@ -200,6 +191,12 @@ export class ExpensesListBillsComponent implements OnInit {
           headerName: 'Fecha',
           accessorKey: 'date',
           cellRenderer: this.dateTemplate,
+        },
+        {
+          headerName: 'Estado',
+          accessorKey: 'status',
+          cellRenderer: this.statusTemplate,
+
         },
         {
           headerName: 'Acciones',
@@ -224,16 +221,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
-  onSortChange(field: string) {
-    if (this.sortField === field) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortField = field;
-      this.sortDirection = 'asc';
-    }
-    this.loadBills();
-  }
-
   onPageChange = (page: number) => {
     this.page = page - 1;
     this.loadBills();
@@ -244,10 +231,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.page = 0;
     this.loadBills();
   };
-
-  openFormModal() {
-    throw new Error('Method not implemented.');
-  }
 
   //#region DEPENDENCY INJECTION
   billService = inject(BillService);
@@ -262,13 +245,23 @@ export class ExpensesListBillsComponent implements OnInit {
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
       this.categoryList = categories.map((category: any) => ({
-        value: category.id,
+        value: category.category_id,
         label: category.name,
       }));
       this.initializeFilters(); // Actualiza el filtro después de obtener datos
     });
   }
 
+
+  getBillTypes() {
+    this.billService.getBillTypes().subscribe((types) => {
+      this.typesList = types.map((type: any) => ({
+        value: type.bill_type_id,
+        label: type.name,
+      }));
+      this.initializeFilters();
+    });
+  }
   getProviders() {
     this.providerService.getAllProviders().subscribe((providers) => {
       this.supplierList = providers.map((provider: any) => ({
@@ -288,17 +281,6 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-
-  getBillTypes() {
-    this.billService.getBillTypes().subscribe((types) => {
-      this.typesList = types.map((type: any) => ({
-        value: type.id,
-        label: type.name,
-      }));
-      this.initializeFilters();
-    });
-  }
-
   // Initialize filter configurations
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
@@ -329,20 +311,32 @@ export class ExpensesListBillsComponent implements OnInit {
         this.categoryList
       )
       .radioFilter('Activo', 'isActive', [
-        { value: 'true', label: 'Activo' },
-        { value: 'false', label: 'Inactivo' },
+        { value: 'ACTIVE', label: 'Activo' },
+        { value: 'CANCELLED', label: 'Inactivo' },
+        { value: 'NEW', label: 'Nuevo' },
         { value: 'undefined', label: 'Todo' },
+      ])
+      .radioFilter('Tipo de proveedor', 'supplier.type',[
+        {value: 'SUPPLIER', label: 'Proveedor'},
+        {value: 'EMPLOYEE', label: 'Empleado'}
       ])
       .build();
   }
 
-  // Load select values for filter options
-  loadSelect() {
-    this.getCategories();
-    this.getProviders();
-    this.getPeriods();
-    this.getBillTypes();
+  onFilterValueChange($event: Record<string, any>) {
+    console.log($event);
+
+    this.filters.patchValue({
+      selectedCategory: $event['category.name'] === "" ? undefined : $event['category.name'],
+      selectedPeriod: $event['period.id'] === "" ? undefined : $event['period.id'],
+      selectedSupplier: $event['supplier.name'] === "" ? undefined : $event['supplier.name'],
+      selectedProvider: $event['supplier.type'] === "" ? undefined : $event['supplier.type'],
+      selectedStatus: $event['isActive'] === "" ? undefined : $event['isActive'],
+      selectedType: $event['billType.name'] === "" ? undefined : $event['billType.name'],
+    })
+    this.loadBills();
   }
+
 
   // Load all bills with pagination and filters
   private loadBills(): void {
@@ -365,7 +359,7 @@ export class ExpensesListBillsComponent implements OnInit {
           //this.totalPages = Math.ceil(this.totalItems / this.size);
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
-              this.bills = bills;
+              this.bills = this.sortBills(bills);
               this.filteredBills = [...this.bills];
             } else {
               this.bills = [];
@@ -376,40 +370,30 @@ export class ExpensesListBillsComponent implements OnInit {
         error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
           this.isLoading = false;
-        },
+
+        }
+        ,
       });
   }
-  //#endregion
 
-  //#region FILTER OPERATIONS
-  unFilterBills() {
-    this.filters.setValue({
-      selectedCategory: 0,
-      selectedPeriod: 0,
-      selectedSupplier: 0,
-      selectedProvider: 'SUPPLIER',
-      selectedStatus: 'ACTIVE',
-      selectedType: 0,
+  sortBills(bills: Bill[]): Bill[] {
+    return [...bills].sort((a, b) => {
+      const categoryComparison = a.category.name.localeCompare(b.category.name);
+      if (categoryComparison !== 0) return categoryComparison;
+      const supplierComparison = a.supplier.name.localeCompare(b.supplier.name);
+      if (supplierComparison !== 0) return supplierComparison;
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
     });
-    this.loadSelect();
-    this.loadBills();
-  }
-
-  filterChange($event: Record<string, any>) {
-    throw new Error('Method not implemented.');
   }
   //#endregion
 
-  //#region PAGINATION AND PAGE SIZE
-  onItemsPerPageChange() {
-    this.currentPage = 1;
-  }
 
-  updatePageSize() {
-    this.currentPage = 0;
-    this.loadBills();
-  }
+
+
   //#endregion
+
 
   //#region MODAL OPERATIONS
   viewBill(bill: Bill) {

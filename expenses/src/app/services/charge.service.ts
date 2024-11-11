@@ -23,7 +23,7 @@ export class ChargeService {
 
   addCharge(charge: Charge): Observable<Charge> {
     const headers = new HttpHeaders({
-      'user_id': '1'
+      'x-user-id': '1'
     });
     return this.http.post<Charge>(this.apiUrl, charge, { headers });
   }
@@ -31,7 +31,7 @@ export class ChargeService {
   getChargesAll(): Observable<Charge[]> {
     return this.http.get<Charge[]>(this.apiUrl);
   }
-
+  
   getCharges(page: number, size: number, periodId?: number, plotId?: number, categoryId?: number,type?: ChargeType): Observable<Page<Charge>> {
     let params = new HttpParams()
       .set('page', page)
@@ -88,7 +88,7 @@ export class ChargeService {
 
   updateCharge(charge: Charge): Observable<Charge> {
     const headers = new HttpHeaders({
-      'user_id': '1'
+      'x-user-id': '1'
     });
     return this.http.put<Charge>(`${this.apiUrl}/${charge.chargeId}`, charge, {headers});
   }  
@@ -110,12 +110,72 @@ export class ChargeService {
   }
 
   getCategoryCharges(): Observable<CategoryCharge[]> {
-    return this.http.get<CategoryCharge[]>(this.categoryChargeUrl);
+    
+    const excluingFines = false;
+    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`);
+    //return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}`);
+
   }
 
   getCategoriesExcFines() : Observable<CategoryCharge[]> {
     return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/exceptFines`);
   }
 
+  addCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+    categoryCharge.amountSing = ChargeType.ABSOLUTE;
+    return this.http.post<CategoryCharge>(this.categoryChargeUrl, categoryCharge, { headers });
+  }
+
+  updateCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+    return this.http.put<CategoryCharge>(`${this.categoryChargeUrl}/${categoryCharge.categoryChargeId}`, categoryCharge, { headers });
+  }
+
+  deleteCategoryCharge(category: number): Observable<Boolean> {
+    return this.http.delete<Boolean>(`${this.categoryChargeUrl}/${category}`);
+  }
+
+  validateCategoryName(name: string): Observable<boolean> {
+    return this.getCategoryCharges().pipe(
+      map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase() ))
+    );
+  }
+
+  getCategoryChargesPagination(page: number, size: number, type?: ChargeType, status? : boolean, excluingFines? : boolean): Observable<Page<CategoryCharge>> {
+    debugger
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);    
+
+    if(excluingFines != undefined && excluingFines != null) {   
+         
+      params = params.set('excluingFines', excluingFines!);
+    } 
+    if(status != undefined && status != null) {    
+      debugger  
+      params = params.set('status', status!);
+    }
+    if (type != undefined && type != null) {    
+      debugger 
+      let tipo = '';
+      switch(type){
+        case 'Positivo': tipo = 'ABSOLUTE'; break;
+        case 'Porcentaje': tipo ='PERCENTAGE'; break;
+        case 'Negativo': tipo = 'NEGATIVE'; break;
+        default : tipo = 'ABSOLUTE'; break;
+
+      }
+      params = params.set('type', tipo);
+    }
+    
+       
+    console.log('Estos son los parametros: ' +params);
+    return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
+  }
 
 }

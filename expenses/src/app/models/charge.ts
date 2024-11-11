@@ -42,6 +42,8 @@ export interface CategoryCharge {
     categoryChargeId: number;
     description: string;
     name: string;
+    active: boolean;
+    amountSing : ChargeType;
 }
 
 export interface PeriodCharge {
@@ -49,6 +51,15 @@ export interface PeriodCharge {
     year: number ;
     state:string;
     id: number ;
+}
+
+export  class Periods {
+    month: number = 0;
+    year: number = 0;
+    id: number = 0;
+    state: string="";
+    start_date: Date = new Date();
+    end_date: Date = new Date();
 }
 
 export enum ChargeFilters {

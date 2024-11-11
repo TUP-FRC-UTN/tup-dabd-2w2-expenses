@@ -1,5 +1,5 @@
 <ng-template #amountTemplate let-item>
-  <td style="text-align: end">
+  <td class="text-end d-block">
     {{
       item.amount?.toLocaleString("es-AR", {
         style: "currency",
@@ -57,7 +57,7 @@
 
 
 <app-main-container
-  [title]="'Liquidación de Expensas | ' + period.month + ' / ' + period.year"
+  [title]="'Liquidación de Expensas ' + fechaTitulo"
   (infoButtonClick)="showModal()"
 >
 
