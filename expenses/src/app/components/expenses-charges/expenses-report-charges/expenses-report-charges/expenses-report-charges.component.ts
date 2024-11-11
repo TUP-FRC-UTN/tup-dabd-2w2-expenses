@@ -19,7 +19,7 @@ import {
 } from 'chart.js';
 import {BaseChartDirective} from "ng2-charts";
 import Chart from 'chart.js/auto';
-// import { ChargeService } from '../../../../../services/charge.service';
+import {ChargeService} from "../../../../services/charge.service";
 
 @Component({
   selector: 'app-expenses-report-charges',
