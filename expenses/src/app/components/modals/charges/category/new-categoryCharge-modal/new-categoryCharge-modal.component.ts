@@ -27,7 +27,7 @@ import { CategoryCharge, ChargeType } from '../../../../../models/charge';
 })
 export class NewCategoryChargeModalComponent {
   newCategoryForm: FormGroup;
-  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.PERCENTAGE,ChargeType.NEGATIVE];
+  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.NEGATIVE];
 
   constructor(
     private formBuilder: FormBuilder,
