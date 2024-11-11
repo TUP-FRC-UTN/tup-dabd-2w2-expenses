@@ -90,7 +90,11 @@ addCharge() {
   chargesFiltered : Charge[] = [];
   chargesOriginal: Charge[] = [];
 
-  
+   isLoadinge(){
+    
+    let loading = document.getElementById('table');
+    debugger
+   }
 
   //#endregion
 
@@ -207,6 +211,7 @@ addCharge() {
       {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
+    this.isLoadinge();
   }
 
   loadSelect() {

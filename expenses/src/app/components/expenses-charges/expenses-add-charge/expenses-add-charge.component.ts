@@ -1,8 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { ChargeService } from '../../../services/charge.service';
@@ -97,10 +100,49 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', Validators.required],
+      amount: ['', [Validators.required,this.amountValidator]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
+
+    // Escuchar cambios en `categoriaId`
+    this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe((categoriaId: number) => {
+      this.updateAmountValidator(this.chargeForm.get('categoryChargeId')?.value);
+    });
+  }
+
+  
+  amountValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const amount = control.value;
+      const categoryChargeId = this.chargeForm.get('categoryChargeId')?.value;
+      if (categoryChargeId === null) return null;
+  
+      const categoryCharge = this.categoriaCargos.find(c => c.categoryChargeId === categoryChargeId);
+      const tipo = categoryCharge?.amountSign;
+  
+      if (tipo === ChargeType.ABSOLUTE) {
+        // Error si el monto no es positivo
+        return amount > 0 ? null : { positiveOnly: true };
+      } else if (tipo === ChargeType.NEGATIVE) {
+        // Error si el monto no es negativo
+        return amount < 0 ? null : { negativeOnly: true };
+      } else if (tipo === ChargeType.PERCENTAGE) {
+        // Error si el monto no está entre 0 y 100 con hasta dos decimales
+        const isPercentage = amount >= 0 && amount <= 100 && /^\d+(\.\d{1,2})?$/.test(amount);
+        return isPercentage ? null : { percentageOnly: true };
+      }
+  
+      return null;
+    };
+  }
+
+  updateAmountValidator(categoriaId: number) {
+    const amountControl = this.chargeForm.get('amount');
+    if (amountControl) {
+      amountControl.setValidators([this.amountValidator()]);
+      amountControl.updateValueAndValidity();
+    }
   }
 
   ngOnInit(): void {

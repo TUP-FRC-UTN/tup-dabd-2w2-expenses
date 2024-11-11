@@ -210,6 +210,21 @@
           <div class="invalid-feedback">
             El monto es obligatorio.
           </div>
+          @if(chargeForm.get('amount')?.hasError('amountValidator')){
+            <div class="invalid-feedback">
+                El monto debe ser positivo
+            </div>
+          }
+          @if(chargeForm.get('amount')?.hasError('amountValidator')){
+            <div class="invalid-feedback">
+                El monto debe ser positivo 
+            </div>
+          }
+          @if(chargeForm.get('amount')?.hasError('amountValidator')){
+            <div class="invalid-feedback">
+                El monto debe ser un porcentaje entre 0 y 100 con hasta dos decimales
+            </div>
+          }
         </div>
       </div>
     </div>
