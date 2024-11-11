@@ -13,7 +13,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgClass} from "@angular/common";
 import {map, Observable} from "rxjs";
 import { ChargeService } from '../../../../../services/charge.service';
-import { CategoryCharge } from '../../../../../models/charge';
+import { CategoryCharge, ChargeType } from '../../../../../models/charge';
 
 @Component({
   selector: 'app-new-category-modal',
@@ -27,6 +27,7 @@ import { CategoryCharge } from '../../../../../models/charge';
 })
 export class NewCategoryChargeModalComponent {
   newCategoryForm: FormGroup;
+  chargeType : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.PERCENTAGE,ChargeType.NEGATIVE];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -39,7 +40,8 @@ export class NewCategoryChargeModalComponent {
         asyncValidators: [this.nameValidator()],
         updateOn: 'blur'
       }],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      amount_Sign: ['',Validators.required]
     });
   }
 
@@ -74,8 +76,8 @@ export class NewCategoryChargeModalComponent {
       let newCategory: CategoryCharge = this.newCategoryForm.value;
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
-      newCategory.active = false;
-
+      newCategory.amountSign = newCategory.amountSign;
+      console.log(newCategory);
       this.chargeService.addCategory(newCategory).subscribe({
         next: (response: any) => {
           this.activeModal.close({

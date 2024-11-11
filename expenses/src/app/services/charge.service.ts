@@ -109,23 +109,25 @@ export class ChargeService {
     return this.http.post<Charge>(this.apiUrl, charge);
   }
 
-  getCategoryCharges(): Observable<CategoryCharge[]> {
-    
-    const excluingFines = false;
-    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`);
+  getCategoryCharges(excluingFines : boolean |true): Observable<CategoryCharge[]> {
+    let params = new HttpParams;
+    params = params.set('status', true);
+    params = params.set('excluingFines', excluingFines);
+    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`, { params });
     //return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}`);
 
   }
 
   getCategoriesExcFines() : Observable<CategoryCharge[]> {
-    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/exceptFines`);
+    return this.getCategoryCharges(true);
   }
 
   addCategory(categoryCharge : CategoryCharge) : Observable<CategoryCharge> {
     const headers = new HttpHeaders({
       'x-user-id': '1'
     });
-    categoryCharge.amountSing = ChargeType.ABSOLUTE;
+
+    //categoryCharge.amountSing = ChargeType.ABSOLUTE;
     return this.http.post<CategoryCharge>(this.categoryChargeUrl, categoryCharge, { headers });
   }
 
@@ -141,7 +143,7 @@ export class ChargeService {
   }
 
   validateCategoryName(name: string): Observable<boolean> {
-    return this.getCategoryCharges().pipe(
+    return this.getCategoryCharges(false).pipe(
       map(categories => categories.some(category => category.name.toLowerCase() === name.toLowerCase() ))
     );
   }
