@@ -1,0 +1,55 @@
+<div class="modal-header fs-6 py-1">
+  <h4 class="modal-title">Información del reporte de expensas por lote</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body fs-6 py-2">
+  <div class="container-fluid">
+    <!-- Introducción -->
+    <div class="alert alert-info mb-2 py-2">
+      <h5 class="alert-heading">Descripción de la Pantalla</h5>
+      <p class="mb-0 small">
+        Esta pantalla permite visualizar los montos totales de expensas por lote y el porcentaje de contribución de cada lote dentro del periodo seleccionado.
+      </p>
+    </div>
+
+    <!-- Funcionalidades Principales -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-header bg-light py-2">
+        <h5 class="mb-0 fw-bold">Funcionalidades Principales</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex align-items-start py-2">
+            <div>
+              <strong>Visualización de Datos:</strong>
+              <p class="mb-0 text-muted small">
+                El gráfico de barras muestra los montos totales por lote, mientras que el gráfico circular representa el porcentaje de contribución de cada lote.
+              </p>
+            </div>
+          </li>
+          <li class="list-group-item d-flex align-items-start py-2">
+            <div>
+              <strong>Filtrado por Periodo y Tipo de Lote:</strong>
+              <p class="mb-0 text-muted small">
+                Permite seleccionar un periodo y tipo de lote específico para ajustar la visualización de datos en los gráficos.
+              </p>
+            </div>
+          </li>
+          <li class="list-group-item d-flex align-items-start py-2">
+            <div>
+              <strong>Detalles Interactivos:</strong>
+              <p class="mb-0 text-muted small">
+                Al pasar el cursor sobre los gráficos, puedes ver los valores específicos de cada lote.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    
+  </div>
+</div>
+<div class="modal-footer py-2">
+  <button type="button" class="btn btn-primary" (click)="activeModal.close()">Entendido</button>
+</div>
