@@ -341,12 +341,10 @@ export class ExpensesReportComponent {
       }
     });
   }
-  
+
   /**
    * boton info
    */
-
-  }
   showInfo() {
     this.modalService.open(InfoExpenseReportComponent, {
       size: 'lg',
