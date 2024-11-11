@@ -44,6 +44,9 @@ import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-mod
   styleUrl: './expenses-list-categorycharge.component.css'
 })
 export class ExpensesListCategoryChargesComponent {
+getStatusBadgeClass(arg0: string) {
+throw new Error('Method not implemented.');
+}
 
   //SERVICES
   private toastServices = inject(ToastService);
