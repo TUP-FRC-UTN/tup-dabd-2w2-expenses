@@ -57,7 +57,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
 
   // PAGINATION PROPERTIES
   totalItems = 0;
-  page = 0;
+  page = 1;
   size = 10;
   sortField = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -85,7 +85,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
       ...filters
     };
 
-    this.page = 0;
+    this.page = 1;
     this.loadCategories();
   }
 
@@ -97,7 +97,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
 
   onPageSizeChange = (size: number) => {
     this.size = size;
-    this.page = 0;
+    this.page = 1;
     this.loadCategories();
   };
 
@@ -128,7 +128,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
   private loadCategories(): void {
     this.isLoading = true;
     this.categoryService.getPaginatedCategories(
-      this.page,
+      this.page-1,
       this.size,
       this.sortField,
       this.sortDirection,
@@ -151,7 +151,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
 
   onSearchValueChange(searchTerm: string) {
     this.searchParams['searchTerm'] = searchTerm;
-    this.page = 0;
+    this.page = 1;
     this.loadCategories();
   }
 

@@ -20,6 +20,7 @@ import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, T
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
+import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -369,20 +370,16 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   showPaidModal(item: Bill) {
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-
-    modalRef.componentInstance.alertTitle = 'Pago'
-    modalRef.componentInstance.content = this.paidPdf;
-    modalRef.componentInstance.alertMessage = `${item.category.name} ${item.billType.name} - ${item.supplier.name} (${item.amount?.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })})`;
-    modalRef.componentInstance.alertType = 'info';
+    this.openViewModal(item);
   }
 
-
+  openViewModal(bill: Bill) {
+    const modalRef = this.modalService.open(ViewBillModalComponent, {
+      size: 'lg',
+    });
+    modalRef.componentInstance.bill = bill;
+  }
+  
   //  Pther buttons
   edit(bill: Bill) {
     this.openEditModal(bill);
