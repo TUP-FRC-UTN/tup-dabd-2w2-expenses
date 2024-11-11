@@ -349,8 +349,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
     let extraordinaryValues: number[] = [];
     reportMap.forEach((value, key) => {
       labels = [...labels, key];
-      ordinaryValues = [...ordinaryValues, value.ordinary];
-      extraordinaryValues = [...extraordinaryValues, value.extraordinary];
+      ordinaryValues = [...ordinaryValues, value.ordinary/1000000];
+      extraordinaryValues = [...extraordinaryValues, value.extraordinary/1000000];
     });
     const chartData: ChartData<'radar'> = {
       labels: labels,
@@ -476,9 +476,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
       if (this.typeFilter == 'Porcentaje') {
         data = periodData.ordinary.map((item) => item.data.percentage);
       } else if (this.typeFilter == 'Promedio') {
-        data = periodData.ordinary.map((item) => item.data.average);
+        data = periodData.ordinary.map((item) => item.data.average/1000000);
       }   else  {
-        data = periodData.ordinary.map((item) => item.data.totalAmount);
+        data = periodData.ordinary.map((item) => item.data.totalAmount/1000000);
       }
 
       // Asignar los colores y crear el dataset para las "Ordinarias"
@@ -496,9 +496,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
        if (this.typeFilter == 'Porcentaje') {
         data = periodData.ordinary.map((item) => item.data.percentage);
       } else if (this.typeFilter == 'Promedio') {
-        data = periodData.ordinary.map((item) => item.data.average);
+        data = periodData.ordinary.map((item) => item.data.average/1000000);
       } else {
-        data = periodData.ordinary.map((item) => item.data.totalAmount);
+        data = periodData.ordinary.map((item) => item.data.totalAmount/1000000);
       }
       return {
         Title: 'Extraordinarias',
@@ -631,13 +631,12 @@ export class ExpensesPeriodReportComponent implements OnInit {
       .sort((a, b) => b.totalAmount - a.totalAmount)
       .slice(0, 5);
     const labels = suppliers.map((item) => item.supplierDTO.name);
-    const data = suppliers.map((item) => item.totalAmount);
-
+    const data = suppliers.map((item) =>Number((item.totalAmount/1000000).toFixed(3)) );
     const chartData: ChartData<'bar'> = {
       labels: labels,
       datasets: [
         {
-          label: 'Monto total proveedores',
+          label: 'Monto total proveedores en millones',
           data: data,
           backgroundColor:
             chartId == 'supplier-ordinary'

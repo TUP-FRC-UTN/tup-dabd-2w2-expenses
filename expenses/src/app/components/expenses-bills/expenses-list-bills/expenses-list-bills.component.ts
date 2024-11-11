@@ -425,7 +425,7 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
-  showInfo(): void {
+   showInfo(): void {
     this.modalService.open(ListBillsInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -434,6 +434,7 @@ export class ExpensesListBillsComponent implements OnInit {
       scrollable: true,
     });
   }
+
   //#endregion
 
   //#region DOCUMENT GENERATION

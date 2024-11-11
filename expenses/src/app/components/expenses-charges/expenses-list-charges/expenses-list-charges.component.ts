@@ -50,15 +50,10 @@ import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal
   selector: 'app-expenses-list-charges',
   standalone: true,
   imports: [
-    ExpensesUpdateChargeComponent,
     CommonModule,
-    PeriodSelectComponent,
     FormsModule,
-    ReactiveFormsModule,
     NgPipesModule,
-    TableComponent,
-    ExpensesModalComponent,
-    NgbModule,
+    ExpensesModalComponent,    
     MainContainerComponent,
     TableFiltersComponent
   ],
@@ -219,7 +214,7 @@ addCharge() {
     forkJoin({
       periodos: this.periodService.get(),
       lots: this.lotsService.get(),
-      categories: this.chargeService.getCategoryCharges(),
+      categories: this.chargeService.getCategoryCharges(false),
     }).subscribe({
       next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
@@ -257,7 +252,7 @@ addCharge() {
 
   loadCategoryCharge() {
     this.chargeService
-      .getCategoryCharges()
+      .getCategoryCharges(true)
       .subscribe((data: CategoryCharge[]) => {
         this.categorias = data;
         this.createFilters();

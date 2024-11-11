@@ -4,6 +4,7 @@ import Period from '../models/period';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PORT } from '../const';
+import {expenseReport} from "../models/expenseReport";
 
 export interface Page<T> {
   content: T[];
@@ -81,8 +82,20 @@ export class ExpenseServiceService {
     return this.http.get<Expense[]>(this.apiUrl + 'all', { params })
   }
 
-  getExpensesByLot() : Observable<Expense[]> {
-    return this.http.get<Expense[]>("http://localhost:8088/report/expense")
+  getExpensesByLot(top : boolean, periodId:number, quantity: number) : Observable<expenseReport> {
+    let params = new HttpParams()
+    if (periodId !== undefined && periodId !== 0 && periodId !== null) {
+      params = params.set('periodId', periodId.toString());
+    }
+    if(quantity == 0) {
+      console.log('Aca deberia')
+      quantity = 10
+    }
+    if (quantity !== undefined && quantity !== 0 && quantity !== null) {
+      params = params.set('quantity', quantity.toString());
+    }
+
+    return this.http.get<expenseReport>("http://localhost:8088/report/expense?top=" + top.toString(), {params});
   }
   getLotPercentage() : Observable<number[]> {
     return this.http.get<number[]>(`http://localhost:8088/report/lot`)
