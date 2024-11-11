@@ -1,40 +1,78 @@
-
-<app-main-container title="Reporte de montos totales por lote">
-  <div class="select-container" style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 20px">
+<app-main-container title="Reporte de expensas por lote">
+  <div class="row" style="padding-bottom: 20px">
     <div class="col-auto">
-      <label>Periodo</label>
-      <select class="form-select" aria-label="Default select example" >
-        <option selected>Open this select menu</option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
-      </select>
+      <app-table-filters [filters]="filterConfig"  (filterValueChange)="filterChange($event)"></app-table-filters>
     </div>
     <div class="col-auto">
-      <label>Tipo de lote</label>
-      <select class="form-select" aria-label="Default select example" >
-        <option selected>Open this select menu</option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
-      </select>
+      <button class="btn btn-success me-2" (click)="downloadTable()">
+        <i class="bi bi-file-earmark-excel"></i>
+      </button>
     </div>
   </div>
-  <div class="row">
-    <div class="col"  style="display: block; height: 500px">
-      <h3>Montos Totales por lote</h3>
-      <canvas baseChart
-              [data]="barChartData"
-              [type]="barChartType">
 
-      </canvas>
+  <!-- Contenedor de los KPI -->
+  <div class="kpi-container row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="kpi-card p-3 " style="background-color: lightskyblue;">
+        <h5>Monto Total {{periodo}}</h5>
+        <p class="h4">{{'$' + total }}</p>
+      </div>
     </div>
-    <div class="col"  style="display: block; height: 700px; padding-left: 100px">
-      <h3>Porcentaje de contribución de cada lote</h3>
-      <canvas baseChart
-              [data]="pieChartData"
-              [type]="pieChartType">
-      </canvas>
+    <div class="col-md-3 mb-3">
+      <div class="kpi-card p-3 " style="background-color: lightgreen;">
+        <h5>Promedio por Lote {{periodo}}</h5>
+        <p class="h4">{{'$' + averageAmount }}</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="kpi-card p-3 " style="background-color: #ffc921;">
+        <h5>Total Lotes</h5>
+        <p class="h4">{{ totalLotes }}</p>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="kpi-card p-3 " style="background-color: hotpink;">
+        <h5>Tipos de Lote</h5>
+        <p class="h4">{{ typesPlots }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor de gráficos -->
+  <div class="row h-100" style="height: 50%"> <!-- Añadimos h-100 para asegurar altura completa -->
+    <div class="col-md-8">
+      <div class="card shadow border-0 rounded-4 p-3 mb-4"> <!-- Cambiamos mb-5 por mb-4 para consistencia -->
+        <h4 class="mb-3">Los {{cantidad}} lotes que {{titulo}} {{periodo}}</h4>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="barChartData"
+                  [type]="barChartType"
+                  [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+      <div class="card shadow border-0 rounded-4 p-3">
+        <h4 class="mb-3">Tendencia de Montos por Periodo</h4>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="kpiChart1Data"
+                  [type]="kpiChart1Tpe"
+                  [options]="kpiChart1Options">
+          </canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 d-flex"> <!-- Añadimos d-flex para estirar el contenido -->
+      <div class="card shadow border-0 rounded-4 p-3 w-100"> <!-- Añadimos w-100 -->
+        <h4 class="mb-3">Montos por Tipo de Lote {{periodo}}</h4>
+        <div class="chart-container h-100"> <!-- Añadimos h-100 -->
+          <canvas baseChart
+                  [data]="kpiChart2Data"
+                  [type]="kpiChartTpe"
+                  [options]="kpiChartOptions">
+          </canvas>
+        </div>
+      </div>
     </div>
   </div>
 </app-main-container>
