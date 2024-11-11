@@ -2,11 +2,14 @@ import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import {NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {MainLayoutComponent, NavbarComponent, NavbarItem, SidebarComponent, ToastsContainer} from 'ngx-dabd-grupo01';
+import { BaseChartDirective } from 'ng2-charts';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 @Component({
+  providers: [provideCharts(withDefaultRegisterables())],
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent, ],
+  imports: [RouterOutlet, RouterModule, NgbModalModule, ToastsContainer, NavbarComponent, SidebarComponent, MainLayoutComponent, BaseChartDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -26,8 +29,10 @@ export class AppComponent {
         {
           label: 'Gastos',
           subMenu: [
-            { label: 'Lista de gastos', routerLink: '/gastos' },
-            { label: 'Categorias', routerLink: '/gastos/categorias' }
+            { label: 'Lista', routerLink: '/gastos' },
+            { label: 'Categorias', routerLink: '/gastos/categorias' },
+            { label: 'Reporte de gastos', routerLink: '/gastos/report' },
+
           ],
         },
         {

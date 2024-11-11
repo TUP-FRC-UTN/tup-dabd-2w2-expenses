@@ -340,6 +340,7 @@ export class ExpensesListBillsComponent implements OnInit {
 
   // Load all bills with pagination and filters
   private loadBills(): void {
+
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
@@ -490,6 +491,18 @@ export class ExpensesListBillsComponent implements OnInit {
 
   downloadTable() {
     const filters = this.filters.value;
+
+
+    //const data = [
+    //   { id: 1, name: "John Doe", age: 30 },
+    //   { id: 2, name: "Jane Smith", age: 25 },
+    // ];
+    //
+    // const columns = [
+    //   { header: "ID", accessor: (item) => item.id },
+    //   { header: "Nombre", accessor: (item) => item.name },
+    //   { header: "Edad", accessor: (item) => item.age },
+    // ];
     this.billService
       .getAllBillsAndPagination(
         500000,
