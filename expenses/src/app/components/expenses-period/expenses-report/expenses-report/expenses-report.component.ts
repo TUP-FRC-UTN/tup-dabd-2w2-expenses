@@ -14,10 +14,7 @@ import {
   TableComponent,
   TableFiltersComponent
 } from "ngx-dabd-grupo01";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {MainContainerComponent, TableComponent, TableFiltersComponent} from "ngx-dabd-grupo01";
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-
 import {
   BarController,
   BubbleController,
@@ -339,9 +336,13 @@ export class ExpensesReportComponent {
         ]
       }
     });
+    
   /**
    * boton info
    */
+  
+
+  }
   showInfo() {
     this.modalService.open(InfoExpenseReportComponent, {
       size: 'lg',
@@ -350,8 +351,6 @@ export class ExpensesReportComponent {
       centered: true,
       scrollable: true
     });
-  }
-
   }
 
 

@@ -213,7 +213,7 @@ addCharge() {
     forkJoin({
       periodos: this.periodService.get(),
       lots: this.lotsService.get(),
-      categories: this.chargeService.getCategoryCharges(),
+      categories: this.chargeService.getCategoryCharges(false),
     }).subscribe({
       next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
@@ -251,7 +251,7 @@ addCharge() {
 
   loadCategoryCharge() {
     this.chargeService
-      .getCategoryCharges()
+      .getCategoryCharges(true)
       .subscribe((data: CategoryCharge[]) => {
         this.categorias = data;
         this.createFilters();
