@@ -1,4 +1,4 @@
-import { CategoryCharge, Charge, ChargeType } from './../models/charge';
+import { CategoryCharge, Charge, ChargeType, ReportCharge } from './../models/charge';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
@@ -19,6 +19,7 @@ export class ChargeService {
   private http = inject(HttpClient);
   private categoryChargeUrl = `${PORT}category-charges`;
   private apiUrl = `${PORT}charges`
+  private urlReport = `${PORT}report/charge`;
   constructor() {}
 
   addCharge(charge: Charge): Observable<Charge> {
@@ -180,4 +181,8 @@ export class ChargeService {
     return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
   }
 
+  /****ACA VIENE LO DE  REPORTE */
+  getReport(periodId : number) : Observable<ReportCharge> {
+    return this.http.get<ReportCharge>(`${this.urlReport}?periodId=${periodId}`);
+  }
 }
