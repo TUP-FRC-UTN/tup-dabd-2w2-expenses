@@ -102,7 +102,7 @@ export class ExpensesCategoryBillComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
-    this.searchParams = { 'isDeleted':'false' };
+    //this.searchParams = { 'isDeleted':'false' };
     this.loadCategories();
   }
 
