@@ -29,6 +29,7 @@ import { EditCategoryModalComponent } from '../../modals/charges/category/edit-c
 import { DeleteCategoryModalComponent } from '../../modals/charges/category/delete-categoryCharge-modal/delete-categoryCharge-modal.component';
 import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
 import { ExpensesModalComponent } from '../../modals/expenses-modal/expenses-modal.component';
+import { CategoryChargeInfoComponent } from '../../modals/info/category-charge-info/category-charge-info.component';
 
 @Component({
   selector: 'app-expenses-list-category-charges',
@@ -289,13 +290,13 @@ throw new Error('Method not implemented.');
 
 
   showInfo(): void {
-    /*this.modalService.open(, {
+    this.modalService.open(CategoryChargeInfoComponent, {
       size: 'lg',
       backdrop: 'static',
       keyboard: false,
       centered: true,
       scrollable: true
-    });*/
+    });
   }
 
   downloadTable() {
