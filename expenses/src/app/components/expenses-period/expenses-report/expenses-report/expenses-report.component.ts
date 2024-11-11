@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {PeriodSelectComponent} from "../../../selects/period-select/period-select.component";
 import {CommonModule, DatePipe} from '@angular/common';
 import {NgPipesModule} from "ngx-pipes";
+
 import {
   Filter,
   FilterOption,
@@ -14,6 +15,9 @@ import {
   TableFiltersComponent
 } from "ngx-dabd-grupo01";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {MainContainerComponent, TableComponent, TableFiltersComponent} from "ngx-dabd-grupo01";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+
 import {
   BarController,
   BubbleController,
@@ -36,6 +40,9 @@ import BillType from "../../../../models/billType";
 import {expenseReport} from "../../../../models/expenseReport";
 import { map } from 'rxjs/operators';
 import * as XLSX from "xlsx";
+import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
+import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
+
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
 @Component({
@@ -59,6 +66,7 @@ export class ExpensesReportComponent {
   top : boolean = false;
   totalAmountPerTypePlot: Map<String, number>[] | undefined
 
+  modalService = inject(NgbModal);
 
   periods: FilterOption[] = [];
   categories: FilterOption[] = []
@@ -331,6 +339,18 @@ export class ExpensesReportComponent {
         ]
       }
     });
+  /**
+   * boton info
+   */
+  showInfo() {
+    this.modalService.open(InfoExpenseReportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+  }
 
   }
 
