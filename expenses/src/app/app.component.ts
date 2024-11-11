@@ -34,7 +34,8 @@ export class AppComponent {
           label: 'Cargos',
           subMenu: [
             { label: 'Lista de cargos', routerLink: '/cargos' },
-            { label: 'Categorias', routerLink: '/cargos/categorias' }
+            { label: 'Categorias', routerLink: '/cargos/categorias' },
+            { label: 'Reporte', routerLink: '/cargos/reportes' }
           ],
         },
         {
