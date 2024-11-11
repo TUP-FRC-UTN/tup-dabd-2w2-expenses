@@ -132,7 +132,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
       {headerName: 'Proveedor', accessorKey: 'supplier.name'},
       {headerName: 'Descripción', accessorKey: 'description'},
       {headerName: 'Estado', accessorKey: 'status', cellRenderer: this.statusTemplate},
-      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate},
+      {headerName: 'Monto', accessorKey: 'amount', cellRenderer: this.amountTemplate, align:'right'},
       {headerName: 'Acciones', accessorKey: 'actions', cellRenderer: this.actionsTemplate},
     ];
   }
