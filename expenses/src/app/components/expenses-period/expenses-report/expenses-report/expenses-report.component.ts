@@ -6,7 +6,7 @@ import {PeriodSelectComponent} from "../../../selects/period-select/period-selec
 import {CommonModule, DatePipe} from '@angular/common';
 import {NgPipesModule} from "ngx-pipes";
 import {MainContainerComponent, TableComponent, TableFiltersComponent} from "ngx-dabd-grupo01";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   BarController,
   BubbleController,
@@ -21,6 +21,8 @@ import {
 } from 'chart.js';
 import {BaseChartDirective} from "ng2-charts";
 import Chart from 'chart.js/auto';
+import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
+import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
 @Component({
@@ -35,7 +37,7 @@ Chart.register(BarController, PieController, RadarController, LineController, Po
 })
 export class ExpensesReportComponent {
 
-
+  modalService = inject(NgbModal);
 
   public barChartType: ChartType = 'bar';
   public barChartData: ChartData<'bar'> = {
@@ -89,6 +91,18 @@ export class ExpensesReportComponent {
   }
 
 
+  /**
+   * boton info
+   */
+  showInfo() {
+    this.modalService.open(InfoExpenseReportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+  }
 
 
 
