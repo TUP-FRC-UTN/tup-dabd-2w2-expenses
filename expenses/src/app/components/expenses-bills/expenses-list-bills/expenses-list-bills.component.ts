@@ -72,7 +72,7 @@ export class ExpensesListBillsComponent implements OnInit {
 
 
   totalItems = 0;
-  page = 0;
+  page = 1;
   size = 10;
   sortField = 'billType.name';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -222,13 +222,13 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   onPageChange = (page: number) => {
-    this.page = page - 1;
+    this.page = page;
     this.loadBills();
   };
 
   onPageSizeChange = (size: number) => {
     this.size = size;
-    this.page = 0;
+    this.page = 1;
     this.loadBills();
   };
 
@@ -341,11 +341,12 @@ export class ExpensesListBillsComponent implements OnInit {
 
   // Load all bills with pagination and filters
   private loadBills(): void {
+
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
-        this.page,
+        this.page - 1,
         this.size,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
@@ -427,6 +428,7 @@ export class ExpensesListBillsComponent implements OnInit {
       scrollable: true,
     });
   }
+
   //#endregion
 
   //#region DOCUMENT GENERATION

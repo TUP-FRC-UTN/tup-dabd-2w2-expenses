@@ -1,5 +1,11 @@
-<app-main-container title="Reporte de expensas por lote">
-  <div class="row" style="padding-bottom: 20px">
+<app-main-container
+  title="Reporte de montos totales por lote"
+  (infoButtonClick)="showInfo()"
+>
+  <div
+    class="select-container"
+    style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 20px"
+  >
     <div class="col-auto">
       <app-table-filters
         [filters]="filterConfig"
@@ -12,15 +18,10 @@
       </button>
     </div>
   </div>
-  <!-- <div class="card flex-grow-1 shadow-sm">
-        <div class="card-body">
-          <h6 class="card-subtitle mb-2 text-muted">Total Proveedores Activos</h6>
-          <h4 class="card-title mb-0">127</h4>
 
-        </div> -->
   <div class="row mb-4 h-100">
     <div
-      class="col-6 gap-4"
+      class="col-6"
       style="
         height: 100%;
         display: flex;
@@ -28,7 +29,7 @@
         justify-content: center;
       "
     >
-      <div class="row">
+      <div class="row my-4">
         <div class="col-6">
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
@@ -36,7 +37,7 @@
                 Monto Total {{ periodo }}
               </h6>
               @if (total) {
-                <h3 class="card-title mb-0">{{ "$" + total }} mill</h3>
+              <h3 class="card-title mb-0">{{ "$" + total }} mill</h3>
 
               }
             </div>
@@ -50,24 +51,21 @@
                 Promedio por Lote {{ periodo }}
               </h6>
               @if (averageAmount) {
-                <h3 class="card-title mb-0">{{ "$" + averageAmount }} mill</h3>
+              <h3 class="card-title mb-0">{{ "$" + averageAmount }} mill</h3>
               }
-            
             </div>
-
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row my-4">
         <div class="col-6">
           <div class="card flex-grow-1 shadow-sm h-100">
             <div class="card-body">
               <h6 class="card-subtitle text-muted mb-2 ms-2">Total Lotes</h6>
               @if (totalLotes) {
-                <h3 class="card-title mb-0">{{ totalLotes }}</h3>
+              <h3 class="card-title mb-0">{{ totalLotes }}</h3>
 
               }
-
             </div>
           </div>
         </div>
@@ -76,9 +74,8 @@
             <div class="card-body">
               <h6 class="card-subtitle text-muted mb-2 ms-2">Tipos de Lote</h6>
               @if(typesPlots){
-                <h3 class="card-title mb-0">{{ typesPlots }}</h3>
+              <h3 class="card-title mb-0">{{ typesPlots }}</h3>
               }
-
             </div>
           </div>
         </div>
@@ -101,33 +98,35 @@
   </div>
 
   <!-- Contenedor de gráficos -->
-  <div class="col-12 d-flex gap-4">
-    <!-- Añadimos h-100 para asegurar altura completa -->
-    <div class="col-6 card shadow border-0 rounded-4 p-3 mb-4">
-      <!-- Cambiamos mb-5 por mb-4 para consistencia -->
-      <h4 class="mb-3">
-        Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
-      </h4>
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [data]="barChartData"
-          [type]="barChartType"
-          [options]="barChartOptions"
-        >
-        </canvas>
+  <div class="row d-flex">
+    <div class="col-12 d-flex">
+      <!-- Añadimos h-100 para asegurar altura completa -->
+      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3 me-4">
+        <!-- Cambiamos mb-5 por mb-4 para consistencia -->
+        <h4 class="mb-3">
+          Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
+        </h4>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="barChartData"
+            [type]="barChartType"
+            [options]="barChartOptions"
+          >
+          </canvas>
+        </div>
       </div>
-    </div>
-    <div class="col-6 card shadow border-0 rounded-4 p-3">
-      <h4 class="mb-3">Tendencia de Montos por Periodo</h4>
-      <div class="chart-container">
-        <canvas
-          baseChart
-          [data]="kpiChart1Data"
-          [type]="kpiChart1Tpe"
-          [options]="kpiChart1Options"
-        >
-        </canvas>
+      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3">
+        <h4 class="mb-3">Tendencia últimos 4 periodos</h4>
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="kpiChart1Data"
+            [type]="kpiChart1Tpe"
+            [options]="kpiChart1Options"
+          >
+          </canvas>
+        </div>
       </div>
     </div>
   </div>

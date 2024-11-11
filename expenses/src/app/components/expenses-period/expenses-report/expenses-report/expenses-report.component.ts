@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {PeriodSelectComponent} from "../../../selects/period-select/period-select.component";
 import {CommonModule, DatePipe} from '@angular/common';
 import {NgPipesModule} from "ngx-pipes";
+
 import {
   Filter,
   FilterOption,
@@ -13,7 +14,7 @@ import {
   TableComponent,
   TableFiltersComponent
 } from "ngx-dabd-grupo01";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   BarController,
   BubbleController,
@@ -36,6 +37,9 @@ import BillType from "../../../../models/billType";
 import {expenseReport} from "../../../../models/expenseReport";
 import { map } from 'rxjs/operators';
 import * as XLSX from "xlsx";
+import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
+import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
+
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
 @Component({
@@ -56,10 +60,11 @@ export class ExpensesReportComponent {
   averageAmount: number | undefined;
   totalLotes: number | undefined;
   typesPlots: number | undefined;
-  top : boolean = false;
+  top : boolean = true;
   totalAmountPerTypePlot: Map<String, number>[] | undefined
 
-
+  modalService = inject(NgbModal);
+  menosMayor :number=1
   periods: FilterOption[] = [];
   categories: FilterOption[] = []
   types: FilterOption[]= []
@@ -223,7 +228,7 @@ export class ExpensesReportComponent {
 
 
   service : ExpenseServiceService = inject(ExpenseServiceService);
-  titulo: string = "menos pagaron";
+  titulo: string = "más pagaron";
   periodo: string = "";
   cantidad: number = 10;
 
@@ -246,34 +251,37 @@ export class ExpensesReportComponent {
   }
 
   loadExpenseData(): void {
-    if(this.countPlots == 0) {
+    if (this.countPlots == 0) {
       this.cantidad = 10
       this.countPlots = 10
     }
-    if(this.top == null) {
+    if (this.top == null) {
       this.top = true
     }
     this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
 
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
-      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) ).reverse();
+      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
       // Usar Object.values() y Object.keys() para objetos regulares 
-      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse();
-      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse();
+      console.log(expenseReport.expenses)
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
+      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
-      .map(num => Number(num / 100000))
-      .reverse();
-  
-  const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
+        .map(num => Number(num / 100000))
+        .reverse();
+
+      const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
       // Debug para verificar los datos
       console.log(expenseReport.totalAmountPerPeriod)
       console.log(Object.keys(expenseReport.totalAmountPerPeriod))
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
-        labels : labelsArrayLine,
+        labels: labelsArrayLine,
         datasets: [
-          {data: valuesArrayLine,
-            label: 'Total',}
+          {
+            data: valuesArrayLine,
+            label: 'Total',
+          }
         ]
       }
       this.kpiChart2Data = {
@@ -281,7 +289,7 @@ export class ExpensesReportComponent {
         datasets: [
           {
             data: valuesArray,
-            backgroundColor : [
+            backgroundColor: [
               'rgba(220, 53, 69, 0.2)',   // Rojo
               'rgba(13, 110, 253, 0.2)',  // Azul
               'rgba(123, 31, 162, 0.2)',  // Púrpura
@@ -307,8 +315,9 @@ export class ExpensesReportComponent {
       this.barChartData = {
         labels: lotNumbers,
         datasets: [
-          { data: totalAmounts, label: 'Distribución de Expensas por Lote' ,
-            backgroundColor : [
+          {
+            data: totalAmounts, label: 'Distribución de Expensas por Lote',
+            backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
               'rgba(220, 53, 69, 0.2)',   // Rojo
@@ -327,11 +336,24 @@ export class ExpensesReportComponent {
 
             ],
             borderColor: 'rgba(13,110,253,1)',
-            borderWidth: 1,}
+            borderWidth: 1,
+          }
         ]
       }
     });
+  }
 
+  /**
+   * boton info
+   */
+  showInfo() {
+    this.modalService.open(InfoExpenseReportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
   }
 
 
@@ -359,8 +381,8 @@ export class ExpensesReportComponent {
     this.selectedPeriodId = $event['period'] || null;
     this.countPlots = $event['count']
     this.cantidad = this.countPlots;
-    const topSelected = $event['lot'] || null;
-    if(topSelected == 1) {
+    this.menosMayor = $event['lot'] || null;
+    if(this.menosMayor == 1) {
       this.top = true;
       this.titulo = "más pagaron"
     } else {

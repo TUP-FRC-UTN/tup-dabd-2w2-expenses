@@ -21,7 +21,7 @@ import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import BillType from '../../../models/billType';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgModalComponent } from '../../modals/ng-modal/ng-modal.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { BillInfoComponent } from '../../modals/info/bill-info/bill-info.component';
 import { NewCategoryModalComponent } from '../../modals/bills/new-category-modal/new-category-modal.component';
 import { MainContainerComponent, ToastService } from 'ngx-dabd-grupo01';
@@ -55,6 +55,7 @@ export class ExpensesAddBillComponent implements OnInit {
   private billService = inject(BillService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private router = inject(Router);
   // #endregion
 
   // #region Form Groups and ViewChild
@@ -170,6 +171,7 @@ export class ExpensesAddBillComponent implements OnInit {
               'El gasto se ha añadido correctamente.'
             );
             this.resetForm();
+            this.router.navigate([`gastos`]);
           },
           error: (error: any) => {
             console.error('Error en el post', error);
@@ -191,6 +193,9 @@ export class ExpensesAddBillComponent implements OnInit {
   }
   // #endregion
 
+  onBack() {
+    this.router.navigate([`gastos`]);
+  }
   // #region Form Utilities
   resetForm() {
     this.billForm.reset();
