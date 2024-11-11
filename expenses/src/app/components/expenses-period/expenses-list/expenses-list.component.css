@@ -5,13 +5,13 @@
 
 .chart-container {
   position: relative;
-  height: 200px; // Reducida la altura para el gráfico de barras y línea
+  height: 200px;
 width: 100%;
 }
 
 .pie-chart-container {
   position: relative;
-  height: 200px; // Igualada la altura para el gráfico circular
+  height: 200px; 
 width: 100%;
 }
 

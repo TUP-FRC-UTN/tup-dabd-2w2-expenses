@@ -26,7 +26,7 @@ import {
 
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
 import { ExpensesListCategoryChargesComponent } from './components/expenses-charges/expenses-list-category-charges/expenses-list-categorycharge.component';
-import { ExpensesReportChargesComponent } from './components/expenses-period/expenses-report/expenses-report-charges/expenses-report-charges/expenses-report-charges.component';
+import { ExpensesReportChargesComponent } from './components/expenses-charges/expenses-report-charges/expenses-report-charges/expenses-report-charges.component';
 
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
