@@ -93,7 +93,22 @@ export class ExpensesReportComponent {
   public barChartType: ChartType = 'bar';
   public barChartOptions: ChartOptions = {
     responsive: true,
-    indexAxis: 'x' // Esta opción hace que las barras se muestren de manera horizontal
+    indexAxis: 'x',
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por Lote (en millones)'
+      },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      },
+    }
   };
   public barChartData: ChartData<'bar'> = {
     labels: [],
@@ -113,6 +128,15 @@ export class ExpensesReportComponent {
   public kpiChartTpe: ChartType = 'pie';
   public kpiChartOptions: ChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+      }
+    }
   };
   public kpiChart2Data: ChartData<'pie'> = {
       labels: [],
@@ -141,6 +165,21 @@ export class ExpensesReportComponent {
   public kpiChart1Tpe: ChartType = 'line';
   public kpiChart1Options: ChartOptions = {
     responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por periodo (en millones)'
+      },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      },
+    }
   };
   public kpiChart1Data:  ChartData<'line'> = {
     labels: [],
@@ -199,12 +238,13 @@ export class ExpensesReportComponent {
         this.top = true
       }
       console.log(expenses.totalPlots);
-      this.total = expenses.totalAmount;
-      this.averageAmount = expenses.averageAmount;
+      this.total = Number((expenses.totalAmount / 1000000).toFixed(3));
+      this.averageAmount = Number((expenses.averageAmount/1000000).toFixed(3)) ;
       this.totalLotes = expenses.totalPlots;
       this.typesPlots = expenses.typesPlots;
     })
   }
+
   loadExpenseData(): void {
     if(this.countPlots == 0) {
       this.cantidad = 10
@@ -215,18 +255,19 @@ export class ExpensesReportComponent {
     }
     this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
 
-      const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber);
-      const totalAmounts = expenseReport.expenses.map(expenseReport => expenseReport.totalAmount);
-      // Usar Object.values() y Object.keys() para objetos regulares
-      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot);
-      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot);
-      const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod);
-      const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod);
+      const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
+      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) ).reverse();
+      // Usar Object.values() y Object.keys() para objetos regulares 
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse();
+      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse();
+      const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
+      .map(num => Number(num / 100000))
+      .reverse();
+  
+  const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
       // Debug para verificar los datos
-      console.log('Values:', valuesArray);
-      console.log('Labels:', labelsArray);
-      console.log('Values line:', valuesArrayLine);
-      console.log('Labels line:', labelsArrayLine);
+      console.log(expenseReport.totalAmountPerPeriod)
+      console.log(Object.keys(expenseReport.totalAmountPerPeriod))
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
         labels : labelsArrayLine,

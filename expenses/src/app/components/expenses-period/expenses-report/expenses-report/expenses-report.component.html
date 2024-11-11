@@ -1,7 +1,10 @@
 <app-main-container title="Reporte de expensas por lote">
   <div class="row" style="padding-bottom: 20px">
     <div class="col-auto">
-      <app-table-filters [filters]="filterConfig"  (filterValueChange)="filterChange($event)"></app-table-filters>
+      <app-table-filters
+        [filters]="filterConfig"
+        (filterValueChange)="filterChange($event)"
+      ></app-table-filters>
     </div>
     <div class="col-auto">
       <button class="btn btn-success me-2" (click)="downloadTable()">
@@ -9,69 +12,122 @@
       </button>
     </div>
   </div>
+  <!-- <div class="card flex-grow-1 shadow-sm">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">Total Proveedores Activos</h6>
+          <h4 class="card-title mb-0">127</h4>
 
-  <!-- Contenedor de los KPI -->
-  <div class="kpi-container row mb-4">
-    <div class="col-md-3 mb-3">
-      <div class="kpi-card p-3 " style="background-color: lightskyblue;">
-        <h5>Monto Total {{periodo}}</h5>
-        <p class="h4">{{'$' + total }}</p>
+        </div> -->
+  <div class="row mb-4 h-100">
+    <div
+      class="col-6 gap-4"
+      style="
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      "
+    >
+      <div class="row">
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">
+                Monto Total {{ periodo }}
+              </h6>
+              @if (total) {
+                <h3 class="card-title mb-0">{{ "$" + total }} mill</h3>
+
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">
+                Promedio por Lote {{ periodo }}
+              </h6>
+              @if (averageAmount) {
+                <h3 class="card-title mb-0">{{ "$" + averageAmount }} mill</h3>
+              }
+            
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">Total Lotes</h6>
+              @if (totalLotes) {
+                <h3 class="card-title mb-0">{{ totalLotes }}</h3>
+
+              }
+
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card flex-grow-1 shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-2 ms-2">Tipos de Lote</h6>
+              @if(typesPlots){
+                <h3 class="card-title mb-0">{{ typesPlots }}</h3>
+              }
+
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-md-3 mb-3">
-      <div class="kpi-card p-3 " style="background-color: lightgreen;">
-        <h5>Promedio por Lote {{periodo}}</h5>
-        <p class="h4">{{'$' + averageAmount }}</p>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="kpi-card p-3 " style="background-color: #ffc921;">
-        <h5>Total Lotes</h5>
-        <p class="h4">{{ totalLotes }}</p>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="kpi-card p-3 " style="background-color: hotpink;">
-        <h5>Tipos de Lote</h5>
-        <p class="h4">{{ typesPlots }}</p>
+    <div class="col-6 d-flex">
+      <div class="card shadow border-0 rounded-4 p-3 w-100">
+        <h4 class="mb-3">Montos por Tipo de Lote {{ periodo }}</h4>
+        <div class="col-12">
+          <canvas
+            baseChart
+            [data]="kpiChart2Data"
+            [type]="kpiChartTpe"
+            [options]="kpiChartOptions"
+          >
+          </canvas>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Contenedor de gráficos -->
-  <div class="row h-100" style="height: 50%"> <!-- Añadimos h-100 para asegurar altura completa -->
-    <div class="col-md-8">
-      <div class="card shadow border-0 rounded-4 p-3 mb-4"> <!-- Cambiamos mb-5 por mb-4 para consistencia -->
-        <h4 class="mb-3">Los {{cantidad}} lotes que {{titulo}} {{periodo}}</h4>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="barChartData"
-                  [type]="barChartType"
-                  [options]="barChartOptions">
-          </canvas>
-        </div>
-      </div>
-      <div class="card shadow border-0 rounded-4 p-3">
-        <h4 class="mb-3">Tendencia de Montos por Periodo</h4>
-        <div class="chart-container">
-          <canvas baseChart
-                  [data]="kpiChart1Data"
-                  [type]="kpiChart1Tpe"
-                  [options]="kpiChart1Options">
-          </canvas>
-        </div>
+  <div class="col-12 d-flex gap-4">
+    <!-- Añadimos h-100 para asegurar altura completa -->
+    <div class="col-6 card shadow border-0 rounded-4 p-3 mb-4">
+      <!-- Cambiamos mb-5 por mb-4 para consistencia -->
+      <h4 class="mb-3">
+        Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
+      </h4>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [data]="barChartData"
+          [type]="barChartType"
+          [options]="barChartOptions"
+        >
+        </canvas>
       </div>
     </div>
-    <div class="col-md-4 d-flex"> <!-- Añadimos d-flex para estirar el contenido -->
-      <div class="card shadow border-0 rounded-4 p-3 w-100"> <!-- Añadimos w-100 -->
-        <h4 class="mb-3">Montos por Tipo de Lote {{periodo}}</h4>
-        <div class="chart-container h-100"> <!-- Añadimos h-100 -->
-          <canvas baseChart
-                  [data]="kpiChart2Data"
-                  [type]="kpiChartTpe"
-                  [options]="kpiChartOptions">
-          </canvas>
-        </div>
+    <div class="col-6 card shadow border-0 rounded-4 p-3">
+      <h4 class="mb-3">Tendencia de Montos por Periodo</h4>
+      <div class="chart-container">
+        <canvas
+          baseChart
+          [data]="kpiChart1Data"
+          [type]="kpiChart1Tpe"
+          [options]="kpiChart1Options"
+        >
+        </canvas>
       </div>
     </div>
   </div>
