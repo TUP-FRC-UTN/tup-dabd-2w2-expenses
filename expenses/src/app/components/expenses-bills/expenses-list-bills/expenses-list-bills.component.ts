@@ -38,7 +38,7 @@ import {
   TableComponent,
   TableFiltersComponent,
 } from 'ngx-dabd-grupo01';
-import { of } from 'rxjs';
+import { map, of } from 'rxjs';
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -316,9 +316,9 @@ export class ExpensesListBillsComponent implements OnInit {
         { value: 'NEW', label: 'Nuevo' },
         { value: 'undefined', label: 'Todo' },
       ])
-      .radioFilter('Tipo de proveedor', 'supplier.type',[
-        {value: 'SUPPLIER', label: 'Proveedor'},
-        {value: 'EMPLOYEE', label: 'Empleado'}
+      .radioFilter('Tipo de proveedor', 'supplier.type', [
+        { value: 'SUPPLIER', label: 'Proveedor' },
+        { value: 'EMPLOYEE', label: 'Empleado' }
       ])
       .build();
   }
@@ -336,6 +336,7 @@ export class ExpensesListBillsComponent implements OnInit {
     })
     this.loadBills();
   }
+
 
 
   // Load all bills with pagination and filters
@@ -370,9 +371,7 @@ export class ExpensesListBillsComponent implements OnInit {
         error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
           this.isLoading = false;
-
-        }
-        ,
+        },
       });
   }
 
@@ -387,11 +386,6 @@ export class ExpensesListBillsComponent implements OnInit {
       return dateB.getTime() - dateA.getTime();
     });
   }
-  //#endregion
-
-
-
-
   //#endregion
 
 
@@ -487,21 +481,53 @@ export class ExpensesListBillsComponent implements OnInit {
       });
   }
 
-  downloadTable() {
-    const filters = this.filters.value;
-    this.billService
-      .getAllBillsAndPagination(
-        500000,
-        0,
-        filters.selectedPeriod?.valueOf(),
-        filters.selectedCategory?.valueOf(),
-        filters.selectedSupplier?.valueOf(),
-        filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString()
-      )
-      .subscribe((bills) => {
-        const data = bills.content.map((bill) => ({
+  // downloadTable() {
+  //   const filters = this.filters.value;
+  //   this.billService
+  //     .getAllBillsAndPagination(
+  //       this.page,
+  //       this.size,
+  //       filters.selectedPeriod?.valueOf(),
+  //       filters.selectedCategory?.valueOf(),
+  //       filters.selectedSupplier?.valueOf(),
+  //       filters.selectedType?.valueOf(),
+  //       filters.selectedProvider?.valueOf().toString(),
+  //       filters.selectedStatus?.valueOf().toString(),
+  //     )
+  //     .subscribe((bills) => {
+  //       console.log("Response from API:", bills);
+  //       const data = bills.content.map((bill) => ({
+  //         Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
+  //         'Monto Total': `$ ${bill.amount}`,
+  //         Fecha: bill.date,
+  //         Proveedor: bill.supplier?.name,
+  //         Estado: bill.status,
+  //         Categoría: bill.category.name,
+  //         'Tipo de gasto': bill.bill_type?.name,
+  //         Descripción: bill.description,
+  //       }));
+
+  //       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+  //       const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+  //       XLSX.writeFile(wb, this.fileName);
+  //     });
+  // }
+
+
+  getAllItems = () => {
+    return this.billService.getAllBillsAndPaginationAny(
+      this.page,
+      5000,
+      this.filters.get('selectedPeriod')?.value as number,
+      this.filters.get('selectedCategory')?.value as number,
+      this.filters.get('selectedSupplier')?.value as number,
+      this.filters.get('selectedType')?.value as number,
+      this.filters.get('selectedProvider')?.value as string,
+      this.filters.get('selectedStatus')?.value as string
+    ).pipe(
+      map((response) => {
+        const data = response.content.map((bill) => ({
           Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
           'Monto Total': `$ ${bill.amount}`,
           Fecha: bill.date,
@@ -511,13 +537,15 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
         XLSX.writeFile(wb, this.fileName);
-      });
-  }
+        return response.content;
+      })
+    );
+  };
+
   //#endregion
 
   //#region NAVIGATION
