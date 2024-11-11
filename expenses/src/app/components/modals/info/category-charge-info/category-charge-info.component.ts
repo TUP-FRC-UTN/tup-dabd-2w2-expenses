@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-category-charge-info',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './category-charge-info.component.css'
 })
 export class CategoryChargeInfoComponent {
-
+  constructor(public activeModal: NgbActiveModal) {}
 }
