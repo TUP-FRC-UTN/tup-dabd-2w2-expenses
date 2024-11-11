@@ -100,15 +100,15 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', [Validators.required,this.amountValidator]],
+      amount: ['', [Validators.required]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
 
     // Escuchar cambios en `categoriaId`
-    this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe((categoriaId: number) => {
-      this.updateAmountValidator(this.chargeForm.get('categoryChargeId')?.value);
-    });
+    // this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe((categoriaId: number) => {
+    //   this.updateAmountValidator(this.chargeForm.get('categoryChargeId')?.value);
+    // });
   }
 
   
