@@ -43,7 +43,7 @@ export interface CategoryCharge {
     description: string;
     name: string;
     active: boolean;
-    amountSing : ChargeType;
+    amountSign : ChargeType;
 }
 
 export interface PeriodCharge {

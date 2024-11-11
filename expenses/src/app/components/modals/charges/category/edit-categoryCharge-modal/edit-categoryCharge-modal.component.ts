@@ -35,15 +35,18 @@ export class EditCategoryModalComponent implements OnInit{
   ) {
     this.editCategoryForm = this.formBuilder.group({
       name: [{ value: '', disabled: true }, Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      amount_Sign: [{ value: '', disabled: true },Validators.required]
     });
   }
 
   ngOnInit() {
     // Inicializar el formulario con los datos de la categoría
+    console.log(this.category)
     this.editCategoryForm.patchValue({
       name: this.category.name,
-      description: this.category.description
+      description: this.category.description,
+      amount_Sign : this.category.amountSign.toString()
     });
   }
 
@@ -52,7 +55,8 @@ export class EditCategoryModalComponent implements OnInit{
       const updatedCategory: CategoryCharge = {
         ...this.category,
         name: this.editCategoryForm.get('name')?.value,
-        description: this.editCategoryForm.get('description')?.value
+        description: this.editCategoryForm.get('description')?.value,
+        amountSign: this.editCategoryForm.get('amount_Sign')?.value
       };
 
       this.categoryService.updateCategory(updatedCategory).subscribe({

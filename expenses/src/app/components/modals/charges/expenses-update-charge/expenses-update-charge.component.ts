@@ -83,7 +83,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
     return forkJoin([
       this.periodService.get(),
       this.lotsService.get(),
-      this.chargeService.getCategoryCharges()
+      this.chargeService.getCategoryCharges(true)
     ]).pipe(
       tap(([periodos, lots, categoryCharges]) => {
         this.periodos = periodos;
@@ -116,7 +116,7 @@ export class ExpensesUpdateChargeComponent implements OnInit {
   }
 
   loadCategoryCharge(){
-    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+    this.chargeService.getCategoryCharges(true).subscribe((data: CategoryCharge[]) => {
       this.categoryCharges = data;
     })
   }
