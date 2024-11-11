@@ -60,11 +60,11 @@ export class ExpensesReportComponent {
   averageAmount: number | undefined;
   totalLotes: number | undefined;
   typesPlots: number | undefined;
-  top : boolean = false;
+  top : boolean = true;
   totalAmountPerTypePlot: Map<String, number>[] | undefined
 
   modalService = inject(NgbModal);
-
+  menosMayor :number=1
   periods: FilterOption[] = [];
   categories: FilterOption[] = []
   types: FilterOption[]= []
@@ -228,7 +228,7 @@ export class ExpensesReportComponent {
 
 
   service : ExpenseServiceService = inject(ExpenseServiceService);
-  titulo: string = "menos pagaron";
+  titulo: string = "más pagaron";
   periodo: string = "";
   cantidad: number = 10;
 
@@ -261,10 +261,11 @@ export class ExpensesReportComponent {
     this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
 
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
-      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) ).reverse();
+      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
       // Usar Object.values() y Object.keys() para objetos regulares 
-      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse();
-      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse();
+      console.log(expenseReport.expenses)
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
+      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
       .map(num => Number(num / 100000))
       .reverse();
@@ -378,8 +379,8 @@ export class ExpensesReportComponent {
     this.selectedPeriodId = $event['period'] || null;
     this.countPlots = $event['count']
     this.cantidad = this.countPlots;
-    const topSelected = $event['lot'] || null;
-    if(topSelected == 1) {
+    this.menosMayor = $event['lot'] || null;
+    if(this.menosMayor == 1) {
       this.top = true;
       this.titulo = "más pagaron"
     } else {
