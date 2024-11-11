@@ -251,11 +251,11 @@ export class ExpensesReportComponent {
   }
 
   loadExpenseData(): void {
-    if(this.countPlots == 0) {
+    if (this.countPlots == 0) {
       this.cantidad = 10
       this.countPlots = 10
     }
-    if(this.top == null) {
+    if (this.top == null) {
       this.top = true
     }
     this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
@@ -267,19 +267,21 @@ export class ExpensesReportComponent {
       const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
       const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
-      .map(num => Number(num / 100000))
-      .reverse();
-  
-  const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
+        .map(num => Number(num / 100000))
+        .reverse();
+
+      const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
       // Debug para verificar los datos
       console.log(expenseReport.totalAmountPerPeriod)
       console.log(Object.keys(expenseReport.totalAmountPerPeriod))
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
-        labels : labelsArrayLine,
+        labels: labelsArrayLine,
         datasets: [
-          {data: valuesArrayLine,
-            label: 'Total',}
+          {
+            data: valuesArrayLine,
+            label: 'Total',
+          }
         ]
       }
       this.kpiChart2Data = {
@@ -287,7 +289,7 @@ export class ExpensesReportComponent {
         datasets: [
           {
             data: valuesArray,
-            backgroundColor : [
+            backgroundColor: [
               'rgba(220, 53, 69, 0.2)',   // Rojo
               'rgba(13, 110, 253, 0.2)',  // Azul
               'rgba(123, 31, 162, 0.2)',  // Púrpura
@@ -313,8 +315,9 @@ export class ExpensesReportComponent {
       this.barChartData = {
         labels: lotNumbers,
         datasets: [
-          { data: totalAmounts, label: 'Distribución de Expensas por Lote' ,
-            backgroundColor : [
+          {
+            data: totalAmounts, label: 'Distribución de Expensas por Lote',
+            backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
               'rgba(220, 53, 69, 0.2)',   // Rojo
@@ -333,17 +336,18 @@ export class ExpensesReportComponent {
 
             ],
             borderColor: 'rgba(13,110,253,1)',
-            borderWidth: 1,}
+            borderWidth: 1,
+          }
         ]
       }
     });
-    
+  }
+
   /**
    * boton info
    */
-  
 
-  }
+  
   showInfo() {
     this.modalService.open(InfoExpenseReportComponent, {
       size: 'lg',
