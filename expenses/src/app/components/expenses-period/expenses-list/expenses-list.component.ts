@@ -21,7 +21,8 @@ import {
   MainContainerComponent,
   ToastService, TableFiltersComponent, Filter, FilterConfigBuilder, FilterOption, SelectFilter
 } from "ngx-dabd-grupo01" ;
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {InfoExpensesListComponent} from "../../modals/info-expenses-list/info-expenses-list.component";
 
 
 @Component({
@@ -35,6 +36,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ExpensesListComponent implements OnInit{
 
 
+  modalService = inject(NgbModal);
   private route = inject(ActivatedRoute);
   private readonly periodService = inject(PeriodService)
   private readonly lotsService = inject(LotsService)
@@ -210,9 +212,26 @@ export class ExpensesListComponent implements OnInit{
     ];
     return monthNames[month - 1];
   }
+
+
+  /**
+   * boton info
+   */
   showInfo() {
-    throw new Error('Method not implemented.');
+    this.modalService.open(InfoExpensesListComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
   }
+
+
+
+
+
+
   imprimir() {
     console.log('Imprimiendo')
     const doc = new jsPDF();

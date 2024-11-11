@@ -230,6 +230,15 @@ export class BillService {
 
     return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
+
+  removeBill(id: number):Observable<Bill>{
+    const body: { billId: number, newStatus: string} = { "billId": id, "newStatus": "Cancelado"}
+    const headers = new HttpHeaders({
+      'x-user-id': '1',
+    });
+
+    return this.http.patch<Bill>(`${this.url}bills/status`, body , { headers })
+  }
   //#endregion
 }
 

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExpensesReportComponent } from './expenses-report.component';
+import { DeleteBillModalComponent } from './delete-bill-modal.component';
 
-describe('ExpensesReportComponent', () => {
-  let component: ExpensesReportComponent;
-  let fixture: ComponentFixture<ExpensesReportComponent>;
+describe('DeleteBillModalComponent', () => {
+  let component: DeleteBillModalComponent;
+  let fixture: ComponentFixture<DeleteBillModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExpensesReportComponent]
+      imports: [DeleteBillModalComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ExpensesReportComponent);
+    fixture = TestBed.createComponent(DeleteBillModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

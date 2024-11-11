@@ -21,10 +21,14 @@ import {
 import {ExpensesPeriodComponent} from "./components/expenses-period/expenses-period/expenses-period.component";
 
 import {
-  ExpensesReportComponent
-} from "./components/expenses-period/expenses-report/expenses-report/expenses-report.component";
+  ExpensesPeriodReportComponent
+} from "./components/expenses-period/expenses-period-report/expenses-period-report.component";
 
 import { ExpensesListBillsComponent } from './components/expenses-bills/expenses-list-bills/expenses-list-bills.component';
+import { ExpensesReportComponent } from './components/expenses-period/expenses-report/expenses-report/expenses-report.component';
+import { ExpensesListCategoryChargesComponent } from './components/expenses-charges/expenses-list-category-charges/expenses-list-categorycharge.component';
+import { ExpensesReportChargesComponent } from './components/expenses-charges/expenses-report-charges/expenses-report-charges/expenses-report-charges.component';
+import { TopSupliersComponent } from './components/expenses-period/top-supliers/top-supliers.component';
 
 // import { ExpensesPeriodListComponent } from './components/period/expenses-period-list/expenses-period-list.component';
 // import {CategoryBillComponent} from "./components/expenses_bills/expenses-category-bill/category-bill.component";
@@ -40,6 +44,7 @@ export const routes: Routes = [
   { path: 'periodo/:period_id/liquidacion', component: ExpensesLiquidationComponent },
   { path: 'periodo/:period_id/gastos', component: LiquidationExpenseDetailsComponent },
 
+
   // Ruta expenses - CRUD de expensas
   { path: 'expenses', component: ExpensesListComponent },
   {path: 'expenses/report', component: ExpensesReportComponent},
@@ -50,12 +55,16 @@ export const routes: Routes = [
   { path: 'cargos', component: ExpensesListChargesComponent },
   { path: 'cargos/nuevo', component: ExpensesAddChargeComponent },
   { path: 'cargos/modificar/:id', component: LiquidationExpenseDetailsComponent },
+  { path: 'cargos/categorias', component: ExpensesListCategoryChargesComponent },
+  { path: 'cargos/reportes', component: ExpensesReportChargesComponent },
 
   // Ruta bills - CRUD de gastos
   { path: 'gastos', component: ExpensesListBillsComponent },
   { path: 'gastos/nuevo', component: ExpensesAddBillComponent },
   { path: 'gastos/modificar/:id', component: ExpensesAddBillComponent },
   { path: 'gastos/categorias', component: ExpensesCategoryBillComponent },
+  { path: 'gastos/report', component: ExpensesPeriodReportComponent },
+  { path: 'gastos/top-proveedores', component: TopSupliersComponent },
 
   // Ruta por defecto o de redirección (opcional)
   // { path: '', redirectTo: '', pathMatch: 'full' },

@@ -38,6 +38,7 @@ import { LiquidationExpenseService } from '../../../services/liquidation-expense
 import { forkJoin, mergeMap } from 'rxjs';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import { DatePeriodModalComponent } from '../../modals/periods/date-period-modal/date-period-modal.component';
+import { InfoPeriodComponent } from '../../modals/info/info-period/info-period.component';
 
 @Component({
   selector: 'app-expenses-period-list',
@@ -113,16 +114,15 @@ export class ExpensesPeriodListComponent implements OnInit {
     .build();
 
   fileName = 'reporte-periodos-liquidaciones';
-
-  showModal() {
-    // 'Se muestra una lista con todos los periodos, con su estado y sus montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En la fila del periodo se visualizan distintas acciones para cerrar los periodos en vigencia y poder visualizar mayor detalle de los mismos.'
-    const modalRef = this.modalService.open(ConfirmAlertComponent);
-
-    modalRef.componentInstance.alertMessage =
-      'Se muestra una lista con todos los periodos, incluyendo su estado y los montos de liquidaciones de expensas tanto ordinarias como extraordinarias. En cada fila del período se presentan distintas acciones para cerrar los periodos vigentes y visualizar detalles adicionales. El periodo podrá finalizarse después del día 24 del mes, siempre que cuente con gastos ordinarios y el área de tickets haya recibido el aviso correspondiente.';
-    modalRef.componentInstance.alertType = 'info';
-
-    this.idClosePeriod = null;
+ 
+  showModal():void {
+    this.modalService.open(InfoPeriodComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true,
+    });
   }
 
   loadPaged(page: number) {
