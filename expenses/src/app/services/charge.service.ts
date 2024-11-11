@@ -110,9 +110,9 @@ export class ChargeService {
   }
 
   getCategoryCharges(): Observable<CategoryCharge[]> {
-    const status = true;
+    
     const excluingFines = false;
-    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}?status=${status}&excluingFines=${excluingFines}`);
+    return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}/all`);
     //return this.http.get<CategoryCharge[]>(`${this.categoryChargeUrl}`);
 
   }
@@ -137,7 +137,7 @@ export class ChargeService {
   }
 
   deleteCategoryCharge(category: number): Observable<Boolean> {
-    return this.http.delete<Boolean>(this.apiUrl + '/' + category);
+    return this.http.delete<Boolean>(`${this.categoryChargeUrl}/${category}`);
   }
 
   validateCategoryName(name: string): Observable<boolean> {
@@ -146,13 +146,22 @@ export class ChargeService {
     );
   }
 
-  getCategoryChargesPagination(page: number, size: number, type?: ChargeType): Observable<Page<CategoryCharge>> {
+  getCategoryChargesPagination(page: number, size: number, type?: ChargeType, status? : boolean, excluingFines? : boolean): Observable<Page<CategoryCharge>> {
+    debugger
     let params = new HttpParams()
       .set('page', page)
       .set('size', size);    
 
-    
-    if (type != undefined || type != null) {     
+    if(excluingFines != undefined && excluingFines != null) {   
+         
+      params = params.set('excluingFines', excluingFines!);
+    } 
+    if(status != undefined && status != null) {    
+      debugger  
+      params = params.set('status', status!);
+    }
+    if (type != undefined && type != null) {    
+      debugger 
       let tipo = '';
       switch(type){
         case 'Positivo': tipo = 'ABSOLUTE'; break;
@@ -161,10 +170,12 @@ export class ChargeService {
         default : tipo = 'ABSOLUTE'; break;
 
       }
-      
+      params = params.set('type', tipo);
     }
-    console.log(params);
-    return this.http.get<Page<CategoryCharge>>(this.apiUrl, { params });
+    
+       
+    console.log('Estos son los parametros: ' +params);
+    return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
   }
 
 }

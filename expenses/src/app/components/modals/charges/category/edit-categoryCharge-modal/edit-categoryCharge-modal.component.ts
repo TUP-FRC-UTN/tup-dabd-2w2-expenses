@@ -51,8 +51,8 @@ export class EditCategoryModalComponent implements OnInit{
     if (this.editCategoryForm.valid) {
       const updatedCategory: CategoryCharge = {
         ...this.category,
-        name: this.editCategoryForm.value.name.trim(),
-        description: this.editCategoryForm.value.description.trim()
+        name: this.editCategoryForm.get('name')?.value,
+        description: this.editCategoryForm.get('description')?.value
       };
 
       this.categoryService.updateCategory(updatedCategory).subscribe({

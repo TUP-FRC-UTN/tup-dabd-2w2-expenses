@@ -68,7 +68,7 @@ export class ExpensesListCategoryChargesComponent {
   searchTerm = '';
   fileName: string = 'reporte-categorias-cargos';
 
-  TypeAmount : string = '';
+
 
 
   @ViewChild('statusTemplate') statusTemplate!: TemplateRef<any>;
@@ -89,7 +89,25 @@ export class ExpensesListCategoryChargesComponent {
   // fileName: string = 'reporte-categorias-cargos';
   chargeTypes : ChargeType[] = [ChargeType.ABSOLUTE,ChargeType.PERCENTAGE,ChargeType.NEGATIVE];
   categoryStatus : string[] = ['1','','true','false'];
-  selectedStatus: string | null = null;
+  selectedStatus: boolean | null = null;
+  excluingFines : boolean | null = null;
+  TypeAmount : ChargeType | null = null;
+   // Métodos de Filtro y Paginación
+  //#region FILTER OPERATIONS
+  applyFilters() {
+    this.currentPage = 0;
+    this.cargarPaginado();
+  }
+
+  clearFilters() {
+    this.TypeAmount = null;
+    this.selectedStatus = null;
+    this.excluingFines = null;
+    this.cargarPaginado();
+    this.searchTerm = '';
+  }
+  filters : Filter[]= [];
+  
   filterConfig: Filter[] = new FilterConfigBuilder()
     .selectFilter(
       'Estado',
@@ -105,6 +123,10 @@ export class ExpensesListCategoryChargesComponent {
       value : type,
       label : type.toString()
     })))
+    .radioFilter('Incuye Multas', 'includeFine', [
+      { value: 'false', label: 'Si' },
+      { value: 'true', label: 'No' },
+    ])
     .build()
 
   onFilterValueChange(filters: Record<string, any>) {
@@ -130,29 +152,33 @@ export class ExpensesListCategoryChargesComponent {
 
   ngOnInit(): void {
     this.searchParams = { 'isDeleted':'false' };
-    this.loadCategories();
+    this.cargarPaginado();
+    //this.loadCategories();
   }
 
   loadCategories(){
     this.chargesServices.getCategoryCharges().subscribe((data)=>{
       this.categories = data;
+      
     })
   }
 
   cargarPaginado() {
     const status = this.selectedStatus || undefined;
-    const type = this.getChargeType(this.TypeAmount);
-    
+    const type = this.TypeAmount || undefined //this.getChargeType(this.TypeAmount);
+    const excluingFines = this.excluingFines || false ;
+    debugger
     console.log('El tipo es ' + type)
     this.chargesServices
-      .getCategoryChargesPagination(this.currentPage, this.pageSize, type)
+      .getCategoryChargesPagination(this.currentPage, this.pageSize, type!, status!, excluingFines)
       .subscribe((response) => {
+        debugger
         this.categories = response.content;
         this.categories = this.keysToCamel(this.categories) as CategoryCharge[]; //Cambiar de snake_Case a camelCase       
-              
+        console.log('Categoria en : '+ this.categories);
         this.totalPages = response.totalPages;
         this.totalItems = response.totalElements;
-        this.currentPage = response.number;
+        this.currentPage = response.number;        
       });
     console.log(this.categories);
   }
@@ -175,7 +201,7 @@ export class ExpensesListCategoryChargesComponent {
     }     return o;
   }
 
-  isFine(name :String){
+  isFine(name :String){    
     return name.toLowerCase().includes("multa");
   }
 
@@ -224,9 +250,7 @@ export class ExpensesListCategoryChargesComponent {
       }
     );
   }
-  deleted(){
 
-  }
   addCategory() {
     const modalRef = this.modalService.open(NewCategoryChargeModalComponent);
     modalRef.result.then(
@@ -268,37 +292,47 @@ export class ExpensesListCategoryChargesComponent {
   }
 
   downloadTable() {
-    /*this.chargesServices.getPaginatedCategories(0,this.totalItems,this.sortField,this.sortDirection,this.searchParams)
+    const status = this.selectedStatus || undefined;
+    const type = this.TypeAmount || undefined //this.getChargeType(this.TypeAmount);
+    const excluingFines = this.excluingFines || false ;
+    this.chargesServices.getCategoryChargesPagination(0,this.totalItems,type,status,excluingFines)
       .subscribe(categories =>
         {
           // Mapear los datos a un formato tabular adecuado
           const data = categories.content.map(category => ({
             'Nombre': category.name,
-            'Descripcion': category.description
+            'Descripcion': category.description,
+            'Tipo de valor': category.amountSing,
+            'Estado': category.active
           }));
           const fecha = new Date();
           const finalName = this.fileName + '-' + moment(fecha).format("DD-MM-YYYY_HH-mm");
           const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
           const wb: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, 'Categorias de Gastos');
+          XLSX.utils.book_append_sheet(wb, ws, 'Categorias de Cargos');
           XLSX.writeFile(wb, `${finalName}.xlsx`);
         }
-      )*/
+      )
   }
 
   imprimirPDF() {
+    const status = this.selectedStatus || undefined;
+    const type = this.TypeAmount || undefined //this.getChargeType(this.TypeAmount);
+    const excluingFines = this.excluingFines || false ;
     let doc = new jsPDF();
     doc.setFontSize(18);
     doc.text('Reporte de Categorias de cargos', 14, 20);
-    /*this.categoryService.getPaginatedCategories(0,this.totalItems,this.sortField,this.sortDirection,this.searchParams)
+    this.chargesServices.getCategoryChargesPagination(0,this.totalItems,type,status,excluingFines)
       .subscribe(categories => {
         // Usando autoTable para agregar la tabla
         autoTable(doc, {
           startY: 30,
-          head: [['Nombre', 'Descripcion']],
+          head: [['Nombre', 'Descripcion','Tipo de Valor','Estado']],
           body: categories.content.map(category => [
             category.name,
-            category.description
+            category.description,
+            category.amountSing,
+            category.active
             ]
           ),
         });
@@ -306,7 +340,7 @@ export class ExpensesListCategoryChargesComponent {
         const fecha = new Date();
         const finalFileName = this.fileName + "-" + moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
         doc.save(finalFileName);
-      });*/
+      });
 
   }
 
@@ -329,9 +363,13 @@ openDeleteModal(category: CategoryCharge) {
 
   modalRef.result.then(
     (result) => {
-      if (result) {
-        this.deleteCategory(result);
+      if (result.success) {
+        this.toastServices.sendSuccess(result.message)
+        //window.location.reload();
         this.cargarPaginado();
+        // this.loadCategories();
+      } else {
+        this.toastServices.sendError(result.message)
       }
     },
     () => {}
@@ -341,7 +379,9 @@ openDeleteModal(category: CategoryCharge) {
 filterChange(event: Record<string, any>) {
     
   // Actualizar las variables de filtro
-  this.TypeAmount = event['chargeType'] || undefined;
+  this.selectedStatus = event['isDeleted'] || null;
+  this.excluingFines = event['includeFine'] || false
+  this.TypeAmount = event['chargeType'] || null;
   console.log('El tipo es' + this.TypeAmount)
   this.cargarPaginado();
 }
