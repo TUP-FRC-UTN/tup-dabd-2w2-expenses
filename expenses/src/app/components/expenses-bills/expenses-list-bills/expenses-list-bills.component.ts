@@ -18,7 +18,6 @@ import {
 } from '@angular/forms';
 import { PeriodService } from '../../../services/period.service';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import BillType from '../../../models/billType';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import * as XLSX from 'xlsx';
@@ -383,6 +382,28 @@ export class ExpensesListBillsComponent implements OnInit {
       keyboard: false
     });
     modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Cancelado"
+    modalRef.componentInstance.action = 'eliminar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
+  }
+
+  activeBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Activo"
+    modalRef.componentInstance.action = 'activar'
     modalRef.result.then(
       (result) => {
         if (result.success) {
@@ -533,7 +554,7 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-  
+
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
@@ -542,7 +563,7 @@ export class ExpensesListBillsComponent implements OnInit {
       })
     );
   };
-  
+
   nuevoGasto() {
     this.router.navigate(['/gastos/nuevo']);
   }
