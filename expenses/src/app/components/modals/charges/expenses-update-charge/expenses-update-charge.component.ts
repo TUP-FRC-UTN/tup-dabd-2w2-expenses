@@ -110,7 +110,6 @@ export class ExpensesUpdateChargeComponent implements OnInit {
   }
 
   getPlotNumber(lotId : number){
-    console.log(this.lots)
     const lot = this.lots.find(lot => lot.id === lotId);
     return lot ? lot.plot_number : undefined;
   }
@@ -139,10 +138,8 @@ export class ExpensesUpdateChargeComponent implements OnInit {
         ...this.chargeForm.value,
       };
       const charge = this.camelToSnake(updatedCharge);
-      console.log(charge);
       this.chargeService.updateCharge(updatedCharge).subscribe(
         (response) => {
-          console.log('Cargo actualizado con éxito:', response);
           this.activeModal.close(true);
         },
         (error) => {

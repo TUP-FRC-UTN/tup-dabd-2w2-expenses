@@ -83,7 +83,6 @@ export class ExpensesListComponent implements OnInit{
       this.selectedPeriodId = Number(this.periodPath)
     }
     this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
-      console.log(data.content)
       this.expenses = data.content.map(expense => {
         const expenses = this.keysToCamel(expense) as Expense;
         return {
@@ -101,7 +100,6 @@ export class ExpensesListComponent implements OnInit{
 
   onPageSizeChange() {
     this.currentPage = 0; // Reinicia a la primera página
-    console.log(this.pageSize)
     this.loadExpenses(0,this.pageSize);
   }
   applyFilters() {
@@ -126,10 +124,8 @@ export class ExpensesListComponent implements OnInit{
   }
 
   onPageChange(page: number): void {
-    console.log(this.totalPages)
     if (page >= 0 && page < this.totalPages) {
 
-      console.log('Cargando página ' + page);
       this.loadExpenses(page, this.pageSize);
       this.updateVisiblePages();
       this.currentPage = page;
@@ -176,7 +172,6 @@ export class ExpensesListComponent implements OnInit{
   loadSelect() {
 
     if (this.periodPath != null) {
-      console.log('Path: ' + this.periodPath);
       this.filterConfig.pop();
     } else {
     this.periodService.get().subscribe((data) => {
@@ -233,7 +228,6 @@ export class ExpensesListComponent implements OnInit{
 
 
   imprimir() {
-    console.log('Imprimiendo')
     const doc = new jsPDF();
 
     // Título del PDF
@@ -257,7 +251,6 @@ export class ExpensesListComponent implements OnInit{
       });
       // Guardar el PDF después de agregar la tabla
       doc.save('expenses_report.pdf');
-      console.log('Impreso')
     });
   }
 
