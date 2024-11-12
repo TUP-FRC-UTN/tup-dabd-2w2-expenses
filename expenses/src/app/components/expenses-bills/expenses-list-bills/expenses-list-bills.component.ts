@@ -65,7 +65,6 @@ export class ExpensesListBillsComponent implements OnInit {
 
   private readonly toastService = inject(ToastService);
 
-  //#region VARIABLES
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
   currentPage: number = 1;
@@ -75,7 +74,6 @@ export class ExpensesListBillsComponent implements OnInit {
   supplierList: { value: string; label: string }[] = [];
   periodsList: { value: string; label: string }[] = [];
   typesList: { value: string; label: string }[] = [];
-
 
   totalItems = 0;
   page = 1;
@@ -88,7 +86,6 @@ export class ExpensesListBillsComponent implements OnInit {
   today: Date = new Date();
   fileName: string = `Gastos_${this.today.toLocaleDateString()}.xlsx`;
 
-  // FormGroup for filters
   filters = new FormGroup({
     selectedCategory: new FormControl(0),
     selectedPeriod: new FormControl<number>(0),
@@ -127,9 +124,6 @@ export class ExpensesListBillsComponent implements OnInit {
     let filterStatus = '';
     if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
 
-
-
-
     this.filteredBills = this.bills.filter((bill) => {
       const matchesCategory = filterCategory
         ? bill.category?.category_id === filterCategory
@@ -159,10 +153,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.page = 1;
     this.filterTableByText(searchTerm);
   }
-
-
-
-  //#endregion
 
   @ViewChild('amountTemplate', { static: true })
   amountTemplate!: TemplateRef<any>;
@@ -238,7 +228,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   };
 
-  //#region DEPENDENCY INJECTION
   billService = inject(BillService);
   categoryService = inject(CategoryService);
   periodService = inject(PeriodService);
@@ -246,7 +235,6 @@ export class ExpensesListBillsComponent implements OnInit {
   modalService = inject(NgbModal);
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  //#endregion
 
   getCategories() {
     this.categoryService.getAllCategories().subscribe((categories) => {
@@ -254,7 +242,7 @@ export class ExpensesListBillsComponent implements OnInit {
         value: category.category_id,
         label: category.name,
       }));
-      this.initializeFilters(); // Actualiza el filtro después de obtener datos
+      this.initializeFilters();
     });
   }
 
@@ -287,7 +275,7 @@ export class ExpensesListBillsComponent implements OnInit {
       this.initializeFilters();
     });
   }
-  // Initialize filter configurations
+
   initializeFilters(): void {
     this.filterConfig = new FilterConfigBuilder()
       .selectFilter(
@@ -308,8 +296,6 @@ export class ExpensesListBillsComponent implements OnInit {
         'Seleccione un periodo',
         this.periodsList
       )
-      // .numberFilter('Monto', 'amount', 'Ingrese el monto')
-      // .dateFilter('Fecha', 'date', 'Seleccione una fecha')
       .selectFilter(
         'Categoría',
         'category.name',
@@ -342,9 +328,6 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
-
-
-  // Load all bills with pagination and filters
   private loadBills(): void {
 
     this.isLoading = true;
@@ -374,7 +357,6 @@ export class ExpensesListBillsComponent implements OnInit {
             }
           });
         },
-        error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
           this.isLoading = false;
         },
@@ -392,10 +374,7 @@ export class ExpensesListBillsComponent implements OnInit {
       return dateB.getTime() - dateA.getTime();
     });
   }
-  //#endregion
 
-
-  //#region MODAL OPERATIONS
   viewBill(bill: Bill) {
     this.openViewModal(bill);
   }
@@ -452,9 +431,6 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
-  //#endregion
-
-  //#region DOCUMENT GENERATION
   imprimir() {
     const doc = new jsPDF();
     doc.setFontSize(18);
@@ -518,7 +494,6 @@ export class ExpensesListBillsComponent implements OnInit {
   //       filters.selectedStatus?.valueOf().toString(),
   //     )
   //     .subscribe((bills) => {
-  //       console.log("Response from API:", bills);
   //       const data = bills.content.map((bill) => ({
   //         Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
   //         'Monto Total': `$ ${bill.amount}`,
@@ -539,7 +514,6 @@ export class ExpensesListBillsComponent implements OnInit {
 
 
   getAllItems = () => {
-    console.log('Calling getAllItems');
     return this.billService.getAllBillsAndPaginationAny(
       0,
       5000,
@@ -551,7 +525,6 @@ export class ExpensesListBillsComponent implements OnInit {
       this.filters.get('selectedStatus')?.value as string
     ).pipe(
       map((response) => {
-        console.log('Response from billService:', response);
         const data = response.content.map((bill) => ({
           Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
           'Monto Total': `$ ${bill.amount}`,
@@ -562,24 +535,17 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-        console.log('Formatted data for Excel:', data);
   
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
-        console.log('Attempting to write Excel file:', this.fileName);
         XLSX.writeFile(wb, this.fileName);
         return response.content;
       })
     );
   };
   
-
-  //#endregion
-
-  //#region NAVIGATION
   nuevoGasto() {
     this.router.navigate(['/gastos/nuevo']);
   }
-  //#endregion
 }
