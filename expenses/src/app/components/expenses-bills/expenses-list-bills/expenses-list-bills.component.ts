@@ -62,7 +62,6 @@ import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/d
 })
 export class ExpensesListBillsComponent implements OnInit {
 
-
   private readonly toastService = inject(ToastService);
 
   bills: Bill[] = [];
@@ -90,8 +89,8 @@ export class ExpensesListBillsComponent implements OnInit {
     selectedCategory: new FormControl(0),
     selectedPeriod: new FormControl<number>(0),
     selectedSupplier: new FormControl(0),
-    selectedProvider: new FormControl('SUPPLIER'),
-    selectedStatus: new FormControl('ACTIVE'),
+    selectedProvider: new FormControl(''),
+    selectedStatus: new FormControl(''),
     selectedType: new FormControl(0),
   });
 
@@ -329,7 +328,6 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   private loadBills(): void {
-
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
