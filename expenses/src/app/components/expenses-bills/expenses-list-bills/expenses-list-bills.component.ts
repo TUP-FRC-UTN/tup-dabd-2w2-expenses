@@ -39,7 +39,7 @@ import {
   TableFiltersComponent,
   ToastService,
 } from 'ngx-dabd-grupo01';
-import { of } from 'rxjs';
+import { map, of } from 'rxjs';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
 
 @Component({
@@ -217,7 +217,7 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   onPageChange = (page: number) => {
-    this.page = page ;
+    this.page = page;
     this.loadBills();
   };
 
@@ -307,9 +307,9 @@ export class ExpensesListBillsComponent implements OnInit {
         { value: 'NEW', label: 'Nuevo' },
         { value: 'undefined', label: 'Todo' },
       ])
-      .radioFilter('Tipo de proveedor', 'supplier.type',[
-        {value: 'SUPPLIER', label: 'Proveedor'},
-        {value: 'EMPLOYEE', label: 'Empleado'}
+      .radioFilter('Tipo de proveedor', 'supplier.type', [
+        { value: 'SUPPLIER', label: 'Proveedor' },
+        { value: 'EMPLOYEE', label: 'Empleado' }
       ])
       .build();
   }
@@ -327,14 +327,12 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
-
-  // Load all bills with pagination and filters
   private loadBills(): void {
     this.isLoading = true;
     const filters = this.filters.value;
     this.billService
       .getAllBillsAndPagination(
-        this.page-1,
+        this.page - 1,
         this.size,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
@@ -357,12 +355,9 @@ export class ExpensesListBillsComponent implements OnInit {
             }
           });
         },
-        error: (error) => console.error('Error al cargar las facturas:', error),
         complete: () => {
           this.isLoading = false;
-
-        }
-        ,
+        },
       });
   }
 
@@ -424,7 +419,7 @@ export class ExpensesListBillsComponent implements OnInit {
     });
   }
 
-   showInfo(): void {
+  showInfo(): void {
     this.modalService.open(ListBillsInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -483,33 +478,52 @@ export class ExpensesListBillsComponent implements OnInit {
       });
   }
 
-  downloadTable() {
-    const filters = this.filters.value;
+  // downloadTable() {
+  //   const filters = this.filters.value;
+  //   this.billService
+  //     .getAllBillsAndPaginationAny(
+  //       this.page,
+  //       this.size,
+  //       filters.selectedPeriod?.valueOf(),
+  //       filters.selectedCategory?.valueOf(),
+  //       filters.selectedSupplier?.valueOf(),
+  //       filters.selectedType?.valueOf(),
+  //       filters.selectedProvider?.valueOf().toString(),
+  //       filters.selectedStatus?.valueOf().toString(),
+  //     )
+  //     .subscribe((bills) => {
+  //       const data = bills.content.map((bill) => ({
+  //         Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
+  //         'Monto Total': `$ ${bill.amount}`,
+  //         Fecha: bill.date,
+  //         Proveedor: bill.supplier?.name,
+  //         Estado: bill.status,
+  //         Categoría: bill.category.name,
+  //         'Tipo de gasto': bill.bill_type?.name,
+  //         Descripción: bill.description,
+  //       }));
+
+  //       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+  //       const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //       XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+  //       XLSX.writeFile(wb, this.fileName);
+  //     });
+  // }
 
 
-    //const data = [
-    //   { id: 1, name: "John Doe", age: 30 },
-    //   { id: 2, name: "Jane Smith", age: 25 },
-    // ];
-    //
-    // const columns = [
-    //   { header: "ID", accessor: (item) => item.id },
-    //   { header: "Nombre", accessor: (item) => item.name },
-    //   { header: "Edad", accessor: (item) => item.age },
-    // ];
-    this.billService
-      .getAllBillsAndPagination(
-        500000,
-        0,
-        filters.selectedPeriod?.valueOf(),
-        filters.selectedCategory?.valueOf(),
-        filters.selectedSupplier?.valueOf(),
-        filters.selectedType?.valueOf(),
-        filters.selectedProvider?.valueOf().toString(),
-        filters.selectedStatus?.valueOf().toString()
-      )
-      .subscribe((bills) => {
-        const data = bills.content.map((bill) => ({
+  getAllItems = () => {
+    return this.billService.getAllBillsAndPaginationAny(
+      0,
+      5000,
+      this.filters.get('selectedPeriod')?.value as number,
+      this.filters.get('selectedCategory')?.value as number,
+      this.filters.get('selectedSupplier')?.value as number,
+      this.filters.get('selectedType')?.value as number,
+      this.filters.get('selectedProvider')?.value as string,
+      this.filters.get('selectedStatus')?.value as string
+    ).pipe(
+      map((response) => {
+        const data = response.content.map((bill) => ({
           Periodo: `${bill?.period?.month} / ${bill?.period?.year}`,
           'Monto Total': `$ ${bill.amount}`,
           Fecha: bill.date,
@@ -519,14 +533,16 @@ export class ExpensesListBillsComponent implements OnInit {
           'Tipo de gasto': bill.bill_type?.name,
           Descripción: bill.description,
         }));
-
+  
         const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
         XLSX.writeFile(wb, this.fileName);
-      });
-  }
-
+        return response.content;
+      })
+    );
+  };
+  
   nuevoGasto() {
     this.router.navigate(['/gastos/nuevo']);
   }
