@@ -32,7 +32,6 @@ export class BillService {
   ): Observable<Bill[]> {
     let params = new HttpParams();
 
-    // Agrega solo los parámetros que tengan valores válidos
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
@@ -58,7 +57,6 @@ export class BillService {
       params = params.set('status', status);
     }
 
-    // Realiza la solicitud HTTP con los parámetros construidos
     let result = this.formatBills(
       this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params })
     );
@@ -85,7 +83,58 @@ export class BillService {
   ): Observable<PaginatedResponse<BillDto>> {
     let params = new HttpParams();
 
-    // Agrega solo los parámetros que tengan valores válidos
+    if (size !== undefined && size > 0) {
+      params = params.set('size', size.toString());
+    }
+    if (page !== undefined && page > 0) {
+      params = params.set('page', page.toString());
+    }
+    if (period !== undefined && period > 0) {
+      params = params.set('period', period.toString());
+    }
+    if (category !== undefined && category > 0) {
+      params = params.set('category', category.toString());
+    }
+    if (supplier !== undefined && supplier > 0) {
+      params = params.set('supplier', supplier.toString());
+    }
+    if (type !== undefined && type > 0) {
+      params = params.set('type', type.toString());
+    }
+    if (provider) {
+      params = params.set('provider', provider);
+    }
+    if (status && status !== 'undefined') {
+      params = params.set('status', status);
+    }
+    console.log(`${this.url}bills?${params.toString()}` );
+
+    let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
+    result.subscribe({
+      next: (data) => {
+        console.log('Response data:', data);
+        console.log('Response Content:', data.content);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+    });
+    return result;
+  }
+
+
+  getAllBillsAndPaginationAny(
+    page?: number,
+    size?: number,
+    period?: number,
+    category?: number,
+    supplier?: number,
+    type?: number,
+    provider?: string,
+    status?: string
+  ): Observable<PaginatedResponse<any>> {
+    let params = new HttpParams();
+
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
