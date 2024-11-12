@@ -196,15 +196,12 @@ export class BillService {
     if (status != null) request = request + `&status=${status}`;
     if (category != null) request = request + `&category=${category}`;
     if (period != null) request = request + `&period=${period}`;
+    if (status != null) request = request + `&status=${status}`;
     if (supplier != null) request = request + `&supplier=${supplier}`;
 
     let data = this.http.get<PaginatedResponse<BillDto>>(request);
 
-    try {
-      return of({ pagination: data, bills: this.formatBills(data) });
-    } catch (e) {
-      throw e;
-    }
+    return of({ pagination: data, bills: this.formatBills(data) });
   }
   //#endregion
 
@@ -274,8 +271,8 @@ export class BillService {
     return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
 
-  removeBill(id: number):Observable<Bill>{
-    const body: { billId: number, newStatus: string} = { "billId": id, "newStatus": "Cancelado"}
+  patchBill(id: number, status: string):Observable<Bill>{
+    const body: { billId: number, newStatus: string} = { "billId": id, "newStatus": status}
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });
