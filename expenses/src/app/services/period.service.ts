@@ -24,7 +24,6 @@ export class PeriodService {
      const response = this.http.get<Period[]>(this.apiUrl)
       return response
     }catch( e) {
-      console.log(e)
       throw  e
     }
 
@@ -34,7 +33,6 @@ export class PeriodService {
       const response = this.http.get<Period>(`${this.apiUrl}/open`)
         return response
       }catch( e) {
-        console.log(e)
         throw  e
       }
   }
@@ -53,11 +51,9 @@ export class PeriodService {
   if(year){
     params=params.set('year',year)
   }
-  console.log(params)
   try{
       return this.http.get<Page<Period>>(`${this.apiUrl}/page`, { params });
      }catch( e) {
-       console.log(e)
        throw  e
      }
 
@@ -68,7 +64,6 @@ export class PeriodService {
       'x-user-id': '1'
     });
 
-    console.log(body);
 
 
     return this.http.post<void>(this.apiUrl, body, { headers })
@@ -80,7 +75,6 @@ export class PeriodService {
       'x-user-id': '1'
     });
 
-    console.log(body);
 
 
     return this.http.put<void>(`${this.apiUrl}/update/${id}`, body, { headers });

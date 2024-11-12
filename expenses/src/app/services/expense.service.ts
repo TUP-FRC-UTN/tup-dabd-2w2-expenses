@@ -88,7 +88,6 @@ export class ExpenseServiceService {
       params = params.set('periodId', periodId.toString());
     }
     if(quantity == 0) {
-      console.log('Aca deberia')
       quantity = 10
     }
     if (quantity !== undefined && quantity !== 0 && quantity !== null) {

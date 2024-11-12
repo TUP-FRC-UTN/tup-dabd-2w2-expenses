@@ -127,7 +127,6 @@ addCharge() {
     this.selectedLotId = event['lot'] || null;
     this.selectedCategoryId = event['categoryCharge'] || null;
     this.TypeAmount = event['chargeType'] || undefined;
-    console.log('El tipo es' + this.TypeAmount)
     this.cargarPaginado();
   }
   categoriasCargos :FilterOption[] = [];
@@ -233,7 +232,6 @@ addCharge() {
           });
         });
 
-        console.log('Lotes:', this.lots);
         categories.forEach(category => {
           this.categoriasCargos.push({
             value: category.categoryChargeId.toString(),
@@ -276,7 +274,6 @@ addCharge() {
     const lot = this.selectedLotId || undefined;
     const type = this.getChargeType(this.TypeAmount) || undefined;
 
-    console.log('El tipo es ' + type)
     this.chargeService
       .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
       .subscribe((response) => {
@@ -294,7 +291,6 @@ addCharge() {
         this.totalItems = response.totalElements;
         this.currentPage = response.number;
       });
-    console.log(this.charges);
   }
 
 
@@ -303,7 +299,6 @@ addCharge() {
       ...charge,
       plotNumber: this.getPlotNumber(charge.lotId),
     }));
-    console.log(this.chargesCompleted);
   }
   //#endregion
 

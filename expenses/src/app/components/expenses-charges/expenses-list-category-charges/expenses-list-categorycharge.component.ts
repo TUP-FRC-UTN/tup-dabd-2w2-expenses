@@ -176,19 +176,16 @@ throw new Error('Method not implemented.');
     const type = this.TypeAmount || undefined //this.getChargeType(this.TypeAmount);
     const excluingFines = this.excluingFines || false ;
     debugger
-    console.log('El tipo es ' + type)
     this.chargesServices
       .getCategoryChargesPagination(this.currentPage, this.pageSize, type!, status!, excluingFines)
       .subscribe((response) => {
         debugger
         this.categories = response.content;
         this.categories = this.keysToCamel(this.categories) as CategoryCharge[]; //Cambiar de snake_Case a camelCase       
-        console.log('Categoria en : '+ this.categories);
         this.totalPages = response.totalPages;
         this.totalItems = response.totalElements;
         this.currentPage = response.number;        
       });
-    console.log(this.categories);
   }
 
   toCamel(s: string) {
@@ -390,7 +387,6 @@ filterChange(event: Record<string, any>) {
   this.selectedStatus = event['isDeleted'] || null;
   this.excluingFines = event['includeFine'] || false
   this.TypeAmount = event['chargeType'] || null;
-  console.log('El tipo es' + this.TypeAmount)
   this.cargarPaginado();
 }
 

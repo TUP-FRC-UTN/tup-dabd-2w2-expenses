@@ -77,7 +77,6 @@ export class NewCategoryChargeModalComponent {
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
       newCategory.amountSign = newCategory.amountSign;
-      console.log(newCategory);
       this.chargeService.addCategory(newCategory).subscribe({
         next: (response: any) => {
           this.activeModal.close({
