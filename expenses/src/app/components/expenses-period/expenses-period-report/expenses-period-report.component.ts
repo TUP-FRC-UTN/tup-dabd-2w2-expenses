@@ -232,9 +232,11 @@ export class ExpensesPeriodReportComponent implements OnInit {
           parentElement5.removeChild(parentElement5.firstChild);
         }
       }
+
       return
     }
-    this.loadResume()
+    this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.value)));
+
   }
   getPeriodOptions(): { value: string; label: string }[] {
     return this.periodsList.filter(
