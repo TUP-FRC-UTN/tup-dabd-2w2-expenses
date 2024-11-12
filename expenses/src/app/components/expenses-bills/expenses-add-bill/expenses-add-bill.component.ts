@@ -166,7 +166,6 @@ export class ExpensesAddBillComponent implements OnInit {
         )
         .subscribe({
           next: (response: any) => {
-            console.log('Añadido correctamente', response);
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
@@ -185,7 +184,6 @@ export class ExpensesAddBillComponent implements OnInit {
           },
         });
     } else {
-      console.log('Formulario inválido');
       this.toastService.sendError(
         'Por favor, complete todos los campos requeridos correctamente.'
       );

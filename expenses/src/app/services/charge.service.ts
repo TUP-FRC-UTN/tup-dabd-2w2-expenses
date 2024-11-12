@@ -40,20 +40,17 @@ export class ChargeService {
 
     if (periodId != undefined || periodId != null ) {
       if(periodId != 0){
-        console.log('periodo = '+periodId);
         params = params.set('period', periodId.toString());
       }      
     }
     if(plotId != undefined || plotId != null ){
       if (plotId) {
-        console.log('lote= '+plotId)
         params = params.set('lot', plotId);
       }
     }
     
     if (categoryId != undefined || categoryId != null) {
       if(categoryId != 0){
-        console.log('categoria = '+categoryId);
         params = params.set('category', categoryId.toString());
       }
     }
@@ -67,11 +64,9 @@ export class ChargeService {
         default : tipo = 'ABSOLUTE'; break;
 
       } 
-      console.log('tipo SIGN ES '+tipo);
       params = params.set('type', tipo);
       
     }
-    console.log(params);
     return this.http.get<Page<Charge>>(this.apiUrl, { params });
     /*
     .pipe(
@@ -177,7 +172,6 @@ export class ChargeService {
     }
     
        
-    console.log('Estos son los parametros: ' +params);
     return this.http.get<Page<CategoryCharge>>(this.categoryChargeUrl, { params });
   }
 

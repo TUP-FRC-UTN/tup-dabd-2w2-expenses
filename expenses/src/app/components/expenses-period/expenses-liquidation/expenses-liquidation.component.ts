@@ -99,7 +99,6 @@ export class ExpensesLiquidationComponent implements OnInit {
         .subscribe((data: LiquidationExpense[]) => {
           this.liquidationExpensesList = data;
           this.loadLookList();
-          console.log(data)
         });
     }
   }
@@ -137,12 +136,10 @@ export class ExpensesLiquidationComponent implements OnInit {
 
   seeDetail(categoryId:number) {
     let id = this.listLooking[0].expense_id;
-    console.log(categoryId)
     this.router.navigate([`periodo/${this.id}/liquidacion/${id}/${categoryId}`]);
   }
 
   openErrorModal(err: any) {
-    console.log(err);
     const modalRef = this.modalService.open(NgModalComponent);
     modalRef.componentInstance.title = 'Error';
     modalRef.componentInstance.message = err?.error.message;
@@ -159,7 +156,6 @@ export class ExpensesLiquidationComponent implements OnInit {
   }
 
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
 
     // Título del PDF
@@ -194,10 +190,8 @@ export class ExpensesLiquidationComponent implements OnInit {
 
           // Guardar el PDF después de agregar la tabla
           const fecha = new Date();
-          console.log(fecha);
           const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm") +".pdf";
           doc.save(finalFileName);
-          console.log('Impreso')
         });
     }
   }
@@ -214,7 +208,6 @@ export class ExpensesLiquidationComponent implements OnInit {
     );
 
     const fecha = new Date();
-      console.log(fecha);
      const finalFileName = this.fileName+"-"+ moment(fecha).format("DD-MM-YYYY_HH-mm");
 
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);

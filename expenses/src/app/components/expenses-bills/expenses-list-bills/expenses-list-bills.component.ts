@@ -330,7 +330,6 @@ export class ExpensesListBillsComponent implements OnInit {
   }
 
   onFilterValueChange($event: Record<string, any>) {
-    console.log($event);
 
     this.filters.patchValue({
       selectedCategory: $event['category.name'] === "" ? undefined : $event['category.name'],
@@ -463,7 +462,6 @@ export class ExpensesListBillsComponent implements OnInit {
 
   //#region DOCUMENT GENERATION
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text('Bills Report', 14, 20);
@@ -509,7 +507,6 @@ export class ExpensesListBillsComponent implements OnInit {
         doc.save(
           `Gastos_${this.today.getDay()}-${this.today.getMonth()}-${this.today.getFullYear()}/${this.today.getHours()}hs:${this.today.getMinutes()}min.pdf`
         );
-        console.log('Impreso');
       });
   }
 

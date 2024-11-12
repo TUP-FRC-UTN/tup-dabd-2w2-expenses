@@ -48,7 +48,6 @@ export class EditCategoryModalComponent implements OnInit{
 
       this.categoryService.updateCategory(this.category.category_id!, updatedCategory).subscribe({
         next: (response: any) => {
-          console.log('Actualizado correctamente', response);
           this.activeModal.close({
             success: true,
             message: 'La categoría se ha actualizado correctamente.',

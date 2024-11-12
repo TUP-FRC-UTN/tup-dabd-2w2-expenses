@@ -59,7 +59,6 @@ export class ExpensesReportChargesComponent {
 
     // })
     /*this.service.getExpensesByLot().subscribe(expenses => {
-      console.log(expenses);
       const lotNumbers = expenses.map(expense => expense.plotNumber);
       const totalAmounts = expenses.map(expense => expense.totalAmount);
 
@@ -72,7 +71,6 @@ export class ExpensesReportChargesComponent {
       }
     });
     this.service.getLotPercentage().subscribe(p => {
-      console.log(p);
      const por = p.map(pe => {
         pe = pe * 100 ;
         return pe

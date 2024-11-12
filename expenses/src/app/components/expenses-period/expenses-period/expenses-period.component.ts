@@ -113,16 +113,13 @@ export class ExpensesPeriodComponent implements OnInit {
       return;
     }
   
-    console.log("Period ID:", this.periodId);
   
     this.expenseService
       .getByPeriod(Number(this.periodId))
       .pipe(
         tap(() => {
-          console.log("getByPeriod called and completed");
         }),
         switchMap(() => {
-          console.log("Calling getExpenses...");
           return this.expenseService.getExpenses(
             this.currentPage - 1,
             this.size,
@@ -134,7 +131,6 @@ export class ExpensesPeriodComponent implements OnInit {
       )
       .subscribe(
         (data) => {
-          console.log("Data received from getExpenses:", data);
           this.listExpenses = data.content.map((expense) => {
             const expenses = this.keysToCamel(expense) as Expense;
             return { ...expenses };

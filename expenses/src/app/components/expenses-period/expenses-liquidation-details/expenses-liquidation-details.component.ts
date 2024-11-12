@@ -305,7 +305,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     }));
 
     const fecha = new Date();
-    console.log(fecha);
     const finalFileName =
       this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
 
@@ -317,7 +316,6 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   }
 
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
 
     // Título del PDF
@@ -347,14 +345,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
 
     // Guardar el PDF después de agregar la tabla
     const fecha = new Date();
-    console.log(fecha);
     const finalFileName =
       this.fileName +
       '-' +
       moment(fecha).format('DD-MM-YYYY_HH-mm') +
       '.pdf';
     doc.save(finalFileName);
-    console.log('Impreso');
   }
 
 

@@ -154,8 +154,6 @@ export class ExpensesAddChargeComponent implements OnInit{
   }
 
   onSubmit(): void {
-    console.log(this.chargeForm.value)
-    console.log(this.chargeForm.valid)
 
     if (this.chargeForm.valid) {
       const formValue = this.chargeForm.value;
@@ -168,14 +166,12 @@ export class ExpensesAddChargeComponent implements OnInit{
       } else{
         charge.amountSign = ChargeType.NEGATIVE;
       }
-      console.log(charge);
       const charges = this.camelToSnake(charge) as Charge;
       
       this.chargeService.addCharge(charges).subscribe(
         (response) => {
           this.toastService.sendSuccess("El cargo se ha registrado correctamente");
 
-          console.log('Cargo registrado exitosamente:', response);
           //('Cargo registrado exitosamente');
           this.chargeForm.reset();
           this.router.navigate([`cargos`]);
