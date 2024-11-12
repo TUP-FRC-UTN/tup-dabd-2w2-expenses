@@ -100,7 +100,7 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', [Validators.required]],
+      amount: ['', [Validators.required,this.amountValidator]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
@@ -120,18 +120,14 @@ export class ExpensesAddChargeComponent implements OnInit{
   
       const categoryCharge = this.categoriaCargos.find(c => c.categoryChargeId === categoryChargeId);
       const tipo = categoryCharge?.amountSign;
-  
+      debugger
       if (tipo === ChargeType.ABSOLUTE) {
         // Error si el monto no es positivo
         return amount > 0 ? null : { positiveOnly: true };
       } else if (tipo === ChargeType.NEGATIVE) {
         // Error si el monto no es negativo
         return amount < 0 ? null : { negativeOnly: true };
-      } else if (tipo === ChargeType.PERCENTAGE) {
-        // Error si el monto no está entre 0 y 100 con hasta dos decimales
-        const isPercentage = amount >= 0 && amount <= 100 && /^\d+(\.\d{1,2})?$/.test(amount);
-        return isPercentage ? null : { percentageOnly: true };
-      }
+      } 
   
       return null;
     };
