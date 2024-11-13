@@ -41,3 +41,10 @@
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.hover-show-close .close-btn {
+  visibility: hidden;
+}
+
+.hover-show-close:hover .close-btn {
+  visibility: visible;
+}

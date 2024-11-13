@@ -56,6 +56,7 @@ import { Resume } from '../../../models/report-period/resume';
 import { SupplierDTO } from '../../../models/report-period/SupplierDTO';
 import { SupplierAmount } from '../../../models/report-period/SupplierAmount';
 import * as XLSX from 'xlsx';
+import { NgSelectComponent } from '@ng-select/ng-select';
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -63,12 +64,10 @@ import * as XLSX from 'xlsx';
     CommonModule,
     RouterModule,
     FormsModule,
-    PeriodSelectComponent,
-    TableComponent,
     NgPipesModule,
     MainContainerComponent,
     TableFiltersComponent,
-    BaseChartDirective,
+    NgSelectComponent,
   ],
   providers: [DatePipe, NgbActiveModal, CurrencyPipe, DecimalPipe],
   templateUrl: './expenses-period-report.component.html',
@@ -426,20 +425,16 @@ export class ExpensesPeriodReportComponent implements OnInit {
             label: (tooltipItem) => `${tooltipItem.label}: ${tooltipItem.raw}`,
           },
         },
-      },
-      onClick: (event, elements) => {
-        if (elements.length > 0) {
-          const clickedElement = elements[0];
-          const datasetIndex = clickedElement.datasetIndex;
-          const index = clickedElement.index;
-
-          const category = chartData.labels?.[index];
-          const datasetLabel = chartData.datasets[datasetIndex].label;
-
-          if (datasetLabel === 'Ordinarias') {
-          } else if (datasetLabel === 'Extraordinarias') {
-          }
-        }
+        legend: {
+          onClick: (event, legendItem) => {
+            console.log(event,legendItem)
+            if (legendItem.text === 'Ordinarias ') {
+              console.log("Ordinarias")
+            } else if (legendItem.text === 'Extraordinarias') {
+              console.log('Extraordinarias ');
+            }
+          },
+        },
       },
     };
 
@@ -456,6 +451,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         // Crea el canvas y añádelo
         canvas = document.createElement('canvas');
         canvas.id = chartId; // Asigna un ID único para cada gráfico
+        canvas.height=75
         parentElement.appendChild(canvas); // Añade el canvas al contenedor
       }
 
