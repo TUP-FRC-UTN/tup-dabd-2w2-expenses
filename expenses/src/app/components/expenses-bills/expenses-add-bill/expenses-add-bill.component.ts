@@ -132,7 +132,7 @@ export class ExpensesAddBillComponent implements OnInit {
   loadSelectOptions() {
     this.categories = this.categoryService.getAllCategories();
     this.providers = this.providerService.getAllProviders();
-    this.periods = this.periodService.get();
+    this.periods = this.periodService.getOpenPeriods();
     this.types = this.billService.getBillTypes();
   }
   // #endregion
@@ -173,7 +173,6 @@ export class ExpensesAddBillComponent implements OnInit {
             this.router.navigate([`gastos`]);
           },
           error: (error: any) => {
-            console.error('Error en el post', error);
             if (error.status === 409) {
               this.toastService.sendError(
                 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'

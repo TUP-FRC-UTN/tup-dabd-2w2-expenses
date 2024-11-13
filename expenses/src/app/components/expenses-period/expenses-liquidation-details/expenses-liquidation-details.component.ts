@@ -16,11 +16,12 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import moment from 'moment';
-import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn} from 'ngx-dabd-grupo01';
+import { ConfirmAlertComponent, MainContainerComponent, TableFiltersComponent, TableComponent, Filter, SelectFilter, FilterOption, TableColumn, ToastService, RadioFilter} from 'ngx-dabd-grupo01';
 import { ProviderService } from '../../../services/provider.service';
 import Period from '../../../models/period';
 import { EditBillModalComponent } from '../../modals/bills-modal/edit-bill-modal/edit-bill-modal.component';
 import { ViewBillModalComponent } from '../../modals/bills-modal/view-bill-modal/view-bill-modal.component';
+import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
 
 @Component({
   selector: 'app-expenses-liquidation-details',
@@ -47,7 +48,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   //
   //  Services
   //
-
+  private readonly toastService = inject(ToastService)
   private readonly billsService = inject(BillService);
   private readonly categoryService = inject(CategoryService);
   private readonly supplierService = inject(ProviderService);
@@ -98,7 +99,13 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
   filters: Filter[] = [
     new SelectFilter('Categoría', 'category', 'Seleccione la categoría', this.categories),
     new SelectFilter('Proveedor', 'supplier', 'Seleccione el proveedor', this.suppliers),
-    new SelectFilter('Tipo', 'type', 'Seleccione el tipo', this.billTypes)
+    new SelectFilter('Tipo', 'type', 'Seleccione el tipo', this.billTypes),
+    new RadioFilter('Activo', 'isActive', [
+      { value: 'ACTIVE', label: 'Activo' },
+      { value: 'CANCELLED', label: 'Inactivo' },
+      { value: 'NEW', label: 'Nuevo' },
+      { value: 'undefined', label: 'Todo' },
+    ])
   ];
 
   // pagination
@@ -240,8 +247,12 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     this.filterCategory = value['category']?.toLowerCase() || null;
     this.filterSupplier = value['supplier']?.toLowerCase() || null;
     this.filterType = value['type']?.toLowerCase() || null;
+    let filterStatus = value['isActive'] || null;
 
-    if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null) {
+    if (filterStatus === 'undefined') filterStatus = null;
+
+
+    if (this.filterCategory === null && this.filterSupplier === null && this.filterType === null && filterStatus === null) {
       this.billsFiltered = this.originalBills;
       this.totalItems = this.originalTotalItems
       return;
@@ -254,7 +265,7 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
         this.periodId,
         this.filterCategory,
         this.filterType,
-        null,
+        filterStatus,
         this.filterSupplier
       )
       .subscribe((data) => {
@@ -375,10 +386,50 @@ export class LiquidationExpenseDetailsComponent implements OnInit {
     });
     modalRef.componentInstance.bill = bill;
   }
-  
+
   //  Pther buttons
   edit(bill: Bill) {
     this.openEditModal(bill);
+  }
+
+  deleteBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Cancelado"
+    modalRef.componentInstance.action = 'eliminar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
+  }
+
+  activeBill(bill: Bill) {
+    const modalRef = this.modalService.open(DeleteBillModalComponent, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    modalRef.componentInstance.bill = bill;
+    modalRef.componentInstance.status = "Activo"
+    modalRef.componentInstance.action = 'activar'
+    modalRef.result.then(
+      (result) => {
+        if (result.success) {
+          this.toastService.sendSuccess(result.message)
+          window.location.reload();
+        } else {
+          this.toastService.sendError(result.message)
+        }
+      }
+    );
   }
 
   openEditModal(bill: Bill) {
