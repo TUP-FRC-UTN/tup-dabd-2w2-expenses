@@ -133,6 +133,12 @@ export class ExpensesReportComponent {
   public kpiChartTpe: ChartType = 'pie';
   public kpiChartOptions: ChartOptions = {
     responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Montos por Tipo de Lote (en millones)'
+        }
+      },
     maintainAspectRatio: false,
     layout: {
       padding: {
@@ -262,9 +268,9 @@ export class ExpensesReportComponent {
 
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
       const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
-      // Usar Object.values() y Object.keys() para objetos regulares 
+      // Usar Object.values() y Object.keys() para objetos regulares
       console.log(expenseReport.expenses)
-      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/1000000)).reverse()
       const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
         .map(num => Number(num / 100000))
