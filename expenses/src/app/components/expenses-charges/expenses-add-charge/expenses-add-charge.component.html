@@ -209,8 +209,17 @@
           }">
           <div class="invalid-feedback">
             El monto es obligatorio.
-          </div>
-          
+          </div> 
+          @if(chargeForm.get('amount')?.getError('positveOnly')){
+            <div class="invalid-feedback">
+              Solo se permiten montos positivos.
+            </div>
+          }
+          @if(chargeForm.get('amount')?.hasError('negativeOnly') && chargeForm.get('amount')?.touched){
+            <div class="invalid-feedback">
+              Solo se permiten montos positivos.
+            </div>
+          }
         </div>
       </div>
     </div>

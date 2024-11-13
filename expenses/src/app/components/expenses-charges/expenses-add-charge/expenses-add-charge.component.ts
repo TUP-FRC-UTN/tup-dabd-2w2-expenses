@@ -111,6 +111,7 @@ export class ExpensesAddChargeComponent implements OnInit{
 
   
   amountValidator(): ValidatorFn {
+    console.log(this.chargeForm);
     return (control: AbstractControl): ValidationErrors | null => {
       const amount = control.value;
       const categoryChargeId = this.chargeForm.get('categoryChargeId')?.value;
