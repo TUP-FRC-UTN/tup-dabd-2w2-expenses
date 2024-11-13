@@ -23,6 +23,8 @@ import { ChargeInfoComponent } from '../../modals/info/charge-info/charge-info.c
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 import { map } from 'rxjs';
 import { NewCategoryChargeModalComponent } from '../../modals/charges/category/new-categoryCharge-modal/new-categoryCharge-modal.component';
+import { StorageService } from '../../../services/storage.service';
+import { User } from '../../../models/user';
 @Component({
   selector: 'app-expenses-add-charge',
   standalone: true,
@@ -37,6 +39,7 @@ export class ExpensesAddChargeComponent implements OnInit{
   private chargeService = inject(ChargeService);
   private modalService = inject(NgbModal);
   private router = inject(Router);
+  private storage = inject(StorageService);
   toastService:ToastService = inject(ToastService)
   lots : Lot[] = []
   
@@ -100,19 +103,15 @@ export class ExpensesAddChargeComponent implements OnInit{
       lotId: ['', Validators.required],
       date: ['', Validators.required],
       periodId: ['', Validators.required],
-      amount: ['', [Validators.required]],
+      amount: ['', [Validators.required,this.amountValidator]],
       categoryChargeId: ['', Validators.required],
       description:['']
     });
-
-    // Escuchar cambios en `categoriaId`
-    // this.chargeForm.get('categoryChargeId')?.valueChanges.subscribe((categoriaId: number) => {
-    //   this.updateAmountValidator(this.chargeForm.get('categoryChargeId')?.value);
-    // });
   }
 
   
   amountValidator(): ValidatorFn {
+    console.log(this.chargeForm);
     return (control: AbstractControl): ValidationErrors | null => {
       const amount = control.value;
       const categoryChargeId = this.chargeForm.get('categoryChargeId')?.value;
@@ -137,16 +136,11 @@ export class ExpensesAddChargeComponent implements OnInit{
     };
   }
 
-  updateAmountValidator(categoriaId: number) {
-    const amountControl = this.chargeForm.get('amount');
-    if (amountControl) {
-      amountControl.setValidators([this.amountValidator()]);
-      amountControl.updateValueAndValidity();
-    }
-  }
-
   ngOnInit(): void {
+    this.storage.saveToStorage(this.userLoggin,'user');
     this.loadSelect();
+    let user = this.storage.getFromSessionStorage('user') as User;
+    alert(user.value.first_name)
   }
 
   onBack() {
@@ -216,5 +210,37 @@ export class ExpensesAddChargeComponent implements OnInit{
     }
     return obj;
   }
+
+
+
+  userLoggin = {
+    "value": {
+      "id": 1,
+      "first_name": "Super",
+      "last_name": "Admin",
+      "user_name": "superadmin",
+      "email": "superadmin@example.com",
+      "is_active": true,
+      "owner_id": 1,
+      "plot_id": 1,
+      "addresses": null,
+      "contacts": null,
+      "roles": [
+        {
+          "id": 1,
+          "code": 999,
+          "name": "SUPERADMIN",
+          "description": "Nivel más alto de acceso",
+          "pretty_name": "Superadministrador",
+          "is_active": true
+        }
+      ],
+      "created_date": "12/11/2024 09:53 p. m.",
+      "document_number": "12345678",
+      "document_type": "DNI",
+      "birthdate": "01/01/1990"
+    },
+    "expirationTime": 1731545612929
+  };
 
 }
