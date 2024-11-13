@@ -127,7 +127,6 @@ export class ExpensesPeriodListComponent implements OnInit {
 
   loadPaged(page: number) {
     page = page - 1;
-    console.log(this.size, page, this.state, this.month, this.year);
     this.periodService
       .getPage(this.size, page, this.state, this.month, this.year)
       .subscribe((data) => {
@@ -169,7 +168,6 @@ export class ExpensesPeriodListComponent implements OnInit {
       'Al cerrar el periodo no podrá cargar mas gastos ni cargos al mismo, se cerrará el cálculo y enviará a tickets la información para procesarla. ¿Está seguro que desea continuar?';
     modalRef.componentInstance.alertType = 'danger';
     modalRef.result.then((result) => {
-      console.log(result);
       if (result) {
         this.closePeriod();
         this.loadPaged(this.currentPage);
@@ -184,7 +182,6 @@ export class ExpensesPeriodListComponent implements OnInit {
       'Al cerrar la liquidación inhabilitara la posibilidad de añadir nuevos gastos al periodo. ¿Desea continuar?';
     modalRef.componentInstance.alertType = 'warning';
     modalRef.result.then((result) => {
-      console.log(result);
       if (result && this.idClosePeriod) {
         this.liquidationService
           .putCloseLiquidationExpensesPeriod(this.idClosePeriod)
@@ -203,7 +200,6 @@ export class ExpensesPeriodListComponent implements OnInit {
       'Al abrir la liquidación habilitara nuevamente la posibilidad de añadir nuevos gastos al periodo. ¿Desea continuar?';
     modalRef.componentInstance.alertType = 'warning';
     modalRef.result.then((result) => {
-      console.log(result);
       if (result && this.idClosePeriod) {
         this.liquidationService
           .putCloseLiquidationExpensesPeriod(this.idClosePeriod)
@@ -235,7 +231,6 @@ export class ExpensesPeriodListComponent implements OnInit {
         },
         error => {
           if (error) {
-            console.log(error);
 
             this.toastService.sendError(error.error.message);
           } else {
@@ -263,10 +258,8 @@ export class ExpensesPeriodListComponent implements OnInit {
       this.periodService.closePeriod(this.idClosePeriod).subscribe({
         next: (data) => {
           this.idClosePeriod = null;
-          console.log('Period closed successfully');
         },
         error: (err) => {
-          console.log(err);
           if (err) {
             this.toastService.sendError(err.error.message);
           } else {
@@ -280,7 +273,6 @@ export class ExpensesPeriodListComponent implements OnInit {
   }
 
   filterChange($event: Record<string, any>) {
-    console.log($event);
     const { year, month, estate } = $event; // this.year = null;
     this.year = year;
     this.month = month;
@@ -317,7 +309,6 @@ export class ExpensesPeriodListComponent implements OnInit {
 
         // Convertir los datos tabulares a una hoja de cálculo
         const fecha = new Date();
-        console.log(fecha);
         const finalFileName =
           this.fileName + '-' + moment(fecha).format('DD-MM-YYYY_HH-mm');
 
@@ -329,7 +320,6 @@ export class ExpensesPeriodListComponent implements OnInit {
   }
 
   imprimir() {
-    console.log('Imprimiendo');
     const doc = new jsPDF();
 
     // Título del PDF
@@ -365,14 +355,12 @@ export class ExpensesPeriodListComponent implements OnInit {
         });
         // Guardar el PDF después de agregar la tabla
         const fecha = new Date();
-        console.log(fecha);
         const finalFileName =
           this.fileName +
           '-' +
           moment(fecha).format('DD-MM-YYYY_HH-mm') +
           '.pdf';
         doc.save(finalFileName);
-        console.log('Impreso');
       });
   }
 }

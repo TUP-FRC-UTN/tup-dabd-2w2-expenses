@@ -32,7 +32,6 @@ export class BillService {
   ): Observable<Bill[]> {
     let params = new HttpParams();
 
-    // Agrega solo los parámetros que tengan valores válidos
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
@@ -58,13 +57,11 @@ export class BillService {
       params = params.set('status', status);
     }
 
-    // Realiza la solicitud HTTP con los parámetros construidos
     let result = this.formatBills(
       this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params })
     );
     result.subscribe({
       next: (data) => {
-        console.log('Response data:', data);
       },
       error: (error) => {
         console.error('Error:', error);
@@ -86,7 +83,6 @@ export class BillService {
   ): Observable<PaginatedResponse<BillDto>> {
     let params = new HttpParams();
 
-    // Agrega solo los parámetros que tengan valores válidos
     if (size !== undefined && size > 0) {
       params = params.set('size', size.toString());
     }
@@ -125,6 +121,54 @@ export class BillService {
     });
     return result;
   }
+
+
+  getAllBillsAndPaginationAny(
+    page?: number,
+    size?: number,
+    period?: number,
+    category?: number,
+    supplier?: number,
+    type?: number,
+    provider?: string,
+    status?: string
+  ): Observable<PaginatedResponse<any>> {
+    let params = new HttpParams();
+
+    if (size !== undefined && size > 0) {
+      params = params.set('size', size.toString());
+    }
+    if (page !== undefined && page > 0) {
+      params = params.set('page', page.toString());
+    }
+    if (period !== undefined && period > 0) {
+      params = params.set('period', period.toString());
+    }
+    if (category !== undefined && category > 0) {
+      params = params.set('category', category.toString());
+    }
+    if (supplier !== undefined && supplier > 0) {
+      params = params.set('supplier', supplier.toString());
+    }
+    if (type !== undefined && type > 0) {
+      params = params.set('type', type.toString());
+    }
+    if (provider) {
+      params = params.set('provider', provider);
+    }
+    if (status && status !== 'undefined') {
+      params = params.set('status', status);
+    }
+
+    let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
+    result.subscribe({
+      next: (data) => {
+      },
+      error: (error) => {
+      },
+    });
+    return result;
+  }
   //#endregion
 
   //#region Bill Type Methods
@@ -152,16 +196,12 @@ export class BillService {
     if (status != null) request = request + `&status=${status}`;
     if (category != null) request = request + `&category=${category}`;
     if (period != null) request = request + `&period=${period}`;
+    if (status != null) request = request + `&status=${status}`;
     if (supplier != null) request = request + `&supplier=${supplier}`;
 
     let data = this.http.get<PaginatedResponse<BillDto>>(request);
 
-    try {
-      return of({ pagination: data, bills: this.formatBills(data) });
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
+    return of({ pagination: data, bills: this.formatBills(data) });
   }
   //#endregion
 
@@ -231,8 +271,8 @@ export class BillService {
     return this.http.get<boolean>(`${this.url}bills/valid-date`, { params });
   }
 
-  removeBill(id: number):Observable<Bill>{
-    const body: { billId: number, newStatus: string} = { "billId": id, "newStatus": "Cancelado"}
+  patchBill(id: number, status: string):Observable<Bill>{
+    const body: { billId: number, newStatus: string} = { "billId": id, "newStatus": status}
     const headers = new HttpHeaders({
       'x-user-id': '1',
     });

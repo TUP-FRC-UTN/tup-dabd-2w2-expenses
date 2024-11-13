@@ -166,7 +166,6 @@ export class ExpensesAddBillComponent implements OnInit {
         )
         .subscribe({
           next: (response: any) => {
-            console.log('Añadido correctamente', response);
             this.toastService.sendSuccess(
               'El gasto se ha añadido correctamente.'
             );
@@ -174,7 +173,6 @@ export class ExpensesAddBillComponent implements OnInit {
             this.router.navigate([`gastos`]);
           },
           error: (error: any) => {
-            console.error('Error en el post', error);
             if (error.status === 409) {
               this.toastService.sendError(
                 'Datos incorrectos/inexistentes. Por favor, intentelo de nuevo.'
@@ -185,7 +183,6 @@ export class ExpensesAddBillComponent implements OnInit {
           },
         });
     } else {
-      console.log('Formulario inválido');
       this.toastService.sendError(
         'Por favor, complete todos los campos requeridos correctamente.'
       );

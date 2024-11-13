@@ -33,7 +33,6 @@ export class PeriodSelectComponent implements OnInit {
   onPeriodChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement; 
     const selectedValue = selectElement.value; 
-    console.log('Rami' + selectedValue)
     if (selectedValue) {
       this.periodSelected.emit(Number(selectedValue)); 
     }

@@ -133,12 +133,6 @@ export class ExpensesReportComponent {
   public kpiChartTpe: ChartType = 'pie';
   public kpiChartOptions: ChartOptions = {
     responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: 'Distribución de Montos por Tipo de Lote (en millones)'
-        }
-      },
     maintainAspectRatio: false,
     layout: {
       padding: {
@@ -248,7 +242,6 @@ export class ExpensesReportComponent {
       if(this.top == null) {
         this.top = true
       }
-      console.log(expenses.totalPlots);
       this.total = Number((expenses.totalAmount / 1000000).toFixed(3));
       this.averageAmount = Number((expenses.averageAmount/1000000).toFixed(3)) ;
       this.totalLotes = expenses.totalPlots;
@@ -269,8 +262,7 @@ export class ExpensesReportComponent {
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
       const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
       // Usar Object.values() y Object.keys() para objetos regulares
-      console.log(expenseReport.expenses)
-      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/1000000)).reverse()
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
       const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
         .map(num => Number(num / 100000))
@@ -278,8 +270,6 @@ export class ExpensesReportComponent {
 
       const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
       // Debug para verificar los datos
-      console.log(expenseReport.totalAmountPerPeriod)
-      console.log(Object.keys(expenseReport.totalAmountPerPeriod))
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
         labels: labelsArrayLine,
@@ -401,6 +391,5 @@ export class ExpensesReportComponent {
     }
     this.loadExpenseData()
     this.loadKpis()
-    console.log(this.countPlots)
   }
 }
