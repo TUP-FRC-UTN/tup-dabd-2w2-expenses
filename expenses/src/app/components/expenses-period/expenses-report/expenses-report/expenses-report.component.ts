@@ -71,7 +71,6 @@ export class ExpensesReportComponent {
   filterConfig: Filter[] = [
     new SelectFilter('Tipo de Top','lot','Seleccione un tipo de top',this.categories),
     new NumberFilter('Cantidad de lotes para mostrar','count','Seleccione una cantidad'),
-    new SelectFilter('Periodos','period','Seleccione un periodo',this.periods)
   ]
   selectedPeriodId: number = 0;
   countPlots: number = 10; //Predefinido 10
@@ -167,7 +166,7 @@ export class ExpensesReportComponent {
       }]
 
   };
-  public kpiChart1Tpe: ChartType = 'line';
+  public kpiChart1Tpe: ChartType = 'bar';
   public kpiChart1Options: ChartOptions = {
     responsive: true,
     plugins: {
@@ -261,7 +260,7 @@ export class ExpensesReportComponent {
 
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
       const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
-      // Usar Object.values() y Object.keys() para objetos regulares 
+      // Usar Object.values() y Object.keys() para objetos regulares
       const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
       const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
@@ -277,17 +276,9 @@ export class ExpensesReportComponent {
           {
             data: valuesArrayLine,
             label: 'Total',
-          }
-        ]
-      }
-      this.kpiChart2Data = {
-        labels: labelsArray,
-        datasets: [
-          {
-            data: valuesArray,
             backgroundColor: [
-              'rgba(220, 53, 69, 0.2)',   // Rojo
-              'rgba(13, 110, 253, 0.2)',  // Azul
+              'rgba(255, 193, 7, 0.2)',   // Amarillo
+              'rgba(25, 135, 84, 0.2)',   // Verde
               'rgba(123, 31, 162, 0.2)',  // Púrpura
               'rgba(255, 87, 34, 0.2)',   // Naranja
               'rgba(76, 175, 80, 0.2)',   // Verde claro
@@ -299,8 +290,38 @@ export class ExpensesReportComponent {
               'rgba(158, 158, 158, 0.2)', // Gris
               'rgba(121, 85, 72, 0.2)',   // Café
               'rgba(33, 150, 243, 0.2)',
+              'rgba(220, 53, 69, 0.2)',   // Rojo
+              'rgba(13, 110, 253, 0.2)',  // Azul
+
+
+            ],
+            borderColor: 'rgba(13,110,253,1)',
+            borderWidth: 1,
+          }
+        ]
+      }
+      this.kpiChart2Data = {
+        labels: labelsArray,
+        datasets: [
+          {
+            data: valuesArray,
+            backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
+              'rgba(123, 31, 162, 0.2)',  // Púrpura
+              'rgba(255, 87, 34, 0.2)',   // Naranja
+              'rgba(76, 175, 80, 0.2)',   // Verde claro
+              'rgba(63, 81, 181, 0.2)',   // Azul índigo
+              'rgba(244, 67, 54, 0.2)',   // Rojo claro
+              'rgba(0, 150, 136, 0.2)',   // Turquesa
+              'rgba(255, 235, 59, 0.2)',  // Amarillo claro
+              'rgba(205, 220, 57, 0.2)',  // Lima
+              'rgba(158, 158, 158, 0.2)', // Gris
+              'rgba(121, 85, 72, 0.2)',   // Café
+              'rgba(33, 150, 243, 0.2)',
+              'rgba(220, 53, 69, 0.2)',   // Rojo
+              'rgba(13, 110, 253, 0.2)',  // Azul
+
 
             ],
             borderColor: 'rgba(13,110,253,1)',
