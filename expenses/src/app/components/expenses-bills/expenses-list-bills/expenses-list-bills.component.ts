@@ -73,6 +73,7 @@ export class ExpensesListBillsComponent implements OnInit {
   periodsList: { value: string; label: string }[] = [];
   typesList: { value: string; label: string }[] = [];
 
+  private pageSize = 10;
   totalItems = 0;
   page = 1;
   size = 10;
@@ -96,11 +97,13 @@ export class ExpensesListBillsComponent implements OnInit {
   filterTableByText(value: string) {
     const filterValue = value?.toLowerCase() || '';
     if (filterValue === '') {
-      this.filteredBills = this.bills;
+      const startIndex = (this.page - 1) * this.size;
+      const endIndex = startIndex + this.size;
+      this.filteredBills = this.allBills.slice(startIndex, endIndex);
       return;
     }
 
-    this.filteredBills = this.bills.filter(
+    const filtered = this.allBills.filter(
       (bill) =>
         (bill.billType?.name
           ? bill.billType.name.toLowerCase().includes(filterValue)
@@ -112,6 +115,11 @@ export class ExpensesListBillsComponent implements OnInit {
           ? bill.category.name.toLowerCase().includes(filterValue)
           : false)
     );
+
+    this.totalItems = filtered.length;
+    const startIndex = (this.page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.filteredBills = filtered.slice(startIndex, endIndex);
   }
 
   filterTableBySelects(value: Record<string, any>) {
@@ -120,9 +128,10 @@ export class ExpensesListBillsComponent implements OnInit {
     const filterPeriod = value['period.id'] || 0;
     const filterType = value['billType.name'] || 0;
     let filterStatus = '';
-    if (value['isActive'] !== 'undefined') filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
+    if (value['isActive'] !== 'undefined') 
+      filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
 
-    this.filteredBills = this.bills.filter((bill) => {
+    const filtered = this.allBills.filter((bill) => {
       const matchesCategory = filterCategory
         ? bill.category?.category_id === filterCategory
         : true;
@@ -135,15 +144,18 @@ export class ExpensesListBillsComponent implements OnInit {
       const matchesType = filterType
         ? bill.billType?.bill_type_id === filterType
         : true;
-
-
       const matchesStatus = filterStatus
         ? bill.status === filterStatus
         : true;
 
-
-      return matchesCategory && matchesSupplier && matchesPeriod && matchesType && matchesStatus;
+      return matchesCategory && matchesSupplier && matchesPeriod && 
+             matchesType && matchesStatus;
     });
+
+    this.totalItems = filtered.length;
+    const startIndex = (this.page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.filteredBills = filtered.slice(startIndex, endIndex);
   }
 
   onSearchValueChange(searchTerm: string) {
@@ -217,13 +229,19 @@ export class ExpensesListBillsComponent implements OnInit {
 
   onPageChange = (page: number) => {
     this.page = page;
-    this.loadBills();
+    const startIndex = (page - 1) * this.size;
+    const endIndex = startIndex + this.size;
+    this.bills = this.allBills.slice(startIndex, endIndex);
+    this.filteredBills = [...this.bills];
   };
 
   onPageSizeChange = (size: number) => {
     this.size = size;
     this.page = 1;
-    this.loadBills();
+    const startIndex = 0;
+    const endIndex = size;
+    this.bills = this.allBills.slice(startIndex, endIndex);
+    this.filteredBills = [...this.bills];
   };
 
   billService = inject(BillService);
@@ -326,13 +344,16 @@ export class ExpensesListBillsComponent implements OnInit {
     this.loadBills();
   }
 
+  private allBills: Bill[] = [];
+
   private loadBills(): void {
     this.isLoading = true;
     const filters = this.filters.value;
+    
     this.billService
       .getAllBillsAndPagination(
-        this.page - 1,
-        this.size,
+        0,
+        5000,
         filters.selectedPeriod?.valueOf(),
         filters.selectedCategory?.valueOf(),
         filters.selectedSupplier?.valueOf(),
@@ -342,15 +363,21 @@ export class ExpensesListBillsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          this.totalItems = response.totalElements;
-          //this.totalPages = Math.ceil(this.totalItems / this.size);
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
-              this.bills = this.sortBills(bills);
+              this.allBills = this.sortBills(bills);
+              
+              this.totalItems = this.allBills.length;
+              
+              const startIndex = (this.page - 1) * this.size;
+              const endIndex = startIndex + this.size;
+              this.bills = this.allBills.slice(startIndex, endIndex);
               this.filteredBills = [...this.bills];
             } else {
+              this.allBills = [];
               this.bills = [];
               this.filteredBills = [];
+              this.totalItems = 0;
             }
           });
         },
@@ -360,17 +387,23 @@ export class ExpensesListBillsComponent implements OnInit {
       });
   }
 
-  sortBills(bills: Bill[]): Bill[] {
-    return [...bills].sort((a, b) => {
-      const categoryComparison = a.category.name.localeCompare(b.category.name);
-      if (categoryComparison !== 0) return categoryComparison;
-      const supplierComparison = a.supplier.name.localeCompare(b.supplier.name);
-      if (supplierComparison !== 0) return supplierComparison;
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return dateB.getTime() - dateA.getTime();
+  private sortBills(bills: Bill[]): Bill[] {
+    const statusOrder: { [key: string]: number } = {
+        'Nuevo': 1,
+        'Activo': 2,
+        'Cancelado': 3
+    };
+
+    return bills.sort((a, b) => {
+        const statusComparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+        if (statusComparison !== 0) {
+            return statusComparison;
+        }
+        
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }
+}
+
 
   viewBill(bill: Bill) {
     this.openViewModal(bill);
