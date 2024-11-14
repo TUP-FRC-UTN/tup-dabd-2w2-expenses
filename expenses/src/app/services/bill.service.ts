@@ -107,12 +107,10 @@ export class BillService {
     if (status && status !== 'undefined') {
       params = params.set('status', status);
     }
-    console.log(`${this.url}bills?${params.toString()}` );
 
     let result = this.http.get<PaginatedResponse<BillDto>>(`${this.url}bills`, { params });
     result.subscribe({
       next: (data) => {
-        console.log('Response data:', data);
         console.log('Response Content:', data.content);
       },
       error: (error) => {

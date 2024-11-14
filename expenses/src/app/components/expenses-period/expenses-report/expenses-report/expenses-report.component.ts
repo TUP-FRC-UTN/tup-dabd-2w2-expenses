@@ -43,7 +43,7 @@ import Period from "../../../../models/period";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
-Chart.register(ChartDataLabels);
+Chart.register(ChartDataLabels)
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -130,15 +130,17 @@ export class ExpensesReportComponent {
         label: 'Expensas Totales por Lote',
 
         backgroundColor : [
-          'rgba(255,193,7,0.2)',
-          'rgba(25,135, 84,0.2)',
-          'rgba(220,53, 69,0.2)'
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+          'rgba(255, 145, 158, 1)',    // Rojo pastel
+          'rgba(130, 177, 255, 1)',    // Azul pastel
         ],
-        borderColor: 'rgba(13,110,253,1)',
         borderWidth: 1,
       }
     ]
   };
+
+ 
+
   public kpiChartLote: ChartType = 'pie';
   public kpiChartOptions: ChartOptions = {
     responsive: true,
@@ -162,23 +164,25 @@ export class ExpensesReportComponent {
       labels: [],
       datasets: [{
         data: [],
-
-        backgroundColor: ['rgba(255, 193, 7, 0.2)',
-          'rgba(25, 135, 84, 0.2)',   // Verde
-          'rgba(220, 53, 69, 0.2)',   // Rojo
-          'rgba(13, 110, 253, 0.2)',  // Azul
-          'rgba(123, 31, 162, 0.2)',  // Púrpura
-          'rgba(255, 87, 34, 0.2)',   // Naranja
-          'rgba(76, 175, 80, 0.2)',   // Verde claro
-          'rgba(63, 81, 181, 0.2)',   // Azul índigo
-          'rgba(244, 67, 54, 0.2)',   // Rojo claro
-          'rgba(0, 150, 136, 0.2)',   // Turquesa
-          'rgba(255, 235, 59, 0.2)',  // Amarillo claro
-          'rgba(205, 220, 57, 0.2)',  // Lima
-          'rgba(158, 158, 158, 0.2)', // Gris
-          'rgba(121, 85, 72, 0.2)',   // Café
-          'rgba(33, 150, 243, 0.2)'],
-        borderColor: 'rgba(13,110,253,1)',
+       
+        backgroundColor:   [
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+       'rgba(255, 145, 158, 1)',    // Rojo pastel
+       'rgba(130, 177, 255, 1)',    // Azul pastel
+       'rgba(187, 131, 209, 1)',    // Púrpura pastel
+       'rgba(255, 171, 145, 1)',    // Naranja pastel
+       'rgba(162, 217, 165, 1)',    // Verde claro pastel
+       'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+       'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+       'rgba(126, 206, 198, 1)',    // Turquesa pastel
+       'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+       'rgba(255, 224, 130, 1)',    // Amarillo pastel
+       'rgba(220, 231, 117, 1)',    // Lima pastel
+       'rgba(196, 196, 196, 1)',    // Gris pastel
+       'rgba(188, 170, 164, 1)',    // Café pastel
+       'rgba(144, 202, 249, 1)'     // Azul claro past
+             ]
+      ,
         borderWidth: 1,
       }]
 
@@ -206,22 +210,24 @@ export class ExpensesReportComponent {
     labels: [],
     datasets: [{
       data: [],
-      backgroundColor: ['rgba(255, 193, 7, 0.2)',
-        'rgba(25, 135, 84, 0.2)',   // Verde
-        'rgba(220, 53, 69, 0.2)',   // Rojo
-        'rgba(13, 110, 253, 0.2)',  // Azul
-        'rgba(123, 31, 162, 0.2)',  // Púrpura
-        'rgba(255, 87, 34, 0.2)',   // Naranja
-        'rgba(76, 175, 80, 0.2)',   // Verde claro
-        'rgba(63, 81, 181, 0.2)',   // Azul índigo
-        'rgba(244, 67, 54, 0.2)',   // Rojo claro
-        'rgba(0, 150, 136, 0.2)',   // Turquesa
-        'rgba(255, 235, 59, 0.2)',  // Amarillo claro
-        'rgba(205, 220, 57, 0.2)',  // Lima
-        'rgba(158, 158, 158, 0.2)', // Gris
-        'rgba(121, 85, 72, 0.2)',   // Café
-        'rgba(33, 150, 243, 0.2)'],
-      borderColor: 'rgba(13,110,253,1)',
+      backgroundColor:   [
+        'rgba(98, 182, 143, 1)',     // Verde pastel
+     'rgba(255, 145, 158, 1)',    // Rojo pastel
+     'rgba(130, 177, 255, 1)',    // Azul pastel
+     'rgba(187, 131, 209, 1)',    // Púrpura pastel
+     'rgba(255, 171, 145, 1)',    // Naranja pastel
+     'rgba(162, 217, 165, 1)',    // Verde claro pastel
+     'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+     'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+     'rgba(126, 206, 198, 1)',    // Turquesa pastel
+     'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+     'rgba(255, 224, 130, 1)',    // Amarillo pastel
+     'rgba(220, 231, 117, 1)',    // Lima pastel
+     'rgba(196, 196, 196, 1)',    // Gris pastel
+     'rgba(188, 170, 164, 1)',    // Café pastel
+     'rgba(144, 202, 249, 1)'     // Azul claro past
+           ]
+    ,
       borderWidth: 1,
     }]
   };
@@ -231,16 +237,14 @@ export class ExpensesReportComponent {
     datasets: [
       { data: [],
         backgroundColor : [
-          'rgba(255,193,7,0.2)',
-          'rgba(25,135, 84,0.2)',
-          'rgba(220,53, 69,0.2)'
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+          'rgba(255, 145, 158, 1)',    // Rojo pastel
+          'rgba(130, 177, 255, 1)',    // Azul pastel
         ],
-        borderColor: 'rgba(13,110,253,1)',
         borderWidth: 1,}
     ],
 
   };
-
 
 
   service : ExpenseServiceService = inject(ExpenseServiceService);
@@ -305,26 +309,23 @@ export class ExpensesReportComponent {
                 title: null
               }
             },
-            backgroundColor: [
-              'rgba(255, 193, 7, 0.2)',   // Amarillo
-              'rgba(25, 135, 84, 0.2)',   // Verde
-              'rgba(123, 31, 162, 0.2)',  // Púrpura
-              'rgba(255, 87, 34, 0.2)',   // Naranja
-              'rgba(76, 175, 80, 0.2)',   // Verde claro
-              'rgba(63, 81, 181, 0.2)',   // Azul índigo
-              'rgba(244, 67, 54, 0.2)',   // Rojo claro
-              'rgba(0, 150, 136, 0.2)',   // Turquesa
-              'rgba(255, 235, 59, 0.2)',  // Amarillo claro
-              'rgba(205, 220, 57, 0.2)',  // Lima
-              'rgba(158, 158, 158, 0.2)', // Gris
-              'rgba(121, 85, 72, 0.2)',   // Café
-              'rgba(33, 150, 243, 0.2)',
-              'rgba(220, 53, 69, 0.2)',   // Rojo
-              'rgba(13, 110, 253, 0.2)',  // Azul
-
-
-            ],
-            borderColor: 'rgba(13,110,253,1)',
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
             borderWidth: 1,
           }
         ]
@@ -334,26 +335,23 @@ export class ExpensesReportComponent {
         datasets: [
           {
             data: valuesArray,
-            backgroundColor: [
-              'rgba(255, 193, 7, 0.2)',   // Amarillo
-              'rgba(25, 135, 84, 0.2)',   // Verde
-              'rgba(123, 31, 162, 0.2)',  // Púrpura
-              'rgba(255, 87, 34, 0.2)',   // Naranja
-              'rgba(76, 175, 80, 0.2)',   // Verde claro
-              'rgba(63, 81, 181, 0.2)',   // Azul índigo
-              'rgba(244, 67, 54, 0.2)',   // Rojo claro
-              'rgba(0, 150, 136, 0.2)',   // Turquesa
-              'rgba(255, 235, 59, 0.2)',  // Amarillo claro
-              'rgba(205, 220, 57, 0.2)',  // Lima
-              'rgba(158, 158, 158, 0.2)', // Gris
-              'rgba(121, 85, 72, 0.2)',   // Café
-              'rgba(33, 150, 243, 0.2)',
-              'rgba(220, 53, 69, 0.2)',   // Rojo
-              'rgba(13, 110, 253, 0.2)',  // Azul
-
-
-            ],
-            borderColor: 'rgba(13,110,253,1)',
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
             borderWidth: 1,
           }
         ]
@@ -367,6 +365,13 @@ export class ExpensesReportComponent {
               const total = valuesArray.reduce((acc, curr) => acc + curr, 0);
               const percentage = ((value / total) * 100).toFixed(2) + '%';
               return percentage;  // Muestra el porcentaje en la etiqueta del gráfico
+            },
+            labels: {
+              title: {
+                font: {
+                  weight: 'bold',
+                }
+              },
             },
           }
         },
@@ -387,25 +392,23 @@ export class ExpensesReportComponent {
                 title: null
               }
             },
-            backgroundColor: [
-              'rgba(255, 193, 7, 0.2)',   // Amarillo
-              'rgba(25, 135, 84, 0.2)',   // Verde
-              'rgba(220, 53, 69, 0.2)',   // Rojo
-              'rgba(13, 110, 253, 0.2)',  // Azul
-              'rgba(123, 31, 162, 0.2)',  // Púrpura
-              'rgba(255, 87, 34, 0.2)',   // Naranja
-              'rgba(76, 175, 80, 0.2)',   // Verde claro
-              'rgba(63, 81, 181, 0.2)',   // Azul índigo
-              'rgba(244, 67, 54, 0.2)',   // Rojo claro
-              'rgba(0, 150, 136, 0.2)',   // Turquesa
-              'rgba(255, 235, 59, 0.2)',  // Amarillo claro
-              'rgba(205, 220, 57, 0.2)',  // Lima
-              'rgba(158, 158, 158, 0.2)', // Gris
-              'rgba(121, 85, 72, 0.2)',   // Café
-              'rgba(33, 150, 243, 0.2)'
-
-            ],
-            borderColor: 'rgba(13,110,253,1)',
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
             borderWidth: 1,
           }
         ]
