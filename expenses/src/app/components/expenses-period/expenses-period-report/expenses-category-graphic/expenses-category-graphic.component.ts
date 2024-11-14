@@ -109,6 +109,11 @@ export class ExpensesCategoryGraphicComponent {
 'rgba(144, 202, 249, 1)'     // Azul claro past
       ];
       return {
+        datalabels: {
+          labels: {
+            title: null
+          }
+        },
         backgroundColor: colors[index],
         borderColor: colors[index],
         borderWidth: 1,

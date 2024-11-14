@@ -126,17 +126,26 @@ export class ExpensesPeriodsGraphicBarComponent implements OnChanges  {
       datasets: [
         {
           label: 'Ordinarias',
+          datalabels: {
+            labels: {
+              title: null
+            }
+          },
           data: Array.from(reportMap.values()).map(report => report.ordinary),
+          
           backgroundColor: 'rgba(98, 182, 143, 1)',  // Color verde para Ordinarias
-          borderColor: 'rgba(98, 182, 143, 1)',
-          borderWidth: 1,
+
         },
         {
           label: 'Extraordinarias',
+          datalabels: {
+            labels: {
+              title: null
+            }
+          },
           data: Array.from(reportMap.values()).map(report => report.extraordinary),
           backgroundColor: 'rgba(255, 145, 158, 1)',  // Color rojo para Extraordinarias
-          borderColor: 'rgba(255, 145, 158, 1)',
-          borderWidth: 1,
+
         },
       ]
     };

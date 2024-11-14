@@ -423,13 +423,23 @@ export class ExpensesPeriodReportComponent implements OnInit {
         {
           label: 'Ordinarias ', // Etiqueta para las datos ordinarios
           data: ordinaryValues,
+          datalabels: {
+            labels: {
+              title: null
+            }
+          },
           borderColor: 'rgba(13,110,253,1)',
           backgroundColor: 'rgba(13, 110, 253, 0.2)', // Color de fondo para las áreas ordinarias
           borderWidth: 1,
           pointBackgroundColor: 'rgba(13, 110, 253, 0.2)', // Color de los puntos en las líneas
         },
         {
-          label: 'Extraordinarias ', // Etiqueta para los datos extraordinarios
+          label: 'Extraordinarias ', 
+          datalabels: {
+            labels: {
+              title: null
+            }
+          },
           data: extraordinaryValues,
           borderColor: 'rgba(220, 53, 69, 1)',
           backgroundColor: 'rgba(220, 53, 69, 0.2)', // Color de fondo para las áreas extraordinarias
@@ -514,6 +524,19 @@ export class ExpensesPeriodReportComponent implements OnInit {
         {
           label: 'Monto total proveedores en millones',
           data: data,
+          datalabels: {
+            display: true,
+            formatter: (value) => {
+              return `$${(value * 1000000).toLocaleString()}`; // Multiplica por 10,000 y agrega el símbolo $
+            },
+            labels: {
+              title: {
+                font: {
+                  weight: 'bold',
+                },
+              },
+            },
+          },
           backgroundColor:
             chartId == 'supplier-ordinary'
               ? 'rgba(98, 182, 143, 1)'

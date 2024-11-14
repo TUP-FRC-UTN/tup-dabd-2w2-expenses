@@ -1,21 +1,24 @@
 @if(type=="Ordinary"){
-<canvas
-  baseChart
-  style="height: 250px"
-  [data]="chartDataOrdinary"
-  [type]="chartType"
-  [options]="chartOptions"
->
-</canvas>
+<div class="chart-container">
+  <canvas
+    baseChart
+    style="height: 450px"
+    [data]="chartDataOrdinary"
+    [type]="chartType"
+    [options]="chartOptions"
+  >
+  </canvas>
+</div>
 
 } @if (type=="Extraordinary") {
-<canvas
-  baseChart
-  style="height: 250px"
-  [data]="chartDataExtraordinary"
-  [type]="chartType"
-  [options]="chartOptions"
->
-</canvas>
-
+<div class="chart-container">
+  <canvas
+    baseChart
+    style="height: 450px"
+    [data]="chartDataExtraordinary"
+    [type]="chartType"
+    [options]="chartOptions"
+  >
+  </canvas>
+</div>
 }

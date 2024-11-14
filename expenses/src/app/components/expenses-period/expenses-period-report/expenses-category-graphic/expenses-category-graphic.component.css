@@ -1,0 +1,7 @@
+.chart-container {
+    height: auto;
+    min-height: 450px; /* Set a minimum height if desired */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
