@@ -24,6 +24,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.6",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "json-server": "^1.0.0-beta.3",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",

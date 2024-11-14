@@ -132,7 +132,7 @@ export class ExpensesAddBillComponent implements OnInit {
   loadSelectOptions() {
     this.categories = this.categoryService.getAllCategories();
     this.providers = this.providerService.getAllProviders();
-    this.periods = this.periodService.get();
+    this.periods = this.periodService.getOpenPeriods();
     this.types = this.billService.getBillTypes();
   }
   // #endregion

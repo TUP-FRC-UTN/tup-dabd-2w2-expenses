@@ -207,10 +207,22 @@
             'is-invalid': chargeForm.get('amount')?.invalid && (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched),
             'is-valid': chargeForm.get('amount')?.valid && (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched)
           }">
-          <div class="invalid-feedback">
-            El monto es obligatorio.
-          </div>
-          
+          @if(chargeForm.get('amount')?.errors?.['required'] &&
+          (chargeForm.get('amount')?.dirty || chargeForm.get('amount')?.touched)){
+            <div class="invalid-feedback">
+              El monto es obligatorio.
+            </div>
+          }
+          @if(chargeForm.get('amount')?.errors?.['min']){
+            <div class="invalid-feedback">
+              Solo se permiten montos positivos.
+            </div>
+          }
+          @if(chargeForm.get('amount')?.errors?.['max']){
+            <div class="invalid-feedback">
+              Solo se permiten montos negativos.
+            </div>
+          }
         </div>
       </div>
     </div>

@@ -62,7 +62,7 @@
             <td>{{category.amountSign}}</td>
             <td><i [ngClass]="category.active ? 'bi bi-check2-circle text-success fs-3' : 'bi bi-x-circle text-danger fs-4'"></i></td>
             <td  style="text-align: left; justify-content: center;" >
-              @if(isFine(category.name) ) {
+              @if(isFine(category.name ) || !category.active ) {
 
               } @else {
                 <div class="container" role="group">

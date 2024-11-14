@@ -486,7 +486,7 @@ export class ExpensesListBillsComponent implements OnInit {
   imprimir() {
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.text('Bills Report', 14, 20);
+    doc.text('Lista de Gastos', 14, 20);
 
     const filters = this.filters.value;
     this.billService
