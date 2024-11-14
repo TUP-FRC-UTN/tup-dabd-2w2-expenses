@@ -40,9 +40,10 @@ import * as XLSX from "xlsx";
 import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
 import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
 import Period from "../../../../models/period";
-
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
+Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -75,6 +76,9 @@ export class ExpensesReportComponent {
   ]
   selectedPeriodId: number = 0;
   countPlots: number = 10; //Predefinido 10
+
+
+  public pieChartPlugins: any = [ChartDataLabels];
   ngOnInit(): void {
     this.loadExpenseData();
     this.loadKpis();
@@ -134,7 +138,7 @@ export class ExpensesReportComponent {
       }
     ]
   };
-  public kpiChartTpe: ChartType = 'pie';
+  public kpiChartLote: ChartType = 'pie';
   public kpiChartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -153,7 +157,7 @@ export class ExpensesReportComponent {
         text: 'Distribución de Expensas por Tipo de Lote (en millones)'
       },}
   };
-  public kpiChart2Data: ChartData<'pie'> = {
+  public kpiChartLotData: ChartData<'pie'> = {
       labels: [],
       datasets: [{
         data: [],
@@ -265,9 +269,14 @@ export class ExpensesReportComponent {
       this.cantidad = 10
       this.countPlots = 10
     }
+    if (this.countPlots > 15) {
+      alert("No puede mostrar mas de 15 lotes")
+      return;
+    }
     if (this.top == null) {
       this.top = true
     }
+    let lotNumbersWithPercentage : String[];
     this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
 
       const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
@@ -278,8 +287,9 @@ export class ExpensesReportComponent {
       const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
         .map(num => Number(num / 100000))
         .reverse();
-
+      console.log(expenseReport.percentages)
       const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
+
       // Debug para verificar los datos
       // Reasignar el objeto completo para forzar la detección de cambios
       this.kpiChart1Data = {
@@ -312,7 +322,7 @@ export class ExpensesReportComponent {
           }
         ]
       }
-      this.kpiChart2Data = {
+      this.kpiChartLotData = {
         labels: labelsArray,
         datasets: [
           {
@@ -340,7 +350,25 @@ export class ExpensesReportComponent {
             borderWidth: 1,
           }
         ]
-      }
+      },
+      this.kpiChartOptions = {
+        responsive: true,
+        plugins: {
+          datalabels: {
+            // Mostrar el porcentaje en los datalabels
+            formatter: (value) => {
+              const total = valuesArray.reduce((acc, curr) => acc + curr, 0);
+              const percentage = ((value / total) * 100).toFixed(2) + '%';
+              return percentage;  // Muestra el porcentaje en la etiqueta del gráfico
+            },
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true  // Asegura que la escala Y comienza desde cero
+          }
+        }
+      } as ChartOptions;
       this.barChartData = {
         labels: lotNumbers,
         datasets: [
