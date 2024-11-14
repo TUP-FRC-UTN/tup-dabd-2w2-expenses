@@ -1,6 +1,6 @@
-<app-main-container title="Reporte de expensas">
+<app-main-container title="Reporte de expensas" style="overflow-x: hidden;">
   <!-- Comment out this section to see if it causes the error -->
-  <div class="container">
+  <div class="container" style="overflow-x: hidden;">
     <div class="card shadow-sm border border-1 px-2 p-1">
       <div class="d-flex align-items-center">
         <!-- Filtro de Mes y Año -->
@@ -239,9 +239,9 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 d-flex">
+          <div class="col-12 d-flex flex-wrap-reverse">
             <div class="col-6 p-2">
-              <div class="card shadow border-0 rounded-4 p-3">
+              <div class="card shadow border-0 rounded-1o p-1">
                 <h6 class="card-subtitle mb-2 text-muted">
                   {{ typeFilter }} de gastos en millones
                 </h6>
@@ -253,7 +253,7 @@
               </div>
             </div>
             <div class="col-6 p-2">
-              <div class="card shadow border-0 rounded-4 p-3">
+              <div class="card shadow border-0 rounded-10 p-1">
                 <h6 class="card-subtitle mb-2 text-muted">
                   {{ typeFilter }} de gastos en millones
                 </h6>
