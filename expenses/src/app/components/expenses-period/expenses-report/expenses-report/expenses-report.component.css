@@ -2,8 +2,8 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 30px; /* Tamaño del círculo */
-  height: 30px;
+  width: 40px; /* Tamaño del círculo */
+  height: 40px;
   border-radius: 50%; /* Hace el contenedor redondo */
   color: white; /* Color del ícono */
   font-size: 24px; /* Tamaño del ícono */

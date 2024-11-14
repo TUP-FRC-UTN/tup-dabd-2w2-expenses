@@ -39,6 +39,7 @@ import { map } from 'rxjs/operators';
 import * as XLSX from "xlsx";
 import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
 import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
+import Period from "../../../../models/period";
 
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
@@ -65,7 +66,7 @@ export class ExpensesReportComponent {
 
   modalService = inject(NgbModal);
   menosMayor :number=1
-  periods: FilterOption[] = [];
+  periods: Period[] = [];
   categories: FilterOption[] = []
   types: FilterOption[]= []
   filterConfig: Filter[] = [
@@ -79,19 +80,23 @@ export class ExpensesReportComponent {
     this.loadKpis();
     this.loadSelect();
   }
+  getMonthName(month: number): string {
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+    return monthNames[month - 1];
+  }
   loadSelect() {
-    this.periodService.get().subscribe((data) => {
-      // @ts-ignore
-      this.periods.push({value: null, label: 'Todos'})
-      data.forEach(item => {
-        // @ts-ignore
-        this.periods.push({value: item.id, label: item.month + '/' + item.year})
-      })
-      // @ts-ignore
-      this.categories.push({value: 1, label: 'Lotes que mas pagaron'})
-      // @ts-ignore
-      this.categories.push({value: 2, label: 'Lotes que menos pagaron'})
-    })
+    let formattedPeriods: string[] = [];
+
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periods = data;
+    });
+    // @ts-ignore
+    this.categories.push({value: 1, label: 'Lotes que mas pagaron'})
+    // @ts-ignore
+    this.categories.push({value: 2, label: 'Lotes que menos pagaron'})
   }
 
   public barChartType: ChartType = 'bar';
@@ -139,13 +144,20 @@ export class ExpensesReportComponent {
         right: 20,
         bottom: 20,
         left: 20
-      }
-    }
+
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por Tipo de Lote (en millones)'
+      },}
   };
   public kpiChart2Data: ChartData<'pie'> = {
       labels: [],
       datasets: [{
         data: [],
+
         backgroundColor: ['rgba(255, 193, 7, 0.2)',
           'rgba(25, 135, 84, 0.2)',   // Verde
           'rgba(220, 53, 69, 0.2)',   // Rojo
@@ -275,7 +287,7 @@ export class ExpensesReportComponent {
         datasets: [
           {
             data: valuesArrayLine,
-            label: 'Total',
+            label: 'Total del Periodo',
             backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
@@ -333,7 +345,8 @@ export class ExpensesReportComponent {
         labels: lotNumbers,
         datasets: [
           {
-            data: totalAmounts, label: 'Distribución de Expensas por Lote',
+            data: totalAmounts,
+            label: 'Monto del Lote',
             backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
@@ -410,6 +423,14 @@ export class ExpensesReportComponent {
       alert("Debe ingresar una cantidad de lotes valida")
       return;
     }
+    this.loadExpenseData()
+    this.loadKpis()
+  }
+
+  onPeriodChange($event: Event): void {
+    const selectedIndex = ($event.target as HTMLSelectElement).value;
+    this.selectedPeriodId = Number(selectedIndex);
+    console.log(this.selectedPeriodId)// Convierte a número
     this.loadExpenseData()
     this.loadKpis()
   }
