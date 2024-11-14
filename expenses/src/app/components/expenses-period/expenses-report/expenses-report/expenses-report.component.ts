@@ -128,6 +128,7 @@ export class ExpensesReportComponent {
     datasets: [
       { data: [],
         label: 'Expensas Totales por Lote',
+
         backgroundColor : [
           'rgba(255,193,7,0.2)',
           'rgba(25,135, 84,0.2)',
@@ -271,7 +272,8 @@ export class ExpensesReportComponent {
     }
     if (this.countPlots > 15) {
       alert("No puede mostrar mas de 15 lotes")
-      return;
+      this.cantidad = 10
+      this.countPlots = 10
     }
     if (this.top == null) {
       this.top = true
@@ -298,6 +300,11 @@ export class ExpensesReportComponent {
           {
             data: valuesArrayLine,
             label: 'Total del Periodo',
+            datalabels: {
+              labels: {
+                title: null
+              }
+            },
             backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
@@ -375,6 +382,11 @@ export class ExpensesReportComponent {
           {
             data: totalAmounts,
             label: 'Monto del Lote',
+            datalabels: {
+              labels: {
+                title: null
+              }
+            },
             backgroundColor: [
               'rgba(255, 193, 7, 0.2)',   // Amarillo
               'rgba(25, 135, 84, 0.2)',   // Verde
