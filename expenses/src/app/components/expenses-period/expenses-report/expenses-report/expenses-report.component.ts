@@ -43,7 +43,6 @@ import Period from "../../../../models/period";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
-Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
