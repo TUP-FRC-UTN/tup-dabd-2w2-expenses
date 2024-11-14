@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ExpenseServiceService } from '../../../services/expense.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
 import {
   CommonModule,
@@ -57,17 +57,21 @@ import { SupplierDTO } from '../../../models/report-period/SupplierDTO';
 import { SupplierAmount } from '../../../models/report-period/SupplierAmount';
 import * as XLSX from 'xlsx';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { ExpensesPeriodsGraphicBarComponent } from './expenses-periods-graphic-bar/expenses-periods-graphic-bar.component';
+import { ExpensesCategoryGraphicComponent } from './expenses-category-graphic/expenses-category-graphic.component';
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule,
+    ReactiveFormsModule,
     NgPipesModule,
     MainContainerComponent,
     TableFiltersComponent,
     NgSelectComponent,
+    ExpensesPeriodsGraphicBarComponent,
+    ExpensesCategoryGraphicComponent
   ],
   providers: [DatePipe, NgbActiveModal, CurrencyPipe, DecimalPipe],
   templateUrl: './expenses-period-report.component.html',
@@ -77,8 +81,25 @@ export class ExpensesPeriodReportComponent implements OnInit {
   private reportPeriodService = inject(ReportPeriodService);
   private periodService = inject(PeriodService);
   private toastService = inject(ToastService);
-
-  reportPeriod: ReportPeriod | undefined;
+  meses = [
+    { nombre: 'Enero', numero: 1 },
+    { nombre: 'Febrero', numero: 2 },
+    { nombre: 'Marzo', numero: 3 },
+    { nombre: 'Abril', numero: 4 },
+    { nombre: 'Mayo', numero: 5 },
+    { nombre: 'Junio', numero: 6 },
+    { nombre: 'Julio', numero: 7 },
+    { nombre: 'Agosto', numero: 8 },
+    { nombre: 'Septiembre', numero: 9 },
+    { nombre: 'Octubre', numero: 10 },
+    { nombre: 'Noviembre', numero: 11 },
+    { nombre: 'Diciembre', numero: 12 }
+  ];
+  form = new FormGroup({
+    mes: new FormControl(),
+    anio: new FormControl()
+  });
+    reportPeriod: ReportPeriod | undefined;
 
   periodos: Period[] = [];
   filters: Filter[] = [];
@@ -91,17 +112,17 @@ export class ExpensesPeriodReportComponent implements OnInit {
   types: FilterOption[] = [];
 
   //lista principal del select
-  periodsList: FilterOption[] = [];
+  periodsList: Period[] = [];
   filterConfig: Filter[] = [];
 
   //copia para las cards
-  listPeriodFind: FilterOption[] = [];
+  listPeriodFind: Period[] = [];
   expenses: Expense[] = [];
   searchTerm: string = '';
   chartInstances: any[] = [];
   resumeReportOrdinary: any;
   resumeReportExtraordinary: any;
-  typeFilter: string = 'Monto';
+  typeFilter:  "Monto" | "Promedio" | "Porcentaje" = "Monto"
   valueKPI1: number = 0;
   valueKPI2: number = 0;
   valueKPI3: number = 0;
@@ -113,17 +134,43 @@ export class ExpensesPeriodReportComponent implements OnInit {
   ngOnInit(): void {
     this.loadReportPeriod([18, 17, 3]);
     this.loadPeriodsList();
+    this.form.valueChanges.subscribe(values => {
+      console.log(values)
+      if(values.anio!=null && values.mes != null){
+        const period = this.periodsList.find((p)=>p.month===Number(values.mes) && p.year===Number(values.anio))
+        if(period){
+          if(this.listPeriodFind.some((p)=>p.id===period.id)){
+            this.toastService.sendError("Ya selecciono este periodo")
+          } else{
+            if(this.listPeriodFind.length>5){
+              this.toastService.sendError("Alcanzo el limite de periodos")
+              return
+            }
+            const monthName = this.meses.find(m=>m.numero ===period.month)
+            if(monthName){
+              period.monthName = monthName?.nombre?.slice(0, 3) || "";
+            }
+            this.listPeriodFind.push(period)
+          }
+        }
+        this.form.reset()
+        this.loadReportPeriod(this.listPeriodFind.map(p=>p.id))
+      }
+    });
   }
   loadPeriodsList() {
     this.periodService.get().subscribe((data) => {
-      this.periodsList = data.map((per, index) => {
-        return { value: per.id.toString(), label: `${per.month}/${per.year}` };
-      });
+      this.periodsList = data;
       this.periodsList.forEach((p, index) => {
         if (index < 3) {
-          this.listPeriodFind.unshift(p); // Agrega el período al inicio de la lista
+          const monthName = this.meses.find(m=>m.numero ===p.month)
+          if(monthName){
+            p.monthName = monthName?.nombre?.slice(0, 3) || "";
+
+          }
+          this.listPeriodFind.push(p)
           this.loadReportPeriod(
-            this.listPeriodFind.map((p) => Number(p.value))
+            this.listPeriodFind.map((p) => Number(p.id))
           );
         }
       });
@@ -154,13 +201,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         { value: 'Monto', label: 'Monto total' },
         { value: 'Porcentaje', label: 'Porcentaje' },
         { value: 'Promedio', label: 'Promedio' },
-      ]),
-      new SelectFilter(
-        'Periodos',
-        'PeriodId',
-        'Agregue un periodo',
-        this.getPeriodOptions()
-      ),
+      ])
     ];
   }
   filterChange($event: Record<string, any>) {
@@ -169,9 +210,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
       this.typeFilter = typeFilter;
     }
 
-    const selectedPeriod = this.periodsList.find((p) => p.value === PeriodId);
+    const selectedPeriod = this.periodsList.find((p) => p.id === PeriodId);
     if (selectedPeriod) {
-      if (this.listPeriodFind.some((p) => p.value === selectedPeriod.value)) {
+      if (this.listPeriodFind.some((p) => p.id === selectedPeriod.id)) {
         this.toastService.sendError('El período ha sido seleccionado');
         return;
       }
@@ -185,7 +226,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
       this.listPeriodFind.unshift(selectedPeriod); // Agrega el período al inicio de la lista
       this.createFilter(); // Actualiza el filtro de períodos
-      this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.value)));
+      this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
     }
   }
 
@@ -215,13 +256,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
       return;
     }
-    this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.value)));
+    this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
-  getPeriodOptions(): { value: string; label: string }[] {
-    return this.periodsList.filter(
-      (period) => !this.listPeriodFind.some((p) => p.value === period.value)
-    );
-  }
+
 
   calculateKPI(resume: Resume, type: string): void {
     let totalAmount = 0;
@@ -273,20 +310,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
   }
   loadResume() {
-    // Crea los gráficos para las expensas ordinarias y extraordinarias
-    if (this.reportPeriod) {
-      this.createChartResume(
-        'resume-ordinary',
-        this.reportPeriod.resume.ordinary || [],
-        this.reportPeriod.resume.extraordinary || [],
-        'chart-container-ordinary'
-      );
-    }
-    this.createChartPeriods(
-      `chart-container-periods`,
-      this.reportPeriod?.periods || [],
-      'chart-container-periods'
-    );
+  
     this.createSuppliersChart(
       'supplier-ordinary',
       this.reportPeriod?.resume?.supplier_ordinary || [],
@@ -427,7 +451,6 @@ export class ExpensesPeriodReportComponent implements OnInit {
         },
         legend: {
           onClick: (event, legendItem) => {
-            console.log(event,legendItem)
             if (legendItem.text === 'Ordinarias ') {
               console.log("Ordinarias")
             } else if (legendItem.text === 'Extraordinarias') {
@@ -472,207 +495,6 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
   }
 
-  //filtro de por categoria (el de abajo)
-  createChartPeriods(chartId: string, periods: Resume[], element: string): any {
-    // Obtener las categorías comunes de todos los períodos (suponiendo que las categorías no cambian entre períodos)
-    const labels = periods[0].ordinary.map((item) => item.category);
-
-    // Función para obtener el color de fondo y borde según el índice
-    const getColor = (index: number) => {
-      const colorsBorder = [
-        'rgba(255, 193, 7, 1)', // Amarillo
-        'rgba(25, 135, 84, 1)', // Verde
-        'rgba(123, 31, 162, 1)', // Púrpura
-        'rgba(255, 87, 34, 1)', // Naranja
-        'rgba(76, 175, 80, 1)', // Verde claro
-        'rgba(63, 81, 181, 1)', // Azul índigo
-        'rgba(244, 67, 54, 1)', // Rojo claro
-        'rgba(0, 150, 136, 1)', // Turquesa
-        'rgba(255, 235, 59, 1)', // Amarillo claro
-        'rgba(205, 220, 57, 1)', // Lima
-        'rgba(158, 158, 158, 1)', // Gris
-        'rgba(121, 85, 72, 1)', // Café
-        'rgba(33, 150, 243, 1)', // Azul
-      ];
-      const colors = [
-        'rgba(255, 193, 7, 0.2)', // Amarillo
-        'rgba(25, 135, 84, 0.2)', // Verde
-        'rgba(123, 31, 162, 0.2)', // Púrpura
-        'rgba(255, 87, 34, 0.2)', // Naranja
-        'rgba(76, 175, 80, 0.2)', // Verde claro
-        'rgba(63, 81, 181, 0.2)', // Azul índigo
-        'rgba(244, 67, 54, 0.2)', // Rojo claro
-        'rgba(0, 150, 136, 0.2)', // Turquesa
-        'rgba(255, 235, 59, 0.2)', // Amarillo claro
-        'rgba(205, 220, 57, 0.2)', // Lima
-        'rgba(158, 158, 158, 0.2)', // Gris
-        'rgba(121, 85, 72, 0.2)', // Café
-        'rgba(33, 150, 243, 0.2)', // Azul
-      ];
-      return {
-        backgroundColor: colors[index],
-        borderColor: colors[index],
-        borderWidth: 1,
-      };
-    };
-
-    // Crear los datos para las barras "Ordinarias"
-    const ordinaryDatasets = periods.map((periodData, index) => {
-      let data: number[] = [];
-
-      // Dependiendo del filtro, se obtienen los valores correspondientes
-
-      if (this.typeFilter == 'Porcentaje') {
-        data = periodData.ordinary.map((item) => item.data.percentage);
-      } else if (this.typeFilter == 'Promedio') {
-        data = periodData.ordinary.map((item) => item.data.average / 1000000);
-      } else {
-        data = periodData.ordinary.map(
-          (item) => item.data.totalAmount / 1000000
-        );
-      }
-
-      // Asignar los colores y crear el dataset para las "Ordinarias"
-      return {
-        Title: 'Ordinarias',
-        label: `${periodData.period.month}/${periodData.period.year} `,
-        data: data,
-        ...getColor(index), // Asignar color de fondo y borde según el índice
-      };
-    });
-
-    // Crear los datos para las barras "Extraordinarias"
-    const extraordinaryDatasets = periods.map((periodData, index) => {
-      let data: number[] = [];
-      if (this.typeFilter == 'Porcentaje') {
-        data = periodData.ordinary.map((item) => item.data.percentage);
-      } else if (this.typeFilter == 'Promedio') {
-        data = periodData.ordinary.map((item) => item.data.average / 1000000);
-      } else {
-        data = periodData.ordinary.map(
-          (item) => item.data.totalAmount / 1000000
-        );
-      }
-      return {
-        Title: 'Extraordinarias',
-        label: `${periodData.period.month}/${periodData.period.year} `,
-        data: data,
-        ...getColor(index),
-      };
-    });
-
-    // Datos del gráfico "Ordinarias"
-    const ordinaryChartData: ChartData<'bar'> = {
-      labels: labels,
-      datasets: ordinaryDatasets,
-    };
-
-    // Datos del gráfico "Extraordinarias"
-    const extraordinaryChartData: ChartData<'bar'> = {
-      labels: labels,
-      datasets: extraordinaryDatasets,
-    };
-
-    const ordinaryChartOptions: ChartOptions = {
-      responsive: true,
-      indexAxis: 'y', // Cambia la orientación a horizontal
-      plugins: {
-        title: {
-          display: true,
-          text: 'Ordinarias',
-        },
-        legend: {
-          position: 'top',
-        },
-
-        tooltip: {
-          callbacks: {
-            label: (tooltipItem) => {
-              return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`;
-            },
-          },
-        },
-      },
-    };
-
-    const extraordinaryChartOptions: ChartOptions = {
-      responsive: true,
-      indexAxis: 'y', // Cambia la orientación a horizontal
-      plugins: {
-        title: {
-          display: true,
-          text: 'Extraordinarias',
-        },
-        legend: {
-          position: 'top',
-        },
-        tooltip: {
-          callbacks: {
-            label: (tooltipItem) => {
-              return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`;
-            },
-          },
-        },
-      },
-    };
-
-    try {
-      // Crear un nuevo canvas para cada gráfico
-      const parentElementOrdinary = document.getElementById(
-        'chart-container-periods-ordinary'
-      );
-      const parentElementExtraordinary = document.getElementById(
-        'chart-container-periods-extraordinary'
-      );
-
-      // Verificar que el contenedor existe
-      if (parentElementOrdinary) {
-        // Eliminar todos los hijos del contenedor
-        while (parentElementOrdinary.firstChild) {
-          parentElementOrdinary.removeChild(parentElementOrdinary.firstChild);
-        }
-
-        // Crear un nuevo canvas para cada gráfico
-        const ordinaryCanvas = document.createElement('canvas');
-        parentElementOrdinary.appendChild(ordinaryCanvas);
-
-        // Crear el gráfico de barras "Ordinarias"
-        const ordinaryCtx = ordinaryCanvas.getContext('2d');
-        if (ordinaryCtx) {
-          const ordinaryChart = new Chart(ordinaryCtx, {
-            type: 'bar',
-            data: ordinaryChartData,
-            options: ordinaryChartOptions,
-          });
-          this.chartInstances.push(ordinaryChart);
-        }
-      }
-      if (parentElementExtraordinary) {
-        while (parentElementExtraordinary.firstChild) {
-          parentElementExtraordinary.removeChild(
-            parentElementExtraordinary.firstChild
-          );
-        }
-
-        const extraordinaryCanvas = document.createElement('canvas');
-        parentElementExtraordinary.appendChild(extraordinaryCanvas);
-
-        // Crear el gráfico de barras "Extraordinarias"
-        const extraordinaryCtx = extraordinaryCanvas.getContext('2d');
-        if (extraordinaryCtx) {
-          const extraordinaryChart = new Chart(extraordinaryCtx, {
-            type: 'bar',
-            data: extraordinaryChartData,
-            options: extraordinaryChartOptions,
-          });
-          this.chartInstances.push(extraordinaryChart);
-        }
-      }
-      return null;
-    } catch (err) {
-    }
-  }
-
   //grafico proveedores
   createSuppliersChart(
     chartId: string,
@@ -694,12 +516,12 @@ export class ExpensesPeriodReportComponent implements OnInit {
           data: data,
           backgroundColor:
             chartId == 'supplier-ordinary'
-              ? 'rgba(54, 162, 235, 0.2)'
-              : 'rgba(220, 53, 69, 0.2)', // Color de fondo de las barras
+              ? 'rgba(98, 182, 143, 1)'
+              : 'rgba(255, 145, 158, 1)', // Color de fondo de las barras
           borderColor:
             chartId == 'supplier-ordinary'
-              ? 'rgba(13,110,253,1)'
-              : 'rgba(220, 53, 69, 1)',
+              ? 'rgba(98, 182, 143, 1)'
+              : 'rgba(255, 145, 158, 1)',
           borderWidth: 1,
         },
       ],
