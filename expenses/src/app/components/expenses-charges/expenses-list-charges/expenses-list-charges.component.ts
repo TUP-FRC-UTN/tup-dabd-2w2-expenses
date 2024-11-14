@@ -45,6 +45,7 @@ import { debounceTime, forkJoin, Subject } from 'rxjs';
 import autoTable from 'jspdf-autotable';
 import { ListChargesInfoComponent } from '../../modals/info/list-charges-info/list-charges-info.component';
 import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal/view-charge-modal.component';
+import {MonthService} from "../../../services/month.service";
 
 @Component({
   selector: 'app-expenses-list-charges',
@@ -53,7 +54,7 @@ import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal
     CommonModule,
     FormsModule,
     NgPipesModule,
-    ExpensesModalComponent,    
+    ExpensesModalComponent,
     MainContainerComponent,
     TableFiltersComponent
   ],
@@ -71,6 +72,7 @@ export class ExpensesListChargesComponent implements OnInit {
 addCharge() {
   this.router.navigate(['/cargos/nuevo'])
 }
+  private readonly monthService = inject(MonthService);
 
   // Variables de Filtros y Paginación
   //#region FILTER VARIABLES
@@ -167,12 +169,16 @@ addCharge() {
     this.searchTerm = '';
   }
 
+  toMonthAbbr(month:number){
+    return this.monthService.getMonthAbbr(month);
+  }
+
   createFilters() {
     this.filterConfig = new FilterConfigBuilder()
 
     .selectFilter('Periodo', 'period', 'Seleccione un periodo', this.periodos.map(periodo => ({
       value: periodo.id.toString(),
-      label: (periodo.month +'/'+ periodo.year)
+      label: (this.toMonthAbbr(periodo.month)+'/'+ periodo.year)
     })))
   .selectFilter('Categoría', 'categoryCharge', 'Seleccione una categoría', this.categorias.map(category => ({
     value: category.categoryChargeId.toString(),
