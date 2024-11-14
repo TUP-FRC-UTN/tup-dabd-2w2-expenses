@@ -50,15 +50,10 @@ import { ViewChargeModalComponent } from '../../modals/charges/view-charge-modal
   selector: 'app-expenses-list-charges',
   standalone: true,
   imports: [
-    ExpensesUpdateChargeComponent,
     CommonModule,
-    PeriodSelectComponent,
     FormsModule,
-    ReactiveFormsModule,
     NgPipesModule,
-    TableComponent,
-    ExpensesModalComponent,
-    NgbModule,
+    ExpensesModalComponent,    
     MainContainerComponent,
     TableFiltersComponent
   ],
@@ -132,7 +127,6 @@ addCharge() {
     this.selectedLotId = event['lot'] || null;
     this.selectedCategoryId = event['categoryCharge'] || null;
     this.TypeAmount = event['chargeType'] || undefined;
-    console.log('El tipo es' + this.TypeAmount)
     this.cargarPaginado();
   }
   categoriasCargos :FilterOption[] = [];
@@ -219,7 +213,7 @@ addCharge() {
     forkJoin({
       periodos: this.periodService.get(),
       lots: this.lotsService.get(),
-      categories: this.chargeService.getCategoryCharges(),
+      categories: this.chargeService.getCategoryCharges(false),
     }).subscribe({
       next: ({ periodos, lots, categories }) => {
         this.periodos = periodos;
@@ -238,7 +232,6 @@ addCharge() {
           });
         });
 
-        console.log('Lotes:', this.lots);
         categories.forEach(category => {
           this.categoriasCargos.push({
             value: category.categoryChargeId.toString(),
@@ -257,7 +250,7 @@ addCharge() {
 
   loadCategoryCharge() {
     this.chargeService
-      .getCategoryCharges()
+      .getCategoryCharges(true)
       .subscribe((data: CategoryCharge[]) => {
         this.categorias = data;
         this.createFilters();
@@ -281,7 +274,6 @@ addCharge() {
     const lot = this.selectedLotId || undefined;
     const type = this.getChargeType(this.TypeAmount) || undefined;
 
-    console.log('El tipo es ' + type)
     this.chargeService
       .getCharges(this.currentPage, this.pageSize, period, lot, category,type)
       .subscribe((response) => {
@@ -299,7 +291,6 @@ addCharge() {
         this.totalItems = response.totalElements;
         this.currentPage = response.number;
       });
-    console.log(this.charges);
   }
 
 
@@ -308,7 +299,6 @@ addCharge() {
       ...charge,
       plotNumber: this.getPlotNumber(charge.lotId),
     }));
-    console.log(this.chargesCompleted);
   }
   //#endregion
 

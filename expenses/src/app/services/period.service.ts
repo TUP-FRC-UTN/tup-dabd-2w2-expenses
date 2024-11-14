@@ -24,17 +24,25 @@ export class PeriodService {
      const response = this.http.get<Period[]>(this.apiUrl)
       return response
     }catch( e) {
-      console.log(e)
       throw  e
     }
 
   }
+
+  getOpenPeriods(): Observable<Period[]> {
+    try{
+     const response = this.http.get<Period[]>(`${this.apiUrl}/open`)
+      return response
+    }catch( e) {
+      throw  e
+    }
+  }
+
   getOpens():Observable<Period>{
     try{4
       const response = this.http.get<Period>(`${this.apiUrl}/open`)
         return response
       }catch( e) {
-        console.log(e)
         throw  e
       }
   }
@@ -53,19 +61,37 @@ export class PeriodService {
   if(year){
     params=params.set('year',year)
   }
-  console.log(params)
   try{
       return this.http.get<Page<Period>>(`${this.apiUrl}/page`, { params });
      }catch( e) {
-       console.log(e)
        throw  e
      }
 
   }
 
-  new():Observable<void>{
-      return this.http.post<void>(this.apiUrl, null)
+  new(body: {end_date: string}):Observable<void>{
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
 
+
+
+    return this.http.post<void>(this.apiUrl, body, { headers })
+
+  }
+
+  updatePeriod(id:number, body: {end_date: string}):Observable<void>{
+    const headers = new HttpHeaders({
+      'x-user-id': '1'
+    });
+
+
+
+    return this.http.put<void>(`${this.apiUrl}/update/${id}`, body, { headers });
+  }
+
+  getFuture(): Observable<{period: string}>{
+    return this.http.get<{period: string}>(`${this.apiUrl}/future`)
   }
 
   closePeriod(id:number):Observable<void>{

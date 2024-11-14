@@ -5,8 +5,16 @@ import {FormsModule} from '@angular/forms';
 import {PeriodSelectComponent} from "../../../selects/period-select/period-select.component";
 import {CommonModule, DatePipe} from '@angular/common';
 import {NgPipesModule} from "ngx-pipes";
-import {MainContainerComponent, TableComponent, TableFiltersComponent} from "ngx-dabd-grupo01";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+
+import {
+  Filter,
+  FilterOption,
+  MainContainerComponent, NumberFilter,
+  SelectFilter,
+  TableComponent,
+  TableFiltersComponent
+} from "ngx-dabd-grupo01";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   BarController,
   BubbleController,
@@ -17,12 +25,25 @@ import {
   PieController,
   PolarAreaController,
   RadarController,
-  ScatterController
+  ScatterController,
+  ChartOptions,
+  ChartConfiguration
 } from 'chart.js';
 import {BaseChartDirective} from "ng2-charts";
 import Chart from 'chart.js/auto';
+import {BillService} from "../../../../services/bill.service";
+import {PeriodService} from "../../../../services/period.service";
+import BillType from "../../../../models/billType";
+import {expenseReport} from "../../../../models/expenseReport";
+import { map } from 'rxjs/operators';
+import * as XLSX from "xlsx";
+import {InfoExpensesListComponent} from "../../../modals/info-expenses-list/info-expenses-list.component";
+import {InfoExpenseReportComponent} from "../../../modals/info-expense-report/info-expense-report.component";
+import Period from "../../../../models/period";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(BarController, PieController, RadarController, LineController, PolarAreaController, DoughnutController, BubbleController, ScatterController);
+Chart.register(ChartDataLabels)
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -35,61 +56,425 @@ Chart.register(BarController, PieController, RadarController, LineController, Po
 })
 export class ExpensesReportComponent {
 
+  private readonly billService = inject(BillService)
+  private readonly periodService = inject(PeriodService)
+  total: number | undefined;
+  averageAmount: number | undefined;
+  totalLotes: number | undefined;
+  typesPlots: number | undefined;
+  top : boolean = true;
+  totalAmountPerTypePlot: Map<String, number>[] | undefined
 
+  modalService = inject(NgbModal);
+  menosMayor :number=1
+  periods: Period[] = [];
+  categories: FilterOption[] = []
+  types: FilterOption[]= []
+  filterConfig: Filter[] = [
+    new SelectFilter('Tipo de Top','lot','Seleccione un tipo de top',this.categories),
+    new NumberFilter('Cantidad de lotes para mostrar','count','Seleccione una cantidad'),
+  ]
+  selectedPeriodId: number = 0;
+  countPlots: number = 10; //Predefinido 10
+
+
+  public pieChartPlugins: any = [ChartDataLabels];
+  ngOnInit(): void {
+    this.loadExpenseData();
+    this.loadKpis();
+    this.loadSelect();
+  }
+  getMonthName(month: number): string {
+    const monthNames = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+    return monthNames[month - 1];
+  }
+  loadSelect() {
+    let formattedPeriods: string[] = [];
+
+    this.periodService.get().subscribe((data: Period[]) => {
+      this.periods = data;
+    });
+    // @ts-ignore
+    this.categories.push({value: 1, label: 'Lotes que mas pagaron'})
+    // @ts-ignore
+    this.categories.push({value: 2, label: 'Lotes que menos pagaron'})
+  }
 
   public barChartType: ChartType = 'bar';
+  public barChartOptions: ChartOptions = {
+    responsive: true,
+    indexAxis: 'x',
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por Lote (en millones)'
+      },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      },
+    }
+  };
   public barChartData: ChartData<'bar'> = {
     labels: [],
     datasets: [
-      { data: [], label: 'Expensas Totales por Lote' }
+      { data: [],
+        label: 'Expensas Totales por Lote',
+
+        backgroundColor : [
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+          'rgba(255, 145, 158, 1)',    // Rojo pastel
+          'rgba(130, 177, 255, 1)',    // Azul pastel
+        ],
+        borderWidth: 1,
+      }
     ]
+  };
+
+ 
+
+  public kpiChartLote: ChartType = 'pie';
+  public kpiChartOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por Tipo de Lote (en millones)'
+      },}
+  };
+  public kpiChartLotData: ChartData<'pie'> = {
+      labels: [],
+      datasets: [{
+        data: [],
+       
+        backgroundColor:   [
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+       'rgba(255, 145, 158, 1)',    // Rojo pastel
+       'rgba(130, 177, 255, 1)',    // Azul pastel
+       'rgba(187, 131, 209, 1)',    // Púrpura pastel
+       'rgba(255, 171, 145, 1)',    // Naranja pastel
+       'rgba(162, 217, 165, 1)',    // Verde claro pastel
+       'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+       'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+       'rgba(126, 206, 198, 1)',    // Turquesa pastel
+       'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+       'rgba(255, 224, 130, 1)',    // Amarillo pastel
+       'rgba(220, 231, 117, 1)',    // Lima pastel
+       'rgba(196, 196, 196, 1)',    // Gris pastel
+       'rgba(188, 170, 164, 1)',    // Café pastel
+       'rgba(144, 202, 249, 1)'     // Azul claro past
+             ]
+      ,
+        borderWidth: 1,
+      }]
+
+  };
+  public kpiChart1Tpe: ChartType = 'bar';
+  public kpiChart1Options: ChartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribución de Expensas por periodo (en millones)'
+      },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      },
+    }
+  };
+  public kpiChart1Data:  ChartData<'line'> = {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor:   [
+        'rgba(98, 182, 143, 1)',     // Verde pastel
+     'rgba(255, 145, 158, 1)',    // Rojo pastel
+     'rgba(130, 177, 255, 1)',    // Azul pastel
+     'rgba(187, 131, 209, 1)',    // Púrpura pastel
+     'rgba(255, 171, 145, 1)',    // Naranja pastel
+     'rgba(162, 217, 165, 1)',    // Verde claro pastel
+     'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+     'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+     'rgba(126, 206, 198, 1)',    // Turquesa pastel
+     'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+     'rgba(255, 224, 130, 1)',    // Amarillo pastel
+     'rgba(220, 231, 117, 1)',    // Lima pastel
+     'rgba(196, 196, 196, 1)',    // Gris pastel
+     'rgba(188, 170, 164, 1)',    // Café pastel
+     'rgba(144, 202, 249, 1)'     // Azul claro past
+           ]
+    ,
+      borderWidth: 1,
+    }]
   };
   public pieChartType: ChartType = 'pie';
   public pieChartData: ChartData<'pie'> = {
     labels: [],
     datasets: [
-      { data: [], label: 'Expensas Totales por Lote' }
-    ]
+      { data: [],
+        backgroundColor : [
+          'rgba(98, 182, 143, 1)',     // Verde pastel
+          'rgba(255, 145, 158, 1)',    // Rojo pastel
+          'rgba(130, 177, 255, 1)',    // Azul pastel
+        ],
+        borderWidth: 1,}
+    ],
+
   };
 
 
   service : ExpenseServiceService = inject(ExpenseServiceService);
+  titulo: string = "más pagaron";
+  periodo: string = "";
+  cantidad: number = 10;
 
-  ngOnInit(): void {
-    this.loadExpenseData();
-  }
 
-  loadExpenseData(): void {
-    this.service.getExpensesByLot().subscribe(expenses => {
-      console.log(expenses);
-      const lotNumbers = expenses.map(expense => expense.plotNumber);
-      const totalAmounts = expenses.map(expense => expense.totalAmount);
-
-      // Reasignar el objeto completo para forzar la detección de cambios
-      this.barChartData = {
-        labels: lotNumbers,
-        datasets: [
-          { data: totalAmounts, label: 'Distribución de Expensas por Lote' }
-        ]
+  loadKpis() {
+    this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenses => {
+      if(this.countPlots == 0) {
+        this.cantidad = 10
+        this.countPlots = 10
       }
-    });
-    this.service.getLotPercentage().subscribe(p => {
-      console.log(p);
-     const por = p.map(pe => {
-        pe = pe * 100 ;
-        return pe
-      })
-      this.pieChartData = {
-       labels: this.barChartData.labels,
-        datasets: [
-          {data: por , label: "Contribución de Expensas por Lote (%)" },
-        ]
+      if(this.top == null) {
+        this.top = true
       }
+      this.total = Number((expenses.totalAmount / 1000000).toFixed(3));
+      this.averageAmount = Number((expenses.averageAmount/1000000).toFixed(3)) ;
+      this.totalLotes = expenses.totalPlots;
+      this.typesPlots = expenses.typesPlots;
     })
   }
 
+  loadExpenseData(): void {
+    if (this.countPlots == 0) {
+      this.cantidad = 10
+      this.countPlots = 10
+    }
+    if (this.countPlots > 15) {
+      alert("No puede mostrar mas de 15 lotes")
+      this.cantidad = 10
+      this.countPlots = 10
+    }
+    if (this.top == null) {
+      this.top = true
+    }
+    let lotNumbersWithPercentage : String[];
+    this.service.getExpensesByLot(this.top, this.selectedPeriodId, this.countPlots).subscribe(expenseReport => {
+
+      const lotNumbers = expenseReport.expenses.map(expenseReport => expenseReport.plotNumber).reverse();
+      const totalAmounts = expenseReport.expenses.map(expenseReport => Number((expenseReport.totalAmount/1000000).toFixed(3)) );
+      // Usar Object.values() y Object.keys() para objetos regulares
+      const valuesArray: number[] = Object.values(expenseReport.totalAmountPerTypePlot).map(num=>num= Number(num/100000)).reverse()
+      const labelsArray: string[] = Object.keys(expenseReport.totalAmountPerTypePlot).reverse()
+      const valuesArrayLine: number[] = Object.values(expenseReport.totalAmountPerPeriod)
+        .map(num => Number(num / 100000))
+        .reverse();
+      console.log(expenseReport.percentages)
+      const labelsArrayLine: string[] = Object.keys(expenseReport.totalAmountPerPeriod).reverse();
+
+      // Debug para verificar los datos
+      // Reasignar el objeto completo para forzar la detección de cambios
+      this.kpiChart1Data = {
+        labels: labelsArrayLine,
+        datasets: [
+          {
+            data: valuesArrayLine,
+            label: 'Total del Periodo',
+            datalabels: {
+              labels: {
+                title: null
+              }
+            },
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
+            borderWidth: 1,
+          }
+        ]
+      }
+      this.kpiChartLotData = {
+        labels: labelsArray,
+        datasets: [
+          {
+            data: valuesArray,
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
+            borderWidth: 1,
+          }
+        ]
+      },
+      this.kpiChartOptions = {
+        responsive: true,
+        plugins: {
+          datalabels: {
+            // Mostrar el porcentaje en los datalabels
+            formatter: (value) => {
+              const total = valuesArray.reduce((acc, curr) => acc + curr, 0);
+              const percentage = ((value / total) * 100).toFixed(2) + '%';
+              return percentage;  // Muestra el porcentaje en la etiqueta del gráfico
+            },
+            labels: {
+              title: {
+                font: {
+                  weight: 'bold',
+                }
+              },
+            },
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true  // Asegura que la escala Y comienza desde cero
+          }
+        }
+      } as ChartOptions;
+      this.barChartData = {
+        labels: lotNumbers,
+        datasets: [
+          {
+            data: totalAmounts,
+            label: 'Monto del Lote',
+            datalabels: {
+              labels: {
+                title: null
+              }
+            },
+            backgroundColor:  [
+              'rgba(98, 182, 143, 1)',     // Verde pastel
+           'rgba(255, 145, 158, 1)',    // Rojo pastel
+           'rgba(130, 177, 255, 1)',    // Azul pastel
+           'rgba(187, 131, 209, 1)',    // Púrpura pastel
+           'rgba(255, 171, 145, 1)',    // Naranja pastel
+           'rgba(162, 217, 165, 1)',    // Verde claro pastel
+           'rgba(149, 160, 217, 1)',    // Azul índigo pastel
+           'rgba(255, 162, 154, 1)',    // Rojo claro pastel
+           'rgba(126, 206, 198, 1)',    // Turquesa pastel
+           'rgba(255, 245, 157, 1)',    // Amarillo claro pastel
+           'rgba(255, 224, 130, 1)',    // Amarillo pastel
+           'rgba(220, 231, 117, 1)',    // Lima pastel
+           'rgba(196, 196, 196, 1)',    // Gris pastel
+           'rgba(188, 170, 164, 1)',    // Café pastel
+           'rgba(144, 202, 249, 1)'     // Azul claro past
+                 ],
+            borderWidth: 1,
+          }
+        ]
+      }
+    });
+  }
+
+  /**
+   * boton info
+   */
+  showInfo() {
+    this.modalService.open(InfoExpenseReportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+      centered: true,
+      scrollable: true
+    });
+  }
 
 
+  downloadTable() {
+    this.service.getExpensesByLot( true, this.selectedPeriodId, this.countPlots).subscribe(expenses => {
+      const data = expenses.expenses.map(expense => ({
+        'Periodo':  `${expense?.period?.month} / ${expense?.period?.year}`,
+        'Monto Total': expense.totalAmount,
+        'Numero de lote': expense.plotNumber,
+      }));
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      // Convertir los datos tabulares a una hoja de cálculo
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
+      XLSX.writeFile(wb,  'Top de montos Fecha: ' + formattedDate + '.xlsx');
+  })
+  }
+  filterChange($event: Record<string, any>) {
+    this.selectedPeriodId = $event['period'] || null;
+    this.countPlots = $event['count']
+    this.cantidad = this.countPlots;
+    this.menosMayor = $event['lot'] || null;
+    if(this.menosMayor == 1) {
+      this.top = true;
+      this.titulo = "más pagaron"
+    } else {
+      this.top = false
+      this.titulo = "menos pagaron"
+    }
+    if(this.countPlots < 0) {
+      alert("Debe ingresar una cantidad de lotes valida")
+      return;
+    }
+    this.loadExpenseData()
+    this.loadKpis()
+  }
 
-
+  onPeriodChange($event: Event): void {
+    const selectedIndex = ($event.target as HTMLSelectElement).value;
+    this.selectedPeriodId = Number(selectedIndex);
+    console.log(this.selectedPeriodId)// Convierte a número
+    this.loadExpenseData()
+    this.loadKpis()
+  }
 }

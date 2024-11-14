@@ -1,4 +1,4 @@
-import {Resume} from "./resume";
+import { Resume } from "./resume";
 
 export interface ReportPeriod {
   resume: Resume;

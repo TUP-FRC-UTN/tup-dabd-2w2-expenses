@@ -1,5 +1,5 @@
 <ng-template #amountTemplate let-item>
-  <td style="text-align: end">
+  <td class="text-end d-block">
     {{
     item.amount?.toLocaleString("es-AR", {
     style: "currency",
@@ -37,16 +37,46 @@
 </ng-template>
 
 <ng-template #actionsTemplate let-bill>
-  <td style="display: flex; flex-direction: row; gap: 4px;">
+  @if(bill.period.state !== 'Cerrado') {
+
+    <td style="
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+    ">
+      <div class="btn-group" ngbDropdown>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary"
+          ngbDropdownToggle
+          aria-expanded="false"
+        >
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <div ngbDropdownMenu>
+          <button type="button" class="dropdown-item" (click)="viewBill(bill)">
+            Detalles
+          </button>
+          <button type="button" class="dropdown-item" (click)="editBill(bill)">
+            Editar
+          </button>
+          @if(bill.status === 'Activo') {
+            <button type="button" class="dropdown-item" (click)="deleteBill(bill)">
+              Eliminar
+            </button>
+          } @else {
+            <button type="button" class="dropdown-item" (click)="activeBill(bill)">
+              Activar
+            </button>
+          }
+        </div>
+      </div>
+    </td>
+  } @else {
     <button type="button" class="btn btn-primary" (click)="viewBill(bill)">
       <i class="bi bi-eye"></i>
     </button>
-    @if(bill.period.state !== 'Cerrado') {
-      <button type="button" class="btn btn-warning" (click)="editBill(bill)">
-        <i class="bi bi-pencil"></i>
-      </button>
-    }
-  </td>
+  }
 </ng-template>
 
 
@@ -60,6 +90,6 @@
     onPageSizeChange: onPageSizeChange
   }" [showSearchBar]="true" [isLoading]="isLoading" (searchValueChange)="onSearchValueChange($event)"
     (headerButtonClick)="nuevoGasto()" [showHeaderButton]="true" (filterValueChange)="onFilterValueChange($event)"
-    [tableFilters]="filterConfig" (excelButtonClick)="downloadTable()" (pdfButtonClick)="imprimir() "[headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''">
+    [tableFilters]="filterConfig" (pdfButtonClick)="imprimir() "[headerButtonIcon]="'bi bi-plus'" [headerButtonText]="''" [getAllItems]="getAllItems">
   </app-table>
 </app-main-container>

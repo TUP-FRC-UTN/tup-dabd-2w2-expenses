@@ -97,7 +97,6 @@ export class EditBillModalComponent implements OnInit {
       status: this.bill?.status
     });
 
-    console.log(this.bill?.period);
   }
 
   async loadLists() {
@@ -177,8 +176,6 @@ export class EditBillModalComponent implements OnInit {
 
   onSubmit() {
     if (this.updateBill.valid) {
-      console.log(`Valor de bill a actualizar:${JSON.stringify(this.updateBill.value)}`);
-      console.log(`Valor de bill a actualizar:${JSON.stringify(this.bill?.expenditureId)}`);
       const requestBill = {
         description: this.updateBill.value.description,
         amount: this.updateBill.value.amount,
@@ -194,7 +191,6 @@ export class EditBillModalComponent implements OnInit {
 
       this.billService.updateBill(requestBill, this.bill?.expenditureId).subscribe({
         next: (response: any) => {
-          console.log('Actualizado correctamente', response);
           this.toastService.sendSuccess('El gasto se ha actualizado correctamente.');
           this.activeModal.close('updated');
         },
@@ -250,11 +246,9 @@ export class EditBillModalComponent implements OnInit {
       newCategory.name = newCategory.name?.trim();
       newCategory.description = newCategory.description?.trim();
       newCategory.is_delete = false;
-      console.log(newCategory);
 
       this.categoryService.addCategory(newCategory).subscribe({
         next: (response: any) => {
-          console.log('Añadido correctamente', response);
           this.showModal('Éxito', 'La categoria se ha añadido correctamente.');
           this.resetForm();
         },
@@ -268,7 +262,6 @@ export class EditBillModalComponent implements OnInit {
         },
       });
     } else {
-      console.log('Formulario inválido');
       this.showModal('Error', 'Por favor, complete todos los campos requeridos correctamente.');
     }
     this.modalService.dismissAll();

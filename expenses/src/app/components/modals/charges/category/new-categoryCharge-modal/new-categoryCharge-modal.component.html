@@ -34,7 +34,27 @@
             }
         </div>
       </div>
-
+      <div class="row mb-3">
+        <label for="newCategoryType" class="text-start">Tipo de valor</label>
+        <div class="col">
+          <select name="newCategoryType" formControlName="amount_Sign" class="form-select "
+          [ngClass]="{
+            'is-invalid': newCategoryForm.get('amount_Sign')?.invalid &&
+                        (newCategoryForm.get('amount_Sign')?.dirty || newCategoryForm.get('amount_Sign')?.touched),
+            'is-valid': newCategoryForm.get('amount_Sign')?.valid
+          }">
+          <option value="">Seleccione un tipo</option>
+          <option value="Positivo">Positivo</option>
+          <option value="Negativo">Negativo</option>
+          </select>
+          @if (newCategoryForm.get('amount_Sign')?.errors?.['required'] &&
+            newCategoryForm.get('amount_Sign')?.touched) {
+            <div class="invalid-feedback">
+              Por favor, seleccione un tipo de valor para la categoría.
+            </div>
+            }
+        </div>        
+      </div>
       <div class="row mb-3">
         <label for="newCategoryDescription" class="text-start">Descripción</label>
         <div class="col">
@@ -52,6 +72,7 @@
           }
         </div>
       </div>
+      
     </form>
   </div>
 </div>

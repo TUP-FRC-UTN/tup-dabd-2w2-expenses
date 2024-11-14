@@ -35,7 +35,8 @@ export class EditCategoryModalComponent implements OnInit{
   ) {
     this.editCategoryForm = this.formBuilder.group({
       name: [{ value: '', disabled: true }, Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      amount_Sign: [{ value: '', disabled: true },Validators.required]
     });
   }
 
@@ -43,7 +44,8 @@ export class EditCategoryModalComponent implements OnInit{
     // Inicializar el formulario con los datos de la categoría
     this.editCategoryForm.patchValue({
       name: this.category.name,
-      description: this.category.description
+      description: this.category.description,
+      amount_Sign : this.category.amountSign.toString()
     });
   }
 
@@ -51,13 +53,13 @@ export class EditCategoryModalComponent implements OnInit{
     if (this.editCategoryForm.valid) {
       const updatedCategory: CategoryCharge = {
         ...this.category,
-        name: this.editCategoryForm.value.name.trim(),
-        description: this.editCategoryForm.value.description.trim()
+        name: this.editCategoryForm.get('name')?.value,
+        description: this.editCategoryForm.get('description')?.value,
+        amountSign: this.editCategoryForm.get('amount_Sign')?.value
       };
 
       this.categoryService.updateCategory(updatedCategory).subscribe({
         next: (response: any) => {
-          console.log('Actualizado correctamente', response);
           this.activeModal.close({
             success: true,
             message: 'La categoría se ha actualizado correctamente.',

@@ -83,7 +83,7 @@ export class ViewChargeModalComponent implements OnInit {
     return forkJoin([
       this.periodService.get(),
       this.lotsService.get(),
-      this.chargeService.getCategoryCharges()
+      this.chargeService.getCategoryCharges(false)
     ]).pipe(
       tap(([periodos, lots, categoryCharges]) => {
         this.periodos = periodos;
@@ -95,13 +95,12 @@ export class ViewChargeModalComponent implements OnInit {
   }
 
   getPlotNumber(lotId : number){
-    console.log(this.lots)
     const lot = this.lots.find(lot => lot.id === lotId);
     return lot ? lot.plot_number : undefined;
   }
 
   loadCategoryCharge(){
-    this.chargeService.getCategoryCharges().subscribe((data: CategoryCharge[]) => {
+    this.chargeService.getCategoryCharges(false).subscribe((data: CategoryCharge[]) => {
       this.categoryCharges = data;
     })
   }
@@ -121,10 +120,8 @@ export class ViewChargeModalComponent implements OnInit {
         ...this.charge,
         ...this.chargeForm.value,
       };
-      console.log(updatedCharge);
       this.chargeService.updateCharge(updatedCharge).subscribe(
         (response) => {
-          console.log('Cargo actualizado con éxito:', response);
           this.activeModal.close(true);
         },
         (error) => {
