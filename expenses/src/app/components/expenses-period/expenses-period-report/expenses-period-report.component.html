@@ -1,4 +1,4 @@
-<app-main-container title="Reporte de expensas" style="overflow-x: hidden;">
+<app-main-container title="Reporte de Gastos">
   <!-- Comment out this section to see if it causes the error -->
   <div class="container" style="overflow-x: hidden;">
     <div class="card shadow-sm border border-1 px-2 p-1">
@@ -40,9 +40,9 @@
         <!-- Filtro Adicional -->
         <div class="align-items-center pe-3">
           <div class="">
-            <app-table-filters            
+            <app-table-filters
               [filters]="filterConfig"
-              (filterValueChange)="filterChange($event)"              
+              (filterValueChange)="filterChange($event)"
             ></app-table-filters>
           </div>
         </div>
@@ -132,7 +132,7 @@
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI2 }} mill</h3>
               </ng-container>
-        
+
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
                 <div class="icon-circle bg-success">
@@ -145,7 +145,7 @@
                   {{ valueKPI2 | number : "1.2-2" }}%
                 </h3>
               </ng-container>
-        
+
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
                 <div class="icon-circle bg-success">
@@ -159,7 +159,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- KPI 3 -->
         <div class="col-3">
           <div class="card flex-grow-1 shadow-sm h-100">
@@ -174,7 +174,7 @@
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI3 }} mill</h3>
               </ng-container>
-        
+
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
                 <div class="icon-circle bg-info">
@@ -187,7 +187,7 @@
                   {{ valueKPI3 | number : "1.2-2" }}%
                 </h3>
               </ng-container>
-        
+
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
                 <div class="icon-circle bg-info">
