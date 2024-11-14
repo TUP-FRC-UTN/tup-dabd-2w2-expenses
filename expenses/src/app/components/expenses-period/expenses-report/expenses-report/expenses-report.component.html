@@ -1,18 +1,16 @@
 <app-main-container
-  title="Reporte de montos totales por lote"
+  title="Reporte de Montos Totales por Lote"
   (infoButtonClick)="showInfo()"
 >
   <div
-    class="select-container card shadow-sm border border-1 px-2 p-1"
-    style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 20px"
+    class="select-container card shadow-sm border border-1 px-2 p-2"
+    style="display: flex; flex-wrap: wrap; padding-bottom: 20px"
   >
-    <div class="d-flex gap-2">
-      <div class="col-auto pe-3  border-end border-1 px-2 mx-2">
-        <select
-          class="form-select"
-          aria-label="Default select example"
-          (change)="onPeriodChange($event)"
-        >
+    <div class="d-flex">
+      <div class="col-auto pe-3 border-end border-1 px-2 mx-2">
+        <select class="form-select form-select-sm">
+          aria-label="Default select example" (change)="onPeriodChange($event)"
+          >
           <option selected [value]="null">Periodos</option>
           @for (period of periods; track $index) {
           <option [value]="period.id">
@@ -27,12 +25,10 @@
           (filterValueChange)="filterChange($event)"
         ></app-table-filters>
       </div>
-
-      
     </div>
   </div>
 
-  <div class="row mb-4 h-100">
+  <div class="row mb-4 h-100 mt-2">
     <div
       class="col-6"
       style="
@@ -130,38 +126,43 @@
   <div class="row d-flex">
     <div class="col-12 d-flex">
       <!-- Añadimos h-100 para asegurar altura completa -->
-      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3 me-4">
-        <div class="d-flex  justify-content-between">
-          <h4 class="mb-3">
-            Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
-          </h4>
-          <div class="col-auto">
-            <button class="btn btn-success me-2" (click)="downloadTable()">
-              <i class="bi bi-file-earmark-excel"></i>
-            </button>
+      <div class="col-6">
+        <div class="card shadow border-0 rounded-4 p-3 my-3 me-4">
+          <div class="d-flex justify-content-between">
+            <h4 class="mb-3">
+              Los {{ cantidad }} lotes que {{ titulo }} {{ periodo }}
+            </h4>
+            <div class="col-auto">
+              <button class="btn btn-success me-2" (click)="downloadTable()">
+                <i class="bi bi-file-earmark-excel"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas
+              baseChart
+              [data]="barChartData"
+              [type]="barChartType"
+              [options]="barChartOptions"
+            >
+            </canvas>
           </div>
         </div>
-        
-        <div class="chart-container">
-          <canvas
-            baseChart
-            [data]="barChartData"
-            [type]="barChartType"
-            [options]="barChartOptions"
-          >
-          </canvas>
-        </div>
       </div>
-      <div class="col-6 card shadow border-0 rounded-4 p-3 my-3">
-        <h4 class="mb-3">Tendencia últimos 4 periodos</h4>
-        <div class="chart-container">
-          <canvas
-            baseChart
-            [data]="kpiChart1Data"
-            [type]="kpiChart1Tpe"
-            [options]="kpiChart1Options"
-          >
-          </canvas>
+
+      <div class="col-6">
+        <div class="card shadow border-0 rounded-4 p-3 my-3">
+          <h4 class="mb-3">Tendencia últimos 4 periodos</h4>
+          <div class="chart-container">
+            <canvas
+              baseChart
+              [data]="kpiChart1Data"
+              [type]="kpiChart1Tpe"
+              [options]="kpiChart1Options"
+            >
+            </canvas>
+          </div>
         </div>
       </div>
     </div>

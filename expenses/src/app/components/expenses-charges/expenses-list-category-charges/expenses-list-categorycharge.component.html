@@ -53,19 +53,19 @@
         <tbody>
           @for (category of categories | filterBy: ['name', 'description','amountSign']: searchTerm; track $index) {
               <tr>
-              
+
             <td>{{category.name}}</td>
-            <td>{{category.description}}</td>          
+            <td>{{category.description}}</td>
             <!-- <td> <span [class]=" getStatusBadgeClass('{{category.amountSing}}')">
-              {{category.amountSign}} 
+              {{category.amountSign}}
               </span></td>   -->
             <td>{{category.amountSign}}</td>
-            <td><i [ngClass]="category.active ? 'bi bi-check2-circle text-success fs-3' : 'bi bi-x-circle text-danger fs-4'"></i></td>            
+            <td><i [ngClass]="category.active ? 'bi bi-check2-circle text-success fs-3' : 'bi bi-x-circle text-danger fs-4'"></i></td>
             <td  style="text-align: left; justify-content: center;" >
-              @if(isFine(category.name) ) {
-  
+              @if(isFine(category.name ) || !category.active ) {
+
               } @else {
-                <div class="container" role="group">               
+                <div class="container" role="group">
                   <button
                       class="btn btn-warning btn-sm m-1"
                       (click)="openUpdateModal(category)"
