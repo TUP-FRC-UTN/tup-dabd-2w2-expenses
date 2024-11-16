@@ -1,17 +1,10 @@
 import {
-  AfterContentInit,
-  ChangeDetectorRef,
   Component,
   inject,
-  input,
-  Input,
   OnInit,
-  SimpleChanges,
 } from '@angular/core';
-import { ExpenseServiceService } from '../../../services/expense.service';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PeriodSelectComponent } from '../../selects/period-select/period-select.component';
+import { Router, RouterModule } from '@angular/router';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
   CommonModule,
   DatePipe,
@@ -19,41 +12,30 @@ import {
   CurrencyPipe,
 } from '@angular/common';
 import {
-  ChartConfiguration,
   ChartData,
-  ChartEvent,
   ChartOptions,
-  ChartType,
-  Title,
+
 } from 'chart.js';
 
 import { NgPipesModule } from 'ngx-pipes';
 import { Chart, registerables } from 'chart.js';
 import {
-  TableColumn,
-  TableComponent,
-  ConfirmAlertComponent,
+
   MainContainerComponent,
   ToastService,
   TableFiltersComponent,
   Filter,
-  FilterConfigBuilder,
   FilterOption,
-  SelectFilter,
   RadioFilter,
 } from 'ngx-dabd-grupo01';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Expense from '../../../models/expense';
-import { BaseChartDirective } from 'ng2-charts';
 import { ReportPeriodService } from '../../../services/report-period/report-period.service';
-import { forkJoin, Observable } from 'rxjs';
 import { ReportPeriod } from '../../../models/report-period/report-period';
 import Period from '../../../models/period';
 import { PeriodService } from '../../../services/period.service';
 import { CategoryData } from '../../../models/report-period/category-data';
-import { Periods } from '../../../models/charge';
 import { Resume } from '../../../models/report-period/resume';
-import { SupplierDTO } from '../../../models/report-period/SupplierDTO';
 import { SupplierAmount } from '../../../models/report-period/SupplierAmount';
 import * as XLSX from 'xlsx';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -71,8 +53,7 @@ import { ExpensesCategoryGraphicComponent } from './expenses-category-graphic/ex
     TableFiltersComponent,
     NgSelectComponent,
     ExpensesPeriodsGraphicBarComponent,
-    ExpensesCategoryGraphicComponent
-  ],
+    ExpensesCategoryGraphicComponent  ],
   providers: [DatePipe, NgbActiveModal, CurrencyPipe, DecimalPipe],
   templateUrl: './expenses-period-report.component.html',
   styleUrl: './expenses-period-report.component.css',
@@ -100,9 +81,9 @@ export class ExpensesPeriodReportComponent implements OnInit {
     anio: new FormControl()
   });
     reportPeriod: ReportPeriod | undefined;
-
   periodos: Period[] = [];
   filters: Filter[] = [];
+
 
   ordinaryData: { category: string; percentage: number }[] = [];
   extraordinaryData: { category: string; percentage: number }[] = [];
@@ -123,6 +104,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
   resumeReportOrdinary: any;
   resumeReportExtraordinary: any;
   typeFilter:  "Monto" | "Promedio" | "Porcentaje" = "Monto"
+  typeGraphic:  "General" | "Proveedores" | "Categorias" = "General"
+
   valueKPI1: number = 0;
   valueKPI2: number = 0;
   valueKPI3: number = 0;
@@ -132,10 +115,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadReportPeriod([18, 17, 3]);
     this.loadPeriodsList();
     this.form.valueChanges.subscribe(values => {
-      console.log(values)
       if(values.anio!=null && values.mes != null){
         const period = this.periodsList.find((p)=>p.month===Number(values.mes) && p.year===Number(values.anio))
         if(period){
@@ -158,6 +139,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
       }
     });
   }
+  
   loadPeriodsList() {
     this.periodService.get().subscribe((data) => {
       this.periodsList = data;
@@ -169,65 +151,61 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
           }
           this.listPeriodFind.push(p)
-          this.loadReportPeriod(
-            this.listPeriodFind.map((p) => Number(p.id))
-          );
+       
         }
       });
+      this.loadReportPeriod(
+        this.listPeriodFind.map((p) => Number(p.id))
+      );
       this.createFilter();
     });
   }
+
   loadReportPeriod(ids: number[]) {
     if (!ids || ids.length === 0) {
       console.error('Error: no ids provided');
       return; // Maneja el caso cuando no se proporcionan ids
     }
+    this.valueKPI1=0
+    this.valueKPI2=0
+    this.valueKPI3=0
+
     this.reportPeriodService.getReportPeriods(ids).subscribe({
       next: (data) => {
         this.reportPeriod = data;
-        this.getTopOneSupplier();
-        this.calculateKPI(data.resume, this.typeFilter);
-        this.loadResume();
-
+        this.calculateKPI(this.reportPeriod?.resume);
+        this.loadResume()
       },
       error: (error) => {
         console.error('Error loading report periods:', error);
       },
     });
   }
+
   createFilter() {
     this.filterConfig = [
       new RadioFilter('Monto total', 'typeFilter', [
         { value: 'Monto', label: 'Monto total' },
         { value: 'Porcentaje', label: 'Porcentaje' },
         { value: 'Promedio', label: 'Promedio' },
+      ]),
+      new RadioFilter('Grafico','typeGraphic',[
+        {value:"General", label:"General"},
+        {value:"Proveedores",label:"Proveedores"},
+        {value:"Categorias", label:"categorias"}
       ])
     ];
   }
+
   filterChange($event: Record<string, any>) {
-    const { typeFilter, PeriodId } = $event;
+    const { typeFilter,typeGraphic } = $event;
     if (typeFilter) {
       this.typeFilter = typeFilter;
     }
-
-    const selectedPeriod = this.periodsList.find((p) => p.id === PeriodId);
-    if (selectedPeriod) {
-      if (this.listPeriodFind.some((p) => p.id === selectedPeriod.id)) {
-        this.toastService.sendError('El período ha sido seleccionado');
-        return;
-      }
-      // Check if the number of selected periods exceeds 5
-      if (this.listPeriodFind.length >= 5) {
-        this.toastService.sendError(
-          'Se pueden seleccionar como máximo 5 períodos'
-        );
-        return;
-      }
-
-      this.listPeriodFind.unshift(selectedPeriod); // Agrega el período al inicio de la lista
-      this.createFilter(); // Actualiza el filtro de períodos
-      this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
+    if(typeGraphic){
+      this.typeGraphic=typeGraphic
     }
+    this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
 
   deletePeriod(index: number) {
@@ -260,40 +238,65 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
 
 
-  calculateKPI(resume: Resume, type: string): void {
+  calculateKPI(resume?: Resume): void {
+    this.valueKPI1 =0;
+    this.valueKPI2 =0;
+    this.valueKPI3 = 0;
+    if(!resume){
+      return
+    }
+
     let totalAmount = 0;
     let totalOrdinary = 0;
     resume.ordinary.map((item) => {
-      totalOrdinary += item.data.totalAmount;
-      totalAmount += item.data.totalAmount;
+      if(this.typeFilter==="Monto"){
+        totalOrdinary += item.data.totalAmount;
+        totalAmount += item.data.totalAmount;
+      }
+      if(this.typeFilter==="Promedio"){
+        totalOrdinary += item.data.average;
+        totalAmount += item.data.average;
+      }
+      if(this.typeFilter==="Porcentaje"){
+        totalOrdinary += item.data.percentage;
+        totalAmount += item.data.percentage;
+      }
     });
     let totalExtraordinary = 0;
     resume.extraordinary.map((item) => {
-      totalExtraordinary += item.data.totalAmount;
-      totalAmount += item.data.totalAmount;
+      if(this.typeFilter==="Monto"){
+        totalExtraordinary += item.data.totalAmount;
+        totalAmount += item.data.totalAmount;
+      }
+      if(this.typeFilter==="Promedio"){
+        totalExtraordinary += item.data.average;
+        totalAmount += item.data.average;
+      }
+      if(this.typeFilter==="Porcentaje"){
+        totalExtraordinary += item.data.percentage;
+        totalAmount += item.data.percentage;
+      }
     });
 
     let totalBillsO = resume.ordinary.length;
     let totalBillsE = resume.extraordinary.length;
 
-    if (isNaN(totalAmount)) totalAmount = 0;
-    if (isNaN(totalOrdinary)) totalOrdinary = 0;
-    if (isNaN(totalExtraordinary)) totalExtraordinary = 0;
-
-    switch (type) {
+  
+    switch (this.typeFilter) {
       case 'Monto': {
         this.valueKPI1 = Number((totalOrdinary / 1000000).toFixed(3));
         this.valueKPI2 = Number((totalExtraordinary / 1000000).toFixed(3));
         this.valueKPI3 = Number((totalAmount / 1000000).toFixed(3));
         break;
+        
       }
       case 'Porcentaje': {
-        this.valueKPI1 = (totalOrdinary / totalAmount) * 100;
-        this.valueKPI2 = (totalExtraordinary / totalAmount) * 100;
+        this.valueKPI1 = totalOrdinary ;
+        this.valueKPI2 = totalExtraordinary ;
         this.valueKPI3 = 0;
-        break;
+             break;
       }
-      case 'Promedio': {
+      case "Promedio": {
         this.valueKPI1 = Number(
           (totalOrdinary / totalBillsO / 1000000).toFixed(3)
         );
@@ -303,11 +306,13 @@ export class ExpensesPeriodReportComponent implements OnInit {
         this.valueKPI3 = Number(
           (totalAmount / (totalBillsO + totalBillsE) / 1000000).toFixed(3)
         );
+
         break;
       }
       default:
         return;
     }
+
   }
   loadResume() {
   
@@ -461,11 +466,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         },
         legend: {
           onClick: (event, legendItem) => {
-            if (legendItem.text === 'Ordinarias ') {
-              console.log("Ordinarias")
-            } else if (legendItem.text === 'Extraordinarias') {
-              console.log('Extraordinarias ');
-            }
+          
           },
         },
       },
@@ -511,12 +512,20 @@ export class ExpensesPeriodReportComponent implements OnInit {
     suppliers: SupplierAmount[],
     title: string
   ): any {
+    console.log(suppliers)
     suppliers = suppliers
       .sort((a, b) => b.totalAmount - a.totalAmount)
       .slice(0, 5);
     const labels = suppliers.map((item) => item.supplierDTO.name);
-    const data = suppliers.map((item) =>
-      Number((item.totalAmount / 1000000).toFixed(3))
+    const data = suppliers.map((item) =>{
+      if(this.typeFilter==="Monto"){
+       return Number((item.totalAmount / 1000000).toFixed(3))
+      } else if(this.typeFilter==="Promedio"){
+        return Number((item.average / 1000000).toFixed(3))
+      } else if (this.typeFilter==="Porcentaje"){
+        return item.percentage
+      } else return 0
+    }
     );
     const chartData: ChartData<'bar'> = {
       labels: labels,
@@ -527,7 +536,11 @@ export class ExpensesPeriodReportComponent implements OnInit {
           datalabels: {
             display: true,
             formatter: (value) => {
-              return `$${(value * 1000000).toLocaleString()}`; // Multiplica por 10,000 y agrega el símbolo $
+              if(this.typeFilter==="Porcentaje"){
+                return `%${value}`
+              } else{
+                return `$${(value * 1000000).toLocaleString()}`;
+              } 
             },
             labels: {
               title: {
