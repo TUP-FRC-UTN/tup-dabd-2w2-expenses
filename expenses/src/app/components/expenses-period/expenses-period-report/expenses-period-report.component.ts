@@ -173,7 +173,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     this.reportPeriodService.getReportPeriods(ids).subscribe({
       next: (data) => {
         this.reportPeriod = data;
-        this.calculateKPI(this.reportPeriod?.resume);
+        this.calculateKPI(this.reportPeriod);
         this.loadResume()
       },
       error: (error) => {
@@ -207,14 +207,47 @@ export class ExpensesPeriodReportComponent implements OnInit {
     }
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
-
   deletePeriod(index: number) {
     const periodToDelete = this.listPeriodFind[index];
     this.listPeriodFind.splice(index, 1);
     this.createFilter(); // Actualiza el filtro de períodos
     if (this.listPeriodFind.length === 0) {
       (this.valueKPI1 = 0), (this.valueKPI3 = 0), (this.valueKPI2 = 0);
-      this.reportPeriod = {
+      this.reportPeriod = this.reportPeriod = {
+        expenditures: {
+          ordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          extraordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          total: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          }
+        },
+        categories: {
+          ordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          extraordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          total: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          }
+        },
         resume: {
           period: {
             month: 0,
@@ -222,95 +255,85 @@ export class ExpensesPeriodReportComponent implements OnInit {
             state: '',
             id: 0,
             start_date: new Date(),
-            end_date: new Date(),
+            end_date: new Date()
           },
-          ordinary: [],
+          ordinary: [],  // Asegúrate de ajustar estos arrays según los datos que realmente necesitas
           extraordinary: [],
           supplier_ordinary: [],
-          supplier_extraordinary: [],
+          supplier_extraordinary: []
         },
-        periods: [],
-      };
+        periods: []
+      }
 
       return;
     }
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
 
-
-  calculateKPI(resume?: Resume): void {
+  calculateKPI(resume: ReportPeriod): void {
     this.valueKPI1 =0;
     this.valueKPI2 =0;
     this.valueKPI3 = 0;
     if(!resume){
       return
     }
-
-    let totalAmount = 0;
-    let totalOrdinary = 0;
-    resume.ordinary.map((item) => {
-      if(this.typeFilter==="Monto"){
-        totalOrdinary += item.data.totalAmount;
-        totalAmount += item.data.totalAmount;
-      }
-      if(this.typeFilter==="Promedio"){
-        totalOrdinary += item.data.average;
-        totalAmount += item.data.average;
-      }
-      if(this.typeFilter==="Porcentaje"){
-        totalOrdinary += item.data.percentage;
-        totalAmount += item.data.percentage;
-      }
-    });
-    let totalExtraordinary = 0;
-    resume.extraordinary.map((item) => {
-      if(this.typeFilter==="Monto"){
-        totalExtraordinary += item.data.totalAmount;
-        totalAmount += item.data.totalAmount;
-      }
-      if(this.typeFilter==="Promedio"){
-        totalExtraordinary += item.data.average;
-        totalAmount += item.data.average;
-      }
-      if(this.typeFilter==="Porcentaje"){
-        totalExtraordinary += item.data.percentage;
-        totalAmount += item.data.percentage;
-      }
-    });
-
-    let totalBillsO = resume.ordinary.length;
-    let totalBillsE = resume.extraordinary.length;
-
+    if(this.typeGraphic==="General"){
+      switch (this.typeFilter) {
+        case 'Monto': {
+          this.valueKPI1 = Number((resume.expenditures.ordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.expenditures.extraordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.expenditures.total.totalAmount / 1000000).toFixed(3));
+          console.log(resume);
+          break;
   
-    switch (this.typeFilter) {
-      case 'Monto': {
-        this.valueKPI1 = Number((totalOrdinary / 1000000).toFixed(3));
-        this.valueKPI2 = Number((totalExtraordinary / 1000000).toFixed(3));
-        this.valueKPI3 = Number((totalAmount / 1000000).toFixed(3));
-        break;
-        
+        }
+        case 'Porcentaje': {
+          this.valueKPI1 = resume.expenditures.ordinary.percentage;
+          this.valueKPI2 = resume.expenditures.extraordinary.percentage;
+          this.valueKPI3 = resume.expenditures.total.percentage;
+          console.log(resume);
+               break;
+        }
+        case "Promedio": {
+          this.valueKPI1 = Number((resume.expenditures.ordinary.average / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.expenditures.extraordinary.average / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.expenditures.total.average / 1000000).toFixed(3));
+  
+          console.log(resume);
+          break;
+        }
+        default:
+          return;
       }
-      case 'Porcentaje': {
-        this.valueKPI1 = totalOrdinary ;
-        this.valueKPI2 = totalExtraordinary ;
-        this.valueKPI3 = 0;
-             break;
+    }
+    if(this.typeGraphic==="Categorias"){
+      switch (this.typeFilter) {
+        case 'Monto': {
+          this.valueKPI1 = Number((resume.categories.ordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.categories.extraordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.categories.total.totalAmount / 1000000).toFixed(3));
+          console.log(resume);
+          break;
+  
+        }
+        case 'Porcentaje': {
+          this.valueKPI1 = resume.categories.ordinary.percentage;
+          this.valueKPI2 = resume.categories.extraordinary.percentage;
+          this.valueKPI3 = resume.categories.total.percentage;
+          console.log(resume);
+               break;
+        }
+        case "Promedio": {
+          this.valueKPI1 = Number((resume.categories.ordinary.average / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.categories.extraordinary.average / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.categories.total.average / 1000000).toFixed(3));
+  
+          console.log(resume);
+          break;
+        }
+        default:
+          return;
       }
-      case "Promedio": {
-        this.valueKPI1 = Number(
-          (totalOrdinary / totalBillsO / 1000000).toFixed(3)
-        );
-        this.valueKPI2 = Number(
-          (totalExtraordinary / totalExtraordinary / 1000000).toFixed(3)
-        );
-        this.valueKPI3 = Number(
-          (totalAmount / (totalBillsO + totalBillsE) / 1000000).toFixed(3)
-        );
-
-        break;
-      }
-      default:
-        return;
     }
 
   }
