@@ -1,8 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -11,16 +7,11 @@ import {
   DecimalPipe,
   CurrencyPipe,
 } from '@angular/common';
-import {
-  ChartData,
-  ChartOptions,
-
-} from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
 
 import { NgPipesModule } from 'ngx-pipes';
 import { Chart, registerables } from 'chart.js';
 import {
-
   MainContainerComponent,
   ToastService,
   TableFiltersComponent,
@@ -41,6 +32,7 @@ import * as XLSX from 'xlsx';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { ExpensesPeriodsGraphicBarComponent } from './expenses-periods-graphic-bar/expenses-periods-graphic-bar.component';
 import { ExpensesCategoryGraphicComponent } from './expenses-category-graphic/expenses-category-graphic.component';
+import { SupplierDTO } from '../../../models/report-period/SupplierDTO';
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
@@ -53,7 +45,8 @@ import { ExpensesCategoryGraphicComponent } from './expenses-category-graphic/ex
     TableFiltersComponent,
     NgSelectComponent,
     ExpensesPeriodsGraphicBarComponent,
-    ExpensesCategoryGraphicComponent  ],
+    ExpensesCategoryGraphicComponent,
+  ],
   providers: [DatePipe, NgbActiveModal, CurrencyPipe, DecimalPipe],
   templateUrl: './expenses-period-report.component.html',
   styleUrl: './expenses-period-report.component.css',
@@ -74,16 +67,15 @@ export class ExpensesPeriodReportComponent implements OnInit {
     { nombre: 'Septiembre', numero: 9 },
     { nombre: 'Octubre', numero: 10 },
     { nombre: 'Noviembre', numero: 11 },
-    { nombre: 'Diciembre', numero: 12 }
+    { nombre: 'Diciembre', numero: 12 },
   ];
   form = new FormGroup({
     mes: new FormControl(),
-    anio: new FormControl()
+    anio: new FormControl(),
   });
-    reportPeriod: ReportPeriod | undefined;
+  reportPeriod: ReportPeriod | undefined;
   periodos: Period[] = [];
   filters: Filter[] = [];
-
 
   ordinaryData: { category: string; percentage: number }[] = [];
   extraordinaryData: { category: string; percentage: number }[] = [];
@@ -103,8 +95,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
   chartInstances: any[] = [];
   resumeReportOrdinary: any;
   resumeReportExtraordinary: any;
-  typeFilter:  "Monto" | "Promedio" | "Porcentaje" = "Monto"
-  typeGraphic:  "General" | "Proveedores" | "Categorias" = "General"
+  typeFilter: 'Monto' | 'Promedio' | 'Porcentaje' = 'Monto';
+  typeGraphic: 'General' | 'Proveedores' | 'Categorias' = 'General';
 
   valueKPI1: number = 0;
   valueKPI2: number = 0;
@@ -116,66 +108,63 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPeriodsList();
-    this.form.valueChanges.subscribe(values => {
-      if(values.anio!=null && values.mes != null){
-        const period = this.periodsList.find((p)=>p.month===Number(values.mes) && p.year===Number(values.anio))
-        if(period){
-          if(this.listPeriodFind.some((p)=>p.id===period.id)){
-            this.toastService.sendError("Ya selecciono este periodo")
-          } else{
-            if(this.listPeriodFind.length>5){
-              this.toastService.sendError("Alcanzo el limite de periodos")
-              return
+    this.form.valueChanges.subscribe((values) => {
+      if (values.anio != null && values.mes != null) {
+        const period = this.periodsList.find(
+          (p) =>
+            p.month === Number(values.mes) && p.year === Number(values.anio)
+        );
+        if (period) {
+          if (this.listPeriodFind.some((p) => p.id === period.id)) {
+            this.toastService.sendError('Ya selecciono este periodo');
+          } else {
+            if (this.listPeriodFind.length > 5) {
+              this.toastService.sendError('Alcanzo el limite de periodos');
+              return;
             }
-            const monthName = this.meses.find(m=>m.numero ===period.month)
-            if(monthName){
-              period.monthName = monthName?.nombre?.slice(0, 3) || "";
+            const monthName = this.meses.find((m) => m.numero === period.month);
+            if (monthName) {
+              period.monthName = monthName?.nombre?.slice(0, 3) || '';
             }
-            this.listPeriodFind.push(period)
+            this.listPeriodFind.push(period);
           }
         }
-        this.form.reset()
-        this.loadReportPeriod(this.listPeriodFind.map(p=>p.id))
+        this.form.reset();
+        this.loadReportPeriod(this.listPeriodFind.map((p) => p.id));
       }
     });
   }
-  
+
   loadPeriodsList() {
     this.periodService.get().subscribe((data) => {
       this.periodsList = data;
       this.periodsList.forEach((p, index) => {
         if (index < 3) {
-          const monthName = this.meses.find(m=>m.numero ===p.month)
-          if(monthName){
-            p.monthName = monthName?.nombre?.slice(0, 3) || "";
-
+          const monthName = this.meses.find((m) => m.numero === p.month);
+          if (monthName) {
+            p.monthName = monthName?.nombre?.slice(0, 3) || '';
           }
-          this.listPeriodFind.push(p)
-       
+          this.listPeriodFind.push(p);
         }
       });
-      this.loadReportPeriod(
-        this.listPeriodFind.map((p) => Number(p.id))
-      );
+      this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
       this.createFilter();
     });
   }
 
   loadReportPeriod(ids: number[]) {
+    this.valueKPI1 = 0;
+    this.valueKPI2 = 0;
+    this.valueKPI3 = 0;
     if (!ids || ids.length === 0) {
       console.error('Error: no ids provided');
-      return; // Maneja el caso cuando no se proporcionan ids
+      return;
     }
-    this.valueKPI1=0
-    this.valueKPI2=0
-    this.valueKPI3=0
-
     this.reportPeriodService.getReportPeriods(ids).subscribe({
       next: (data) => {
-
-        this.reportPeriod = this.keysToCamel(data) as ReportPeriod;;
+        this.reportPeriod = this.keysToCamel(data) as ReportPeriod;
         this.calculateKPI(this.reportPeriod);
-        this.loadResume()
+        this.loadResume();
       },
       error: (error) => {
         console.error('Error loading report periods:', error);
@@ -190,21 +179,21 @@ export class ExpensesPeriodReportComponent implements OnInit {
         { value: 'Porcentaje', label: 'Porcentaje' },
         { value: 'Promedio', label: 'Promedio' },
       ]),
-      new RadioFilter('Grafico','typeGraphic',[
-        {value:"General", label:"General"},
-        {value:"Proveedores",label:"Proveedores"},
-        {value:"Categorias", label:"categorias"}
-      ])
+      new RadioFilter('Grafico', 'typeGraphic', [
+        { value: 'General', label: 'General' },
+        { value: 'Proveedores', label: 'Proveedores' },
+        { value: 'Categorias', label: 'categorias' },
+      ]),
     ];
   }
 
   filterChange($event: Record<string, any>) {
-    const { typeFilter,typeGraphic } = $event;
+    const { typeFilter, typeGraphic } = $event;
     if (typeFilter) {
       this.typeFilter = typeFilter;
     }
-    if(typeGraphic){
-      this.typeGraphic=typeGraphic
+    if (typeGraphic) {
+      this.typeGraphic = typeGraphic;
     }
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
@@ -219,52 +208,52 @@ export class ExpensesPeriodReportComponent implements OnInit {
           ordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           extraordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           total: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
-          }
+            average: 0,
+          },
         },
         categories: {
           ordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           extraordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           total: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
-          }
+            average: 0,
+          },
         },
         suppliers: {
           ordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           extraordinary: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
+            average: 0,
           },
           total: {
             totalAmount: 0,
             percentage: 0,
-            average: 0
-          }
+            average: 0,
+          },
         },
         resume: {
           period: {
@@ -273,55 +262,163 @@ export class ExpensesPeriodReportComponent implements OnInit {
             state: '',
             id: 0,
             startDate: new Date(),
-            endDate: new Date()
+            endDate: new Date(),
           },
-          ordinary: [],  // Asegúrate de ajustar estos arrays según los datos que realmente necesitas
+          ordinary: [], // Asegúrate de ajustar estos arrays según los datos que realmente necesitas
           extraordinary: [],
-          supplierOrdinary: [],
-          supplierExtraordinary: []
+          supplierOrdinary: [
+            {
+              supplierDTO: {} as SupplierDTO, // Suponiendo que SupplierDTO es otro objeto o interfaz
+              totalAmount: 0,
+              average: 0,
+              percentage: 0,
+            },
+          ],
+          supplierExtraordinary: [
+            {
+              supplierDTO: {} as SupplierDTO, 
+              totalAmount: 0,
+              average: 0,
+              percentage: 0,
+            },
+          ],
         },
-        periods: []
-      }
+        periods: [],
+      };
 
       return;
     }
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
 
-  deletePeriods(){
-    this.listPeriodFind = []
+  clearFilter() {
+    this.listPeriodFind = [];
+    this.reportPeriod = {
+      expenditures: {
+        ordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        extraordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        total: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+      },
+      categories: {
+        ordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        extraordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        total: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+      },
+      suppliers: {
+        ordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        extraordinary: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+        total: {
+          totalAmount: 0,
+          percentage: 0,
+          average: 0,
+        },
+      },
+      resume: {
+        period: {
+          month: 0,
+          year: 0,
+          state: '',
+          id: 0,
+          startDate: new Date(),
+          endDate: new Date(),
+        },
+        ordinary: [], // Asegúrate de ajustar estos arrays según los datos que realmente necesitas
+        extraordinary: [],
+        supplierOrdinary: [
+          {
+            supplierDTO: {} as SupplierDTO, // Suponiendo que SupplierDTO es otro objeto o interfaz
+            totalAmount: 0,
+            average: 0,
+            percentage: 0,
+          },
+        ],
+        supplierExtraordinary: [
+          {
+            supplierDTO: {} as SupplierDTO, 
+            totalAmount: 0,
+            average: 0,
+            percentage: 0,
+          },
+        ],
+      },
+      periods: [],
+    };
+    this.loadResume();
   }
 
   calculateKPI(resume: ReportPeriod): void {
-    this.valueKPI1 =0;
-    this.valueKPI2 =0;
+    this.valueKPI1 = 0;
+    this.valueKPI2 = 0;
     this.valueKPI3 = 0;
-    if(!resume){
-      return
+    if (!resume) {
+      return;
     }
-    console.log(resume.expenditures.ordinary.totalAmount)
-    if(this.typeGraphic==="General"){
+    console.log(resume.expenditures.ordinary.totalAmount);
+    if (this.typeGraphic === 'General') {
       switch (this.typeFilter) {
         case 'Monto': {
-          this.valueKPI1 = Number((resume.expenditures.ordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.expenditures.extraordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.expenditures.total.totalAmount / 1000000).toFixed(3));
+          this.valueKPI1 = Number(
+            (resume.expenditures.ordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.expenditures.extraordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.expenditures.total.totalAmount / 1000000).toFixed(3)
+          );
           console.log(resume);
           break;
-  
         }
         case 'Porcentaje': {
           this.valueKPI1 = resume.expenditures.ordinary.percentage;
           this.valueKPI2 = resume.expenditures.extraordinary.percentage;
           this.valueKPI3 = resume.expenditures.total.percentage;
           console.log(resume);
-               break;
+          break;
         }
-        case "Promedio": {
-          this.valueKPI1 = Number((resume.expenditures.ordinary.average / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.expenditures.extraordinary.average / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.expenditures.total.average / 1000000).toFixed(3));
-  
+        case 'Promedio': {
+          this.valueKPI1 = Number(
+            (resume.expenditures.ordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.expenditures.extraordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.expenditures.total.average / 1000000).toFixed(3)
+          );
+
           console.log(resume);
           break;
         }
@@ -329,69 +426,88 @@ export class ExpensesPeriodReportComponent implements OnInit {
           return;
       }
     }
-    if(this.typeGraphic==="Categorias"){
+    if (this.typeGraphic === 'Categorias') {
       switch (this.typeFilter) {
         case 'Monto': {
-          this.valueKPI1 = Number((resume.categories.ordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.categories.extraordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.categories.total.totalAmount / 1000000).toFixed(3));
+          this.valueKPI1 = Number(
+            (resume.categories.ordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.categories.extraordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.categories.total.totalAmount / 1000000).toFixed(3)
+          );
           console.log(resume);
           break;
-  
         }
         case 'Porcentaje': {
           this.valueKPI1 = resume.categories.ordinary.percentage;
           this.valueKPI2 = resume.categories.extraordinary.percentage;
           this.valueKPI3 = resume.categories.total.percentage;
           console.log(resume);
-               break;
+          break;
         }
-        case "Promedio": {
-          this.valueKPI1 = Number((resume.categories.ordinary.average / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.categories.extraordinary.average / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.categories.total.average / 1000000).toFixed(3));
-  
+        case 'Promedio': {
+          this.valueKPI1 = Number(
+            (resume.categories.ordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.categories.extraordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.categories.total.average / 1000000).toFixed(3)
+          );
+
           console.log(resume);
           break;
         }
         default:
           return;
       }
-      
     }
-    if(this.typeGraphic==="Proveedores"){
+    if (this.typeGraphic === 'Proveedores') {
       switch (this.typeFilter) {
         case 'Monto': {
-          this.valueKPI1 = Number((resume.suppliers.ordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.suppliers.extraordinary.totalAmount / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.suppliers.total.totalAmount / 1000000).toFixed(3));
+          this.valueKPI1 = Number(
+            (resume.suppliers.ordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.suppliers.extraordinary.totalAmount / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.suppliers.total.totalAmount / 1000000).toFixed(3)
+          );
           console.log(resume);
           break;
-  
         }
         case 'Porcentaje': {
           this.valueKPI1 = resume.suppliers.ordinary.percentage;
           this.valueKPI2 = resume.suppliers.extraordinary.percentage;
           this.valueKPI3 = resume.suppliers.total.percentage;
           console.log(resume);
-               break;
+          break;
         }
-        case "Promedio": {
-          this.valueKPI1 = Number((resume.categories.ordinary.average / 1000000).toFixed(3));
-          this.valueKPI2 = Number((resume.categories.extraordinary.average / 1000000).toFixed(3));
-          this.valueKPI3 = Number((resume.categories.total.average / 1000000).toFixed(3));
-  
+        case 'Promedio': {
+          this.valueKPI1 = Number(
+            (resume.categories.ordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI2 = Number(
+            (resume.categories.extraordinary.average / 1000000).toFixed(3)
+          );
+          this.valueKPI3 = Number(
+            (resume.categories.total.average / 1000000).toFixed(3)
+          );
+
           console.log(resume);
           break;
         }
         default:
           return;
       }
-      
     }
   }
   loadResume() {
-  
     this.createSuppliersChart(
       'supplier-ordinary',
       this.reportPeriod?.resume?.supplierOrdinary || [],
@@ -506,8 +622,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
           data: ordinaryValues,
           datalabels: {
             labels: {
-              title: null
-            }
+              title: null,
+            },
           },
           borderColor: 'rgba(13,110,253,1)',
           backgroundColor: 'rgba(13, 110, 253, 0.2)', // Color de fondo para las áreas ordinarias
@@ -515,11 +631,11 @@ export class ExpensesPeriodReportComponent implements OnInit {
           pointBackgroundColor: 'rgba(13, 110, 253, 0.2)', // Color de los puntos en las líneas
         },
         {
-          label: 'Extraordinarias ', 
+          label: 'Extraordinarias ',
           datalabels: {
             labels: {
-              title: null
-            }
+              title: null,
+            },
           },
           data: extraordinaryValues,
           borderColor: 'rgba(220, 53, 69, 1)',
@@ -541,9 +657,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
           },
         },
         legend: {
-          onClick: (event, legendItem) => {
-          
-          },
+          onClick: (event, legendItem) => {},
         },
       },
     };
@@ -561,7 +675,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         // Crea el canvas y añádelo
         canvas = document.createElement('canvas');
         canvas.id = chartId; // Asigna un ID único para cada gráfico
-        canvas.height=75
+        canvas.height = 75;
         parentElement.appendChild(canvas); // Añade el canvas al contenedor
       }
 
@@ -578,8 +692,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         this.chartInstances.push(chart);
         return chart; // Devolver la instancia del gráfico
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   //grafico proveedores
@@ -588,21 +701,20 @@ export class ExpensesPeriodReportComponent implements OnInit {
     suppliers: SupplierAmount[],
     title: string
   ): any {
-    console.log(suppliers)
+    console.log(suppliers);
     suppliers = suppliers
       .sort((a, b) => b.totalAmount - a.totalAmount)
       .slice(0, 5);
     const labels = suppliers.map((item) => item.supplierDTO.name);
-    const data = suppliers.map((item) =>{
-      if(this.typeFilter==="Monto"){
-       return Number((item.totalAmount / 1000000).toFixed(3))
-      } else if(this.typeFilter==="Promedio"){
-        return Number((item.average / 1000000).toFixed(3))
-      } else if (this.typeFilter==="Porcentaje"){
-        return item.percentage
-      } else return 0
-    }
-    );
+    const data = suppliers.map((item) => {
+      if (this.typeFilter === 'Monto') {
+        return Number((item.totalAmount / 1000000).toFixed(3));
+      } else if (this.typeFilter === 'Promedio') {
+        return Number((item.average / 1000000).toFixed(3));
+      } else if (this.typeFilter === 'Porcentaje') {
+        return item.percentage;
+      } else return 0;
+    });
     const chartData: ChartData<'bar'> = {
       labels: labels,
       datasets: [
@@ -612,11 +724,11 @@ export class ExpensesPeriodReportComponent implements OnInit {
           datalabels: {
             display: true,
             formatter: (value) => {
-              if(this.typeFilter==="Porcentaje"){
-                return `%${value}`
-              } else{
+              if (this.typeFilter === 'Porcentaje') {
+                return `%${value}`;
+              } else {
                 return `$${(value * 1000000).toLocaleString()}`;
-              } 
+              }
             },
             labels: {
               title: {
@@ -693,8 +805,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
         this.chartInstances.push(ordinaryChart);
         return ordinaryChart; // Devolver la instancia del gráfico
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 
   exportToExcel() {
@@ -767,21 +878,24 @@ export class ExpensesPeriodReportComponent implements OnInit {
   }
 
   toCamel(s: string) {
-    return s.replace(/([-_][a-z])/ig, ($1) => {
-      return $1.toUpperCase()
-        .replace('-', '')
-        .replace('_', '');
+    return s.replace(/([-_][a-z])/gi, ($1) => {
+      return $1.toUpperCase().replace('-', '').replace('_', '');
     });
   }
 
   keysToCamel(o: any): any {
     if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
-      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+      const n: { [key: string]: any } = {};
+      Object.keys(o).forEach((k) => {
         n[this.toCamel(k)] = this.keysToCamel(o[k]);
-      });       return n;
+      });
+      return n;
     } else if (Array.isArray(o)) {
-      return o.map((i) => {         return this.keysToCamel(i);       });
-    }     return o;
+      return o.map((i) => {
+        return this.keysToCamel(i);
+      });
+    }
+    return o;
   }
 }
 interface Report {
