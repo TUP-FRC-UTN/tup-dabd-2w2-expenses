@@ -81,24 +81,32 @@
             <div class="card-body">
               <!-- Condición para Monto -->
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle mb-2 text-muted">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos ordinarios } @else{
-                  Concentración ordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI1 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-percent"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos ordinarios } @else{
-                  Concentración ordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI1 | number : "1.2-2" }}%
@@ -107,12 +115,16 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-calculator"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos ordinarios } @else{
-                  Concentración ordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos ordinarios } @else{
+                    Concentración ordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI1 }} mill</h3>
               </ng-container>
@@ -127,24 +139,38 @@
             <div class="card-body">
               <!-- Condición para Monto -->
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2" [ngStyle]="{ 'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem' }">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos extraordinarios }
-                  @else{ Concentración extraordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI2 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2" [ngStyle]="{ 'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem' }">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-percent"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos extraordinarios }
-                  @else{ Concentración extraordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI2 | number : "1.2-2" }}%
@@ -153,12 +179,19 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2" [ngStyle]="{ 'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem' }">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                  [ngStyle]="{
+                    'font-size': typeGraphic === 'General' ? '1rem' : '0.90rem'
+                  }"
+                >
                   <div class="icon-circle bg-success">
                     <i class="bi bi-calculator"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos extraordinarios }
-                  @else{ Concentración extraordinarios }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos extraordinarios }
+                    @else{ Concentración extraordinarios top 5 }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI2 }} mill</h3>
               </ng-container>
@@ -173,24 +206,32 @@
               <!-- Condición para Monto -->
 
               <ng-container *ngIf="typeFilter === 'Monto'">
-                <h6 class="card-subtitle mb-2 text-muted">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-info">
                     <i class="bi bi-cash-stack"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos totales } @else{
-                  Concentración total }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total top 5}
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI3 }} mill</h3>
               </ng-container>
 
               <!-- Condición para Porcentaje -->
               <ng-container *ngIf="typeFilter === 'Porcentaje'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-info">
                     <i class="bi bi-percent"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos totales } @else{
-                  Concentración total }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">
                   {{ valueKPI3 | number : "1.2-2" }}%
@@ -199,12 +240,16 @@
 
               <!-- Condición para Promedio -->
               <ng-container *ngIf="typeFilter === 'Promedio'">
-                <h6 class="card-subtitle text-muted mb-2 ms-2">
+                <h6
+                  class="card-subtitle mb-2 text-muted d-flex align-items-center"
+                >
                   <div class="icon-circle bg-info">
                     <i class="bi bi-calculator"></i>
                   </div>
-                  @if (typeGraphic==="General") { Gastos totales } @else{
-                  Concentración total }
+                  <div class="px-1">
+                    @if (typeGraphic==="General") { Gastos totales } @else{
+                    Concentración total }
+                  </div>
                 </h6>
                 <h3 class="card-title mb-0">${{ valueKPI3 }} mill</h3>
               </ng-container>

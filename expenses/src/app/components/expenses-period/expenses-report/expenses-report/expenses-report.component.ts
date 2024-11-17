@@ -349,6 +349,7 @@ export class ExpensesReportComponent {
         this.typesPlots = expenses.typesPlots;
       });
   }
+  
 
   loadExpenseData(): void {
     if (this.countPlots == 0) {

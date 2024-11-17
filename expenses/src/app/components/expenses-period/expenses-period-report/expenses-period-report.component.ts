@@ -172,7 +172,8 @@ export class ExpensesPeriodReportComponent implements OnInit {
 
     this.reportPeriodService.getReportPeriods(ids).subscribe({
       next: (data) => {
-        this.reportPeriod = data;
+
+        this.reportPeriod = this.keysToCamel(data) as ReportPeriod;;
         this.calculateKPI(this.reportPeriod);
         this.loadResume()
       },
@@ -248,19 +249,36 @@ export class ExpensesPeriodReportComponent implements OnInit {
             average: 0
           }
         },
+        suppliers: {
+          ordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          extraordinary: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          },
+          total: {
+            totalAmount: 0,
+            percentage: 0,
+            average: 0
+          }
+        },
         resume: {
           period: {
             month: 0,
             year: 0,
             state: '',
             id: 0,
-            start_date: new Date(),
-            end_date: new Date()
+            startDate: new Date(),
+            endDate: new Date()
           },
           ordinary: [],  // Asegúrate de ajustar estos arrays según los datos que realmente necesitas
           extraordinary: [],
-          supplier_ordinary: [],
-          supplier_extraordinary: []
+          supplierOrdinary: [],
+          supplierExtraordinary: []
         },
         periods: []
       }
@@ -277,6 +295,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
     if(!resume){
       return
     }
+    console.log(resume.expenditures.ordinary.totalAmount)
     if(this.typeGraphic==="General"){
       switch (this.typeFilter) {
         case 'Monto': {
@@ -334,19 +353,49 @@ export class ExpensesPeriodReportComponent implements OnInit {
         default:
           return;
       }
+      
     }
-
+    if(this.typeGraphic==="Proveedores"){
+      switch (this.typeFilter) {
+        case 'Monto': {
+          this.valueKPI1 = Number((resume.suppliers.ordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.suppliers.extraordinary.totalAmount / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.suppliers.total.totalAmount / 1000000).toFixed(3));
+          console.log(resume);
+          break;
+  
+        }
+        case 'Porcentaje': {
+          this.valueKPI1 = resume.suppliers.ordinary.percentage;
+          this.valueKPI2 = resume.suppliers.extraordinary.percentage;
+          this.valueKPI3 = resume.suppliers.total.percentage;
+          console.log(resume);
+               break;
+        }
+        case "Promedio": {
+          this.valueKPI1 = Number((resume.categories.ordinary.average / 1000000).toFixed(3));
+          this.valueKPI2 = Number((resume.categories.extraordinary.average / 1000000).toFixed(3));
+          this.valueKPI3 = Number((resume.categories.total.average / 1000000).toFixed(3));
+  
+          console.log(resume);
+          break;
+        }
+        default:
+          return;
+      }
+      
+    }
   }
   loadResume() {
   
     this.createSuppliersChart(
       'supplier-ordinary',
-      this.reportPeriod?.resume?.supplier_ordinary || [],
+      this.reportPeriod?.resume?.supplierOrdinary || [],
       'Top 5 proveedores ordinarios'
     );
     this.createSuppliersChart(
       'supplier-extraordinary',
-      this.reportPeriod?.resume?.supplier_extraordinary || [],
+      this.reportPeriod?.resume?.supplierExtraordinary || [],
       'Top 5 de proveedores extraordinarios'
     );
   }
@@ -357,7 +406,7 @@ export class ExpensesPeriodReportComponent implements OnInit {
   topSupplier: any;
 
   getTopOneSupplier() {
-    const suppliers = this.reportPeriod?.resume.supplier_ordinary;
+    const suppliers = this.reportPeriod?.resume.supplierOrdinary;
 
     if (suppliers && suppliers.length > 0) {
       this.topSupplier = suppliers.reduce((top, current) => {
@@ -711,6 +760,24 @@ export class ExpensesPeriodReportComponent implements OnInit {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Expenses');
     XLSX.writeFile(wb, `Expenses_report:${new Date().getTime()}.xlsx`);
+  }
+
+  toCamel(s: string) {
+    return s.replace(/([-_][a-z])/ig, ($1) => {
+      return $1.toUpperCase()
+        .replace('-', '')
+        .replace('_', '');
+    });
+  }
+
+  keysToCamel(o: any): any {
+    if (o === Object(o) && !Array.isArray(o) && typeof o !== 'function') {
+      const n: {[key: string]: any} = {};       Object.keys(o).forEach((k) => {
+        n[this.toCamel(k)] = this.keysToCamel(o[k]);
+      });       return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {         return this.keysToCamel(i);       });
+    }     return o;
   }
 }
 interface Report {
