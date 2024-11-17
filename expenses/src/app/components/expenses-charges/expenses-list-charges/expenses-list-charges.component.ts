@@ -337,8 +337,11 @@ addCharge() {
             this.getPlotNumber(charge.lotId) || 'N/A',
             charge.categoryCharge.name,
             charge.description,
-            charge.amount,
+            this.getSign(charge.amount, charge.amountSign)  ,
           ]),
+          columnStyles: {
+            5: { halign: 'right' }, // Alinea la sexta columna (índice 5) a la derecha
+          },
         });
 
         const fecha = new Date();
@@ -349,7 +352,21 @@ addCharge() {
       });
   }
 
+  getSign(amount : number,sign : string){
+    switch(sign){
+      case ChargeType.ABSOLUTE:
+        return '$'+amount;
+      case ChargeType.NEGATIVE:
+        return '$' + amount;
+      case ChargeType.PERCENTAGE:
+        return amount +'%';
+      default:
+        return '';
+    }
+  }
+
   downloadTable() {
+    debugger
     this.chargeService
       .getCharges(
         0,
@@ -359,12 +376,14 @@ addCharge() {
         this.selectedCategoryId
       )
       .subscribe((charges) => {
-        const data = charges.content.map((charge) => ({
+        const chargesAll = this.keysToCamel(charges.content)
+        const data = chargesAll.map((charge : Charge) => ({
           Periodo: `${charge.period.month}/${charge.period.year}`,
           'Fecha de Carga': moment(charge.date).format('DD/MM/YYYY'),
           'Número de lote': this.getPlotNumber(charge.lotId),
-          Categoría: charge.categoryCharge.name,
+          Categoria: charge.categoryCharge.name,
           Descripción: charge.description,
+          'Tipo de valor': charge.amountSign,
           Monto: charge.amount,
           Estado: charge.status,
         }));
