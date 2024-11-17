@@ -288,6 +288,10 @@ export class ExpensesPeriodReportComponent implements OnInit {
     this.loadReportPeriod(this.listPeriodFind.map((p) => Number(p.id)));
   }
 
+  deletePeriods(){
+    this.listPeriodFind = []
+  }
+
   calculateKPI(resume: ReportPeriod): void {
     this.valueKPI1 =0;
     this.valueKPI2 =0;
