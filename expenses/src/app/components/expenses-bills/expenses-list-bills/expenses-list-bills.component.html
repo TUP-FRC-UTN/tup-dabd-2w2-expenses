@@ -13,21 +13,21 @@
 
 <ng-template #periodTemplate let-item>
   <td>
-    {{ item.period.month }}/{{ item.period.year }}
+    {{ item?.period?.month }}/{{ item?.period?.year }}
   </td>
 </ng-template>
 
 
 <ng-template #dateTemplate let-item>
   <td>
-    {{ item.date | date: 'dd/MM/yyyy' }}
+    {{ item?.date | date: 'dd/MM/yyyy' }}
   </td>
 </ng-template>
 <ng-template #statusTemplate let-item>
   <div class="d-flex">
     @if(item.status == 'Activo'){
       <i class="bi bi-check2-circle text-success fs-3"></i>
-    } @else if(item.status == 'Cancelado'){
+    } @else if(item?.status == 'Cancelado'){
       <i class="bi bi-x-circle text-danger fs-4"></i>
     } @else {
       <i class="bi bi-exclamation-circle text-primary fs-4"></i>
@@ -37,7 +37,7 @@
 </ng-template>
 
 <ng-template #actionsTemplate let-bill>
-  @if(bill.period.state !== 'Cerrado') {
+  @if(bill?.period?.state !== 'Cerrado') {
 
     <td style="
       display: flex;
