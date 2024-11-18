@@ -40,6 +40,7 @@ import {
 } from 'ngx-dabd-grupo01';
 import { map, of } from 'rxjs';
 import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/delete-bill-modal.component';
+import {MonthService} from "../../../services/month.service";
 
 @Component({
   selector: 'app-list-expenses_bills',
@@ -62,6 +63,7 @@ import { DeleteBillModalComponent } from '../../modals/bills/delete-bill-modal/d
 export class ExpensesListBillsComponent implements OnInit {
 
   private readonly toastService = inject(ToastService);
+  private readonly monthService = inject(MonthService);
 
   bills: Bill[] = [];
   filteredBills: Bill[] = [];
@@ -93,6 +95,10 @@ export class ExpensesListBillsComponent implements OnInit {
     selectedStatus: new FormControl(''),
     selectedType: new FormControl(0),
   });
+
+  toMonthAbbr(month:number){
+    return this.monthService.getMonthAbbr(month);
+  }
 
   filterTableByText(value: string) {
     const filterValue = value?.toLowerCase() || '';
@@ -128,7 +134,7 @@ export class ExpensesListBillsComponent implements OnInit {
     const filterPeriod = value['period.id'] || 0;
     const filterType = value['billType.name'] || 0;
     let filterStatus = '';
-    if (value['isActive'] !== 'undefined') 
+    if (value['isActive'] !== 'undefined')
       filterStatus = value['isActive'] === 'true' ? 'Activo' : 'Cerrado';
 
     const filtered = this.allBills.filter((bill) => {
@@ -148,7 +154,7 @@ export class ExpensesListBillsComponent implements OnInit {
         ? bill.status === filterStatus
         : true;
 
-      return matchesCategory && matchesSupplier && matchesPeriod && 
+      return matchesCategory && matchesSupplier && matchesPeriod &&
              matchesType && matchesStatus;
     });
 
@@ -286,7 +292,7 @@ export class ExpensesListBillsComponent implements OnInit {
     this.periodService.get().subscribe((periods) => {
       this.periodsList = periods.map((period: any) => ({
         value: period.id,
-        label: `${period.month}/${period.year}`,
+        label: `${this.toMonthAbbr(period.month)}/${period.year}`,
       }));
       this.initializeFilters();
     });
@@ -349,7 +355,7 @@ export class ExpensesListBillsComponent implements OnInit {
   private loadBills(): void {
     this.isLoading = true;
     const filters = this.filters.value;
-    
+
     this.billService
       .getAllBillsAndPagination(
         0,
@@ -366,9 +372,9 @@ export class ExpensesListBillsComponent implements OnInit {
           this.billService.formatBills(of(response)).subscribe((bills) => {
             if (bills) {
               this.allBills = this.sortBills(bills);
-              
+
               this.totalItems = this.allBills.length;
-              
+
               const startIndex = (this.page - 1) * this.size;
               const endIndex = startIndex + this.size;
               this.bills = this.allBills.slice(startIndex, endIndex);
@@ -399,7 +405,7 @@ export class ExpensesListBillsComponent implements OnInit {
         if (statusComparison !== 0) {
             return statusComparison;
         }
-        
+
         return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
 }
