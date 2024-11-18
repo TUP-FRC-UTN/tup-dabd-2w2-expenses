@@ -80,24 +80,37 @@ export class ExpensesListComponent implements OnInit{
     this.loadExpenses()
   }
   loadExpenses(page: number = 0, size: number = 10): void {
-    debugger
     if (this.periodPath != null) {
       this.selectedPeriodId = Number(this.periodPath)
-    }
-    this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
-      this.expenses = data.content.map(expense => {
-        const expenses = this.keysToCamel(expense) as Expense;
-        return {
-          ...expenses,
-          month: this.getMonthName(expense.period.month), // Suponiendo que cada expenses-list tenga un campo `month`
-        };
+      this.service.getByPeriod(Number(this.periodPath)).subscribe(data=>{
+        console.log(data)
+        this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+          this.expenses = data.content.map(expense => {
+            const expenses = this.keysToCamel(expense) as Expense;
+            return {
+              ...expenses,
+              month: this.getMonthName(expense.period.month), // Suponiendo que cada expenses-list tenga un campo `month`
+            };
+    
+          });
+        })
 
+      })
+    } else {
+      this.service.getExpenses(page, size, this.selectedPeriodId, this.selectedLotId,this.selectedTypeId,this.sortField, this.sortOrder).subscribe(data => {
+        this.expenses = data.content.map(expense => {
+          const expenses = this.keysToCamel(expense) as Expense;
+          return {
+            ...expenses,
+            month: this.getMonthName(expense.period.month), // Suponiendo que cada expenses-list tenga un campo `month`
+          };
+        });
+        this.totalPages = data.totalPages;  // Número total de páginas
+        this.totalItems = data.totalElements;  // Total de registros
+        this.currentPage = data.number;
+        this.updateVisiblePages();
       });
-      this.totalPages = data.totalPages;  // Número total de páginas
-      this.totalItems = data.totalElements;  // Total de registros
-      this.currentPage = data.number;
-      this.updateVisiblePages();
-    });
+    }
   }
 
   onPageSizeChange() {
