@@ -89,6 +89,8 @@ export class ExpensesReportComponent {
   top: boolean = true;
   totalAmountPerTypePlot: Map<String, number>[] | undefined;
 
+  listYear: number[]=[]
+  
   modalService = inject(NgbModal);
   menosMayor: number = 1;
   periods: Period[] = [];
@@ -114,6 +116,7 @@ export class ExpensesReportComponent {
   ngOnInit(): void {
     this.loadSelect();
     this.loadExpenseData();
+    this.loadYear()
     this.loadKpis();
     this.form.valueChanges.subscribe((values) => {
       if (values.anio != null && values.mes != null) {
@@ -124,6 +127,7 @@ export class ExpensesReportComponent {
         if (period) {
           this.selectedPeriodId = period.id;
         } else {
+          console.log(values)
           this.toast.sendError('No existe ese periodo');
         }
         console.log(period)
@@ -132,6 +136,15 @@ export class ExpensesReportComponent {
       }
     });
   }
+
+  loadYear(){
+    const currentYear = new Date().getFullYear();
+    
+    for (let year = currentYear; year >= 2024; year--) {
+      this.listYear.push(year);
+    }
+  }
+
   form = new FormGroup({
     mes: new FormControl(),
     anio: new FormControl(),
